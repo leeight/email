@@ -98,59 +98,11 @@ func CreateMail(raw []byte, downloadDir string) (*EMail, error) {
 			if err != nil {
 				return nil, err
 			}
-
-			contentType := part.Header.Get(kContentType)
-			contentTransferEncoding := part.Header.Get(kContentTransferEncoding)
-
-			var reader io.Reader
-			if contentTransferEncoding == kBase64 {
-				reader = base64.NewDecoder(base64.StdEncoding, part)
-				// 内部已经处理过 kQuotedPrintable 编码类型了
-				// } else if contentTransferEncoding == kQuotedPrintable {
-				// reader = quotedprintable.NewDecoder(part)
-			} else {
-				reader = part
-			}
-
-			// log.Printf("ContentTransferEncoding = %s\n", contentTransferEncoding)
-
-			if strings.HasPrefix(contentType, "text/") {
-				// XXX(user) quoted-printable 类型的内部已经处理过了
-				body, _ := decodeMesssageBody(reader, contentType)
-
-				// XXX(user) src="cid:d3b11fe4b395a6995fcdb51988247200.png"
-				var r = regexp.MustCompile(`src="cid:([^"]+)"`)
-				body = r.ReplaceAll(body, []byte("src=\""+downloadDir+"/$1\""))
-
-				email.Message = string(body)
-			} else if strings.HasPrefix(contentType, "image/") {
-				// 邮件中内嵌的内容（比如图片）
-				body, _ := ioutil.ReadAll(reader)
-
-				filename := part.Header.Get(kContentId)
-				filename = strings.Replace(filename, "<", "", 1)
-				filename = strings.Replace(filename, ">", "", 1)
-
-				ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
-			} else if part.Header.Get(kContentDisposition) != "" {
-				// 附件
-				body, _ := ioutil.ReadAll(reader)
-
-				filename := RFC2047.Decode(part.FileName())
-				ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
-			} else if strings.HasPrefix(contentType, "multipart/") {
-				// TODO(user) 需要注意递归的处理流程，例如：
-				// multipart/mixed
-				//  multipart/related
-				//   text/html
-				//   image/jpeg
-				//   image/jpeg
-				// application/pdf
-			}
+			decodeMessageMultipart(part, &email, downloadDir)
 		}
 	}
 
-	date, _ := time.Parse(msg.Header.Get(kDate),
+	date, _ := time.Parse("Mon, 2 Jan 2006 15:04:05 -0700",
 		msg.Header.Get(kDate))
 
 	email.From = msg.Header.Get(kFrom)
@@ -163,6 +115,75 @@ func CreateMail(raw []byte, downloadDir string) (*EMail, error) {
 	email.Status = 0
 
 	return &email, nil
+}
+
+func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir string) error {
+	contentType := part.Header.Get(kContentType)
+	contentTransferEncoding := part.Header.Get(kContentTransferEncoding)
+
+	var reader io.Reader
+	if contentTransferEncoding == kBase64 {
+		reader = base64.NewDecoder(base64.StdEncoding, part)
+		// 内部已经处理过 kQuotedPrintable 编码类型了
+		// } else if contentTransferEncoding == kQuotedPrintable {
+		// reader = quotedprintable.NewDecoder(part)
+	} else {
+		reader = part
+	}
+
+	if strings.HasPrefix(contentType, "text/") {
+		// XXX(user) quoted-printable 类型的内部已经处理过了
+		body, _ := decodeMesssageBody(reader, contentType)
+
+		// XXX(user) src="cid:d3b11fe4b395a6995fcdb51988247200.png"
+		var r = regexp.MustCompile(`src="cid:([^"]+)"`)
+		body = r.ReplaceAll(body, []byte("src=\""+downloadDir+"/$1\""))
+
+		email.Message = string(body)
+	} else if strings.HasPrefix(contentType, "image/") {
+		// 邮件中内嵌的内容（比如图片）
+		body, _ := ioutil.ReadAll(reader)
+
+		// TODO(user) 文件名的确定方案
+		filename := part.Header.Get(kContentId)
+		filename = strings.Replace(filename, "<", "", 1)
+		filename = strings.Replace(filename, ">", "", 1)
+
+		ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
+	} else if part.Header.Get(kContentDisposition) != "" {
+		// 附件
+		body, _ := ioutil.ReadAll(reader)
+
+		// TODO(user) 文件名的确定方案
+		filename := RFC2047.Decode(part.FileName())
+		ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
+	} else if strings.HasPrefix(contentType, "multipart/") {
+		// TODO(user) 需要注意递归的处理流程，例如：
+		// multipart/mixed
+		//  multipart/related
+		//   text/html
+		//   image/jpeg
+		//   image/jpeg
+		// application/pdf
+		_, params, err := mime.ParseMediaType(contentType)
+		if err != nil {
+			return err
+		}
+
+		mr := multipart.NewReader(part, params["boundary"])
+		for {
+			subpart, err := mr.NextPart()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			decodeMessageMultipart(subpart, email, downloadDir)
+		}
+	}
+
+	return nil
 }
 
 // 解码邮件的正文，主要是处理编码转化的工作
@@ -179,7 +200,7 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 
 	if charset, ok := params["charset"]; ok {
 		charset = strings.Replace(charset, "\"", "", -1)
-		if charset == "gb2312" {
+		if strings.ToLower(charset) == "gb2312" {
 			charset = "gb18030"
 		}
 		cd, _ := iconv.Open("utf-8", charset)

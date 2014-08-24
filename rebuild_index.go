@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"strings"
 
@@ -69,7 +70,8 @@ func main() {
 			continue
 		}
 
-		email, err := base.CreateMail(raw, kDownloadDir)
+		os.MkdirAll(path.Join(kDownloadDir, uidl), 0755)
+		email, err := base.CreateMail(raw, path.Join(kDownloadDir, uidl))
 		if err != nil {
 			log.Fatal(err)
 			continue

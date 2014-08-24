@@ -20,7 +20,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT `id`, `uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `subject`, `message` FROM mails LIMIT 10")
+	rows, err := db.Query("SELECT `id`, `uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `subject`, `date`, `message` FROM mails ORDER BY `id` DESC LIMIT 10")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,6 +38,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			&email.Bcc,
 			&email.ReplyTo,
 			&email.Subject,
+			&email.Date,
 			&email.Message)
 		emails = append(emails, email)
 	}
