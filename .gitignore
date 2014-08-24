@@ -2,3 +2,9 @@ node_modules
 main
 parser
 sqlite3
+frontend
+body.html
+foo.db
+raw.txt
+raw/
+testdata/

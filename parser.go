@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
-  // "encoding/json"
+	// "encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -52,7 +52,6 @@ func main() {
 		panic(err)
 	}
 
-
 	fmt.Printf("MediaType = %s\n", mediaType)
 
 	cte := msg.Header.Get("Content-Transfer-Encoding")
@@ -69,7 +68,7 @@ func main() {
 
 		body, _ := ioutil.ReadAll(reader)
 		ioutil.WriteFile("body.html", body, 0644)
-		fmt.Printf(cd.ConvString(string(body)))
+		// fmt.Printf(cd.ConvString(string(body)))
 	}
 
 	// 邮件里面可能有附件或者截图之类的东东
@@ -152,7 +151,4 @@ func main() {
 			// 	cd.ConvString(string(slurp)))
 		}
 	}
-
-	// body, err := ioutil.ReadAll(msg.Body)
-	// log.Println(string(body))
 }

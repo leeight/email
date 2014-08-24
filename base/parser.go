@@ -1,10 +1,10 @@
 package base
 
 import (
-  "strings"
-  "regexp"
+	"regexp"
+	"strings"
 
-  "../RFC2047"
+	"../RFC2047"
 )
 
 // 工具类
@@ -13,33 +13,33 @@ import (
 //        size=14296; creation-date="Thu, 21 Aug 2014 11:17:27 GMT";
 //        modification-date="Thu, 21 Aug 2014 11:19:56 GMT"
 
-func ParseContentDisposition(cd string) (map[string]string) {
-  var r = regexp.MustCompile(`^"|"$`)
+func ParseContentDisposition(cd string) map[string]string {
+	var r = regexp.MustCompile(`^"|"$`)
 
-  rv := make(map[string]string)
-  for _, item := range strings.Split(cd, "; ") {
-    var key string
-    var value string
+	rv := make(map[string]string)
+	for _, item := range strings.Split(cd, "; ") {
+		var key string
+		var value string
 
-    chunks := strings.SplitN(item, "=", 2)
-    key = chunks[0]
+		chunks := strings.SplitN(item, "=", 2)
+		key = chunks[0]
 
-    if len(chunks) == 1 {
-      value = key
-    } else if len(chunks) == 2 {
-      value = chunks[1]
-    }
+		if len(chunks) == 1 {
+			value = key
+		} else if len(chunks) == 2 {
+			value = chunks[1]
+		}
 
-    if strings.HasPrefix(value, "\"") {
-      value = string(r.ReplaceAll([]byte(value), []byte("")))
-    }
+		if strings.HasPrefix(value, "\"") {
+			value = string(r.ReplaceAll([]byte(value), []byte("")))
+		}
 
-    if key == "filename" {
-      value = RFC2047.Decode(value)
-    }
+		if key == "filename" {
+			value = RFC2047.Decode(value)
+		}
 
-    rv[key] = value
-  }
+		rv[key] = value
+	}
 
-  return rv
+	return rv
 }
