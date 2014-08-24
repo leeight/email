@@ -7,4 +7,6 @@ body.html
 foo.db
 raw.txt
 raw/
-testdata/
+test/testdata/
+rebuild_index
+downloads

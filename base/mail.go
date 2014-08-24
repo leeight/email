@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"mime"
 	"mime/multipart"
+	"path"
 	"regexp"
 	"strings"
 	"time"
@@ -53,7 +54,7 @@ var (
 
 // 从邮件的正文中创建一个邮件对象 EMail 然后存储到
 // sqlite里面去
-func CreateMail(raw []byte) (*EMail, error) {
+func CreateMail(raw []byte, downloadDir string) (*EMail, error) {
 	var email EMail
 
 	// 编码转化函数
@@ -83,7 +84,7 @@ func CreateMail(raw []byte) (*EMail, error) {
 			reader = msg.Body
 		}
 
-		body, _ := ioutil.ReadAll(reader)
+		body, _ := decodeMesssageBody(reader, msg.Header.Get(kContentType))
 		email.Message = string(body)
 	} else if strings.HasPrefix(mediaType, "multipart/") {
 		// 邮件里面可能有附件或者截图之类的东东
@@ -109,11 +110,11 @@ func CreateMail(raw []byte) (*EMail, error) {
 
 			if strings.HasPrefix(contentType, "text/") {
 				// XXX(user) quoted-printable 类型的内部已经处理过了
-				body, _ := ioutil.ReadAll(reader)
+				body, _ := decodeMesssageBody(reader, contentType)
 
 				// XXX(user) src="cid:d3b11fe4b395a6995fcdb51988247200.png"
 				var r = regexp.MustCompile(`src="cid:([^"]+)"`)
-				body = r.ReplaceAll(body, []byte("src=\"$1\""))
+				body = r.ReplaceAll(body, []byte("src=\""+downloadDir+"/$1\""))
 
 				email.Message = string(body)
 			} else if strings.HasPrefix(contentType, "image/") {
@@ -124,13 +125,21 @@ func CreateMail(raw []byte) (*EMail, error) {
 				filename = strings.Replace(filename, "<", "", 1)
 				filename = strings.Replace(filename, ">", "", 1)
 
-				ioutil.WriteFile(filename, body, 0644)
+				ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
 			} else if part.Header.Get(kContentDisposition) != "" {
 				// 附件
 				body, _ := ioutil.ReadAll(reader)
 
 				filename := RFC2047.Decode(part.FileName())
-				ioutil.WriteFile(filename, body, 0644)
+				ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
+			} else if strings.HasPrefix(contentType, "multipart/") {
+				// TODO(user) 需要注意递归的处理流程，例如：
+				// multipart/mixed
+				//  multipart/related
+				//   text/html
+				//   image/jpeg
+				//   image/jpeg
+				// application/pdf
 			}
 		}
 	}
@@ -148,6 +157,28 @@ func CreateMail(raw []byte) (*EMail, error) {
 	email.Status = 0
 
 	return &email, nil
+}
+
+// 解码邮件的正文，主要是处理编码转化的工作
+func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
+	body, err := ioutil.ReadAll(r)
+	if err != nil {
+		return []byte(""), err
+	}
+
+	_, params, err := mime.ParseMediaType(c)
+	if err != nil {
+		return []byte(""), err
+	}
+
+	if charset, ok := params["charset"]; ok {
+		charset = strings.Replace(charset, "\"", "", -1)
+		cd, _ := iconv.Open("utf-8", charset)
+		defer cd.Close()
+		return []byte(cd.ConvString(string(body))), nil
+	} else {
+		return body, nil
+	}
 }
 
 func (email *EMail) Store(db *sql.DB) error {

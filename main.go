@@ -1,19 +1,21 @@
 package main
 
 import (
-	// "bytes"
+	"database/sql"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
-	// "net/mail"
-	"database/sql"
 	"os"
 
 	pop3 "github.com/bytbox/go-pop3"
 	_ "github.com/mattn/go-sqlite3"
 
 	"./base"
+)
+
+var (
+	kDownloadDir = "downloads"
 )
 
 func Usage() {
@@ -86,7 +88,7 @@ func main() {
 		ioutil.WriteFile("raw/"+uidl+".txt", []byte(raw), 0644)
 		log.Printf("[ SAVE] %d -> raw/%s.txt\n", msg, uidl)
 
-		email, err := base.CreateMail([]byte(raw))
+		email, err := base.CreateMail([]byte(raw), kDownloadDir)
 		if err != nil {
 			log.Fatal(err)
 			continue
