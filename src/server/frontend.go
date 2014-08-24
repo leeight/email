@@ -51,7 +51,10 @@ func staticHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// 自定义的API
 	http.HandleFunc("/api/", apiHandler)
-	http.HandleFunc("/", staticHandler)
+
+	// 其它请求走静态文件
+	http.Handle("/", http.FileServer(http.Dir("/Users/leeight/hd/local/leeight.github.com/email-client")))
 	http.ListenAndServe(":8765", nil)
 }
