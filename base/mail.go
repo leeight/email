@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"io"
 	"io/ioutil"
+	// "log"
 	"mime"
 	"mime/multipart"
 	"path"
@@ -104,9 +105,14 @@ func CreateMail(raw []byte, downloadDir string) (*EMail, error) {
 			var reader io.Reader
 			if contentTransferEncoding == kBase64 {
 				reader = base64.NewDecoder(base64.StdEncoding, part)
+				// 内部已经处理过 kQuotedPrintable 编码类型了
+				// } else if contentTransferEncoding == kQuotedPrintable {
+				// reader = quotedprintable.NewDecoder(part)
 			} else {
 				reader = part
 			}
+
+			// log.Printf("ContentTransferEncoding = %s\n", contentTransferEncoding)
 
 			if strings.HasPrefix(contentType, "text/") {
 				// XXX(user) quoted-printable 类型的内部已经处理过了
@@ -173,13 +179,21 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 
 	if charset, ok := params["charset"]; ok {
 		charset = strings.Replace(charset, "\"", "", -1)
+		if charset == "gb2312" {
+			charset = "gb18030"
+		}
 		cd, _ := iconv.Open("utf-8", charset)
 		defer cd.Close()
 
-		html := cd.ConvString(string(body))
-		body = stripUnnecessaryTags([]byte(html))
+		body = stripUnnecessaryTags(body)
 
-		return body, nil
+		var outbuf [512]byte
+		html, inleft, err := cd.Conv(body, outbuf[:])
+		if err != nil || inleft > 0 {
+			return body, nil
+		}
+
+		return html, nil
 	} else {
 		return body, nil
 	}
@@ -193,8 +207,6 @@ func stripUnnecessaryTags(html []byte) []byte {
 		start := indexs[0][1]
 		end := indexs[1][0]
 		return html[start:end]
-		// fmt.Println(indexs)
-		// fmt.Println(string(html[indexs[0][0]:indexs[0][1]]))
 	}
 	return html
 }
