@@ -44,4 +44,7 @@ func main() {
 	log.Printf("Date = %s\n", email.Date)
 	log.Printf("Message = %s\n", email.Message)
 	log.Printf("Status = %d\n", email.Status)
+
+	ioutil.WriteFile("body.html", []byte(email.Message), 0644)
+
 }

@@ -175,10 +175,28 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 		charset = strings.Replace(charset, "\"", "", -1)
 		cd, _ := iconv.Open("utf-8", charset)
 		defer cd.Close()
-		return []byte(cd.ConvString(string(body))), nil
+
+		html := cd.ConvString(string(body))
+		body = stripUnnecessaryTags([]byte(html))
+
+		return body, nil
 	} else {
 		return body, nil
 	}
+}
+
+// 删除邮件正文中不必要的内容，只保留<body>和</body>之间的内容
+func stripUnnecessaryTags(html []byte) []byte {
+	pattern := regexp.MustCompile(`</?body[^>]*>`)
+	indexs := pattern.FindAllIndex(html, 2)
+	if indexs != nil && len(indexs) == 2 {
+		start := indexs[0][1]
+		end := indexs[1][0]
+		return html[start:end]
+		// fmt.Println(indexs)
+		// fmt.Println(string(html[indexs[0][0]:indexs[0][1]]))
+	}
+	return html
 }
 
 func (email *EMail) Store(db *sql.DB) error {
