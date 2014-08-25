@@ -11,3 +11,4 @@ src/server/raw
 test/testdata/
 rebuild_index
 downloads
+sent_mail

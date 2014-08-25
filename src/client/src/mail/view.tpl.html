@@ -49,6 +49,16 @@
                   <th>源文件：</th>
                   <td><a href="http://127.0.0.1:8765/raw/${uidl}.txt" target="_blank">查看</a></td>
                 </tr>
+                <!-- if: ${email.attachments.length} -->
+                <tr>
+                  <th>附件：</th>
+                  <td>
+                      <!-- for: ${email.attachments} as ${item}, ${index} -->
+                      <a href="http://127.0.0.1:8765/downloads/${uidl}/${item}" target="_blank">${item}</a>&nbsp;&nbsp;
+                      <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
             </table>
         </div>
     </div>

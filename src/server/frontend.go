@@ -4,13 +4,19 @@ import (
 	"database/sql"
 	"encoding/json"
 	_ "github.com/mattn/go-sqlite3"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"path"
 	"strconv"
 	"time"
 
 	"./base"
 	"./net/mail"
+)
+
+var (
+	kDownloadDir = "downloads"
 )
 
 // ER所需要的数据格式
@@ -34,17 +40,18 @@ type SimpleResponse struct {
 
 // 定义邮件类型，View Model
 type EMailViewModel struct {
-	Id      int             `json:"id"`
-	Uidl    string          `json:"uidl"`
-	From    *mail.Address   `json:"from"`
-	To      []*mail.Address `json:"to"`
-	Cc      []*mail.Address `json:"cc"`
-	Bcc     []*mail.Address `json:"bcc"`
-	ReplyTo []*mail.Address `json:"reply_to"`
-	Date    time.Time       `json:"date"`
-	Subject string          `json:"subject"`
-	Message string          `json:"message"`
-	Status  int             `json:"status"`
+	Id          int             `json:"id"`
+	Uidl        string          `json:"uidl"`
+	From        *mail.Address   `json:"from"`
+	To          []*mail.Address `json:"to"`
+	Cc          []*mail.Address `json:"cc"`
+	Bcc         []*mail.Address `json:"bcc"`
+	ReplyTo     []*mail.Address `json:"reply_to"`
+	Date        time.Time       `json:"date"`
+	Subject     string          `json:"subject"`
+	Message     string          `json:"message"`
+	Attachments []string        `json:"attachments"`
+	Status      int             `json:"status"`
 }
 
 func createListPageResponse(r []EMailViewModel, totalCount int, pageNo int, pageSize int) ListResponse {
@@ -79,7 +86,25 @@ func createViewModel(e *base.EMail) EMailViewModel {
 	evm.Cc, _ = mail.ParseAddressList(e.Cc)
 	evm.Bcc, _ = mail.ParseAddressList(e.Bcc)
 	evm.ReplyTo, _ = mail.ParseAddressList(e.ReplyTo)
+	evm.Attachments = scanAttachments(e.Uidl)
 	return evm
+}
+
+// 扫描目录，获取附件的列表
+func scanAttachments(uidl string) []string {
+	attachments := make([]string, 0)
+	fileInfos, err := ioutil.ReadDir(path.Join(kDownloadDir, uidl))
+	if err != nil {
+		return attachments
+	}
+
+	for _, item := range fileInfos {
+		if item.IsDir() {
+			continue
+		}
+		attachments = append(attachments, item.Name())
+	}
+	return attachments
 }
 
 // 获取邮件的详情
