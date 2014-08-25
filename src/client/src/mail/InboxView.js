@@ -8,6 +8,7 @@ define(function (require) {
     require('bat-ria/tpl!./inbox.tpl.html');
     var moment = require('moment');
     var lib = require('esui/lib');
+    var locator = require('er/locator')
 
     var ListView = require('bat-ria/mvc/ListView');
 
@@ -92,7 +93,11 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    MailInboxView.prototype.uiEvents = {};
+    MailInboxView.prototype.uiEvents = {
+        'create:click': function() {
+            locator.redirect('/mail/compose');
+        }
+    };
 
     require('er/util').inherits(MailInboxView, ListView);
     return MailInboxView;

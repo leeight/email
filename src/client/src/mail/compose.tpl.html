@@ -1,0 +1,52 @@
+<!-- target: TPL_mail_compose -->
+<div class="mail-compose">
+<form data-ui-type="Form" data-ui-id="form" data-ui-auto-validate="true" method="POST">
+    <div class="form-block">
+        <h3>新邮件</h3>
+        <div class="form-body">
+            <div class="form-row">
+                <div class="form-key">收件人：</div>
+                <div class="form-value">
+                    <input data-ui-id="to"
+                           data-ui-type="TextBox"
+                           data-ui-required="required"
+                           data-ui-width="500"
+                           name="to"
+                           data-ui-value="${formData.to}" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-key">发件人：</div>
+                <div class="form-value">
+                    <input data-ui-id="from"
+                           data-ui-type="TextBox"
+                           data-ui-required="required"
+                           data-ui-width="500"
+                           name="from"
+                           data-ui-value="liyubei@baidu.com" />
+                </div>
+            </div>
+            <div class="form-row subject-row">
+                <div class="form-key">标题：</div>
+                <div class="form-value">
+                    <input data-ui-id="subject"
+                           data-ui-type="TextBox"
+                           data-ui-required="required"
+                           data-ui-width="500"
+                           name="subject"
+                           data-ui-value="${formData.name}" />
+                </div>
+            </div>
+            <div class="form-row">
+                <script id="email-body-editor" name="content" type="text/plain">这里写你的初始化内容</script>
+            </div>
+        </div>
+    </div>
+    <div class="form-operation">
+        <button data-ui-type="Button" data-ui-id="submit" data-ui-skin="spring" type="submit">提交</button>
+        <button data-ui-type="Button" data-ui-id="cancel" data-ui-skin="link" type="button">取消</button>
+    </div>
+</form>
+
+
+</div>
