@@ -43,7 +43,7 @@ func main() {
 	log.Printf("Bcc = %s\n", email.Bcc)
 	log.Printf("ReplyTo = %s\n", email.ReplyTo)
 	log.Printf("Date = %s\n", email.Date)
-	log.Printf("Message = %s\n", email.Message)
+	// log.Printf("Message = %s\n", email.Message)
 	log.Printf("Status = %d\n", email.Status)
 
 	ioutil.WriteFile("body.html", []byte(email.Message), 0644)

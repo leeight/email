@@ -45,10 +45,10 @@ func (qd qDecoder) Read(p []byte) (n int, err error) {
 	return 1, nil
 }
 
-func decodeRFC2047Word(s string) (string, error) {
+func decodeBuffer(s string) (string, []byte, error) {
 	fields := strings.Split(s, "?")
 	if len(fields) != 5 || fields[0] != "=" || fields[4] != "=" {
-		return "", errors.New("string not RFC 2047 encoded")
+		return "", nil, errors.New("string not RFC 2047 encoded")
 	}
 	charset, enc := strings.ToLower(fields[1]), strings.ToLower(fields[2])
 	if charset != "iso-8859-1" &&
@@ -56,7 +56,7 @@ func decodeRFC2047Word(s string) (string, error) {
 		charset != "gb18030" &&
 		charset != "gb2312" &&
 		charset != "gbk" {
-		return "", fmt.Errorf("charset not supported: %q", charset)
+		return "", nil, fmt.Errorf("charset not supported: %q", charset)
 	}
 
 	in := bytes.NewBufferString(fields[3])
@@ -67,18 +67,17 @@ func decodeRFC2047Word(s string) (string, error) {
 	case "q":
 		r = qDecoder{r: in}
 	default:
-		return "", fmt.Errorf("RFC 2047 encoding not supported: %q", enc)
+		return "", nil, fmt.Errorf("RFC 2047 encoding not supported: %q", enc)
 	}
 
 	dec, err := ioutil.ReadAll(r)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
+	return charset, dec, nil
+}
 
-	if charset == "gbk" || charset == "gb2312" {
-		charset = "gb18030"
-	}
-
+func decodeRFC2047Word(dec []byte, charset string) (string, error) {
 	switch charset {
 	case "iso-8859-1":
 		b := new(bytes.Buffer)
@@ -93,13 +92,13 @@ func decodeRFC2047Word(s string) (string, error) {
 		}
 		defer cd.Close()
 		return cd.ConvString(string(dec)), nil
-	case "utf-8":
+	default:
 		return string(dec), nil
 	}
 	panic("unreachable")
 }
 
-func Decode(s string) (ret string) {
+func Decode(s string) string {
 	// 正常情况下，应该是 ?= =?utf-8?B? 的
 	// 但是有的邮件里面空格没有了，导致后面的逻辑
 	// 运行不正常，我们这里处理一下，通过正则表达式检查一下是否
@@ -115,15 +114,27 @@ func Decode(s string) (ret string) {
 		s = string(pattern.ReplaceAll([]byte(s), []byte("$1 $2")))
 	}
 
-	sep := ""
+	var charset string
+	var buffer, tb []byte
+	var err error
+
+	buffer = make([]byte, 0)
 	for _, p := range strings.Split(s, " ") {
-		r, err := decodeRFC2047Word(p)
+		charset, tb, err = decodeBuffer(p)
 		if err != nil {
-			ret += sep + p
+			return s
 		} else {
-			ret += sep + r
+			buffer = append(buffer, tb...)
 		}
-		sep = " "
 	}
-	return
+
+	if charset == "gbk" || charset == "gb2312" {
+		charset = "gb18030"
+	}
+
+	ret, err := decodeRFC2047Word(buffer, charset)
+	if err != nil {
+		return s
+	}
+	return ret
 }
