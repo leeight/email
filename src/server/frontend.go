@@ -3,13 +3,70 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
+	"time"
 
 	"./base"
+	"./net/mail"
 )
+
+// ER所需要的数据格式
+type ListResponse struct {
+	Success string `json:"success"`
+	Page    struct {
+		TotalCount int              `json:"totalCount"`
+		PageNo     int              `json:"pageNo"`
+		PageSize   int              `json:"pageSize"`
+		OrderBy    string           `json:"orderBy"`
+		Order      string           `json:"order"`
+		Result     []EMailViewModel `json:"result"`
+	} `json:"page"`
+}
+
+// 定义邮件类型，View Model
+type EMailViewModel struct {
+	Id      int             `json:"id"`
+	Uidl    string          `json:"uidl"`
+	From    *mail.Address   `json:"from"`
+	To      []*mail.Address `json:"to"`
+	Cc      []*mail.Address `json:"cc"`
+	Bcc     []*mail.Address `json:"bcc"`
+	ReplyTo []*mail.Address `json:"reply_to"`
+	Date    time.Time       `json:"date"`
+	Subject string          `json:"subject"`
+	Message string          `json:"message"`
+	Status  int             `json:"status"`
+}
+
+func createListPageResponse(r []EMailViewModel) ListResponse {
+	var res ListResponse
+	res.Success = "true"
+	res.Page.TotalCount = 100
+	res.Page.PageNo = 1
+	res.Page.PageSize = 10
+	res.Page.OrderBy = "id"
+	res.Page.Order = "desc"
+	res.Page.Result = r
+	return res
+}
+
+func createViewModel(e *base.EMail) EMailViewModel {
+	var evm EMailViewModel
+	evm.Id = e.Id
+	evm.Uidl = e.Uidl
+	evm.Date = e.Date
+	evm.Subject = e.Subject
+	evm.Message = e.Message
+	evm.Status = e.Status
+	evm.From, _ = mail.ParseAddress(e.From)
+	evm.To, _ = mail.ParseAddressList(e.To)
+	evm.Cc, _ = mail.ParseAddressList(e.Cc)
+	evm.Bcc, _ = mail.ParseAddressList(e.Bcc)
+	evm.ReplyTo, _ = mail.ParseAddressList(e.ReplyTo)
+	return evm
+}
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -26,7 +83,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	emails := make([]base.EMail, 0)
+	emails := make([]EMailViewModel, 0)
 	for rows.Next() {
 		var email base.EMail
 		rows.Scan(
@@ -40,19 +97,27 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			&email.Subject,
 			&email.Date,
 			&email.Message)
-		emails = append(emails, email)
+		emails = append(emails, createViewModel(&email))
 	}
-	s, _ := json.MarshalIndent(emails, "", "    ")
+	s, _ := json.MarshalIndent(createListPageResponse(emails), "", "    ")
 	w.Write(s)
 }
 
-func staticHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+func addDefaultHeaders(fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		fn(w, r)
+	}
 }
 
 func main() {
 	// 自定义的API
-	http.HandleFunc("/api/", apiHandler)
+	http.HandleFunc("/api/", addDefaultHeaders(apiHandler))
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir("/Users/leeight/hd/local/leeight.github.com/email-client")))

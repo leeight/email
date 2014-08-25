@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ActionPanel</title>
+    <script src="esl.js"></script>
+    <script>
+        require.config({
+            'packages': [
+                {
+                    'name': 'er',
+                    'location': '../dep/er/3.1.0-beta.3/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'esui',
+                    'location': '../dep/esui/3.1.0-beta.3/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'underscore',
+                    'location': '../dep/underscore/1.5.2/src',
+                    'main': 'underscore'
+                },
+                {
+                    'name': 'etpl',
+                    'location': '../dep/etpl/2.1.2/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'mini-event',
+                    'location': '../dep/mini-event/1.0.0/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'moment',
+                    'location': '../dep/moment/2.7.0/src',
+                    'main': 'moment'
+                },
+                {
+                    'name': 'ef',
+                    'location': '../src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'eoo',
+                    'location': '../dep/eoo/0.0.5/src',
+                    'main': 'oo'
+                }
+            ],
+            'paths': {}
+        });
+    </script>
+</head>
+<body>
+    <div data-ui-id="panel" data-ui-type="ActionPanel" data-ui-url="/xyz"></div>
+    <script>
+        require(
+            ['esui', 'er/controller', 'ef/ActionPanel'],
+            function (ui, controller) {
+                controller.registerAction({
+                    path: '/abc',
+                    type: 'Test'
+                })
+                ui.init(document.body);
+                var panel = ui.get('panel');
+                panel.on(
+                    'actionattach',
+                    function () {
+                        console.log('attach', this.action);
+                    }
+                );
+                panel.on(
+                    'actionloaded',
+                    function () {
+                        console.log('load', this.action);
+                    }
+                );
+                panel.on(
+                    'actionloadfail',
+                    function (e) {
+                        console.log('fail', e.reason);
+                    }
+                );
+                panel.on(
+                    'actionloadabort',
+                    function (e) {
+                        console.log('abort', this.action);
+                    }
+                );
+                panel.on(
+                    'action@test',
+                    function (e) {
+                        console.log('test', e);
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                );
+                panel.repaint([{ name: 'url' }], { url: { name: 'url' } });
+                panel.set('url', '/abc');
+            }
+        );
+    </script>
+</body>
+</html>

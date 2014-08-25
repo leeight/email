@@ -1,0 +1,34 @@
+{
+  "name": "bat-ria",
+  "version": "0.2.0",
+  "description": "RIA extension for Brand Ads Team",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ecomfe/bat-ria.git"
+  },
+  "keywords": [
+    "RIA",
+    "esui",
+    "er"
+  ],
+  "dependencies": {
+      "er": ">=3.1.0-beta.3",
+      "esui": ">=3.1.0-beta.3",
+      "ef": "3.1.x",
+      "er-track": "~0.9.1",
+      "underscore": ">=1.6.0",
+      "moment": "2.x",
+      "etpl": ">=2.0.8",
+      "urijs": ">=1.12.0"
+  },
+  "author": "Justineo, chestnutchen, leeight",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/ecomfe/bat-ria/issues"
+  },
+  "homepage": "https://github.com/ecomfe/bat-ria"
+}

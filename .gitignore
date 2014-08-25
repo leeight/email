@@ -6,7 +6,8 @@ frontend
 body.html
 foo.db
 raw.txt
-raw/
+raw
+src/server/raw
 test/testdata/
 rebuild_index
 downloads

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Book Store</title>
+    <link rel="stylesheet" href="src/common/layout.css">
+    <link rel="stylesheet" href="src/book/list.css">
+    <link rel="stylesheet" href="src/cart/list.css">
+    <script src="src/common/esl.js"></script>
+    <script src="src/common/jquery.js"></script>
+    <script src="src/common/underscore-min.js"></script>
+</head>
+<body>
+    <div id="page">
+        <h1>Book Store</h1>
+        <div id="nav-wrap">
+            <nav id="nav">
+                <ul>
+                    <li id="link-to-book-list"><a href="#/book/list">图书列表</a></li>
+                    <li id="link-to-cart"><a href="#/cart/list">购物车</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div id="main"></div>
+    </div>
+    <!-- edp: { "loaderAutoConfig": false } -->
+<script>
+    require.config({
+        'baseUrl': 'src',
+        'packages': [
+            {
+                'name': 'mini-event',
+                'location': '../../../dep/mini-event/1.0.0/src',
+                'main': 'main'
+            },
+            {
+                'name': 'etpl',
+                'location': '../../../dep/etpl/2.1.2/src',
+                'main': 'main'
+            },
+            {
+                'name': 'er',
+                'location': '../../../src',
+                'main': 'main'
+            },
+            {
+                'name': 'eoo',
+                'location': '../../../dep/eoo/0.0.8/src',
+                'main': 'oo'
+            }
+        ],
+        'paths': {}
+    });
+    require(
+        [
+            'er', 'er/tpl', 'er/events', 'er/ajax',
+            'er/Deferred', 'er/template', 'er/config',
+            'common/database', 'book/init', 'cart/init', 'common/init'
+        ],
+        function(er, tpl, events, ajax, Deferred, template, config, database, book, cart) {
+            events.on(
+                'error',
+                function(error) {
+                    console.log(error);
+                }
+            );
+
+
+            config.indexURL = '/book/list';
+            er.start();
+
+            var linkToCart = $('#link-to-cart > a');
+            function updateBoughtNumber() {
+                var count = this.boughtBooks.length;
+                var text = '购物车';
+                if (count > 0) {
+                    text += '(' + count + ')';
+                }
+                linkToCart.text(text);
+            }
+            cart.on('add', updateBoughtNumber);
+            cart.on('remove', updateBoughtNumber);
+            cart.on('clear', updateBoughtNumber);
+
+            var topEdge = $('#nav').offset().top;
+            var body = $('body');
+            var document = $('html');
+            var navigator = $('#nav');
+            function adjustNavigator() {
+                var scrollTop =
+                    Math.max(body.scrollTop(), document.scrollTop());
+                var top = topEdge - scrollTop;
+                if (top <= 0) {
+                    navigator.addClass('fix-on-top');
+                }
+                else {
+                    navigator.removeClass('fix-on-top');
+                }
+            }
+
+            $(window).on('scroll', adjustNavigator);
+            adjustNavigator();
+        }
+    );
+</script>
+</body>
+</html>

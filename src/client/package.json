@@ -1,0 +1,36 @@
+{
+    "name": "client",
+    "version": "0.0.1",
+    "description": "edp project",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "edp": {
+        "wwwroot": "/",
+        "depDir": "dep",
+        "srcDir": "src",
+        "loaderAutoConfig": "js,htm,html,tpl,vm,phtml",
+        "loaderUrl": "http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js",
+        "dependencies": {
+            "ef": "~3.1.0-beta.2",
+            "eoo": "~0.0.8",
+            "er": "~3.1.0-beta.5",
+            "esui": "~3.1.0-beta.3",
+            "etpl": "~2.1.2",
+            "mini-event": "~1.0.2",
+            "moment": "~2.7.0",
+            "underscore": "~1.5.2",
+            "esf-ms": "~1.0.2",
+            "est": "~1.2.2",
+            "bat-ria": "~0.2.0",
+            "er-track": "~0.9.1",
+            "urijs": "~1.12.0"
+        }
+    },
+    "dependencies": {},
+    "author": "leeight@gmail.com",
+    "repository": "empty",
+    "license": "BSD",
+    "readme": "README"
+}

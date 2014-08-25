@@ -1,0 +1,38 @@
+{
+    "name": "ef",
+    "version": "3.1.0-beta.2",
+    "maintainers": [
+        {
+            "name": "otakustay",
+            "email": "otakustay@gmail.com"
+        }
+    ],
+    "dependencies": {
+        "er": "3.1.x",
+        "esui": "3.1.x",
+        "underscore": "1.5.x",
+        "mini-event": "1.x",
+        "etpl": "2.x",
+        "moment": "2.x",
+        "eoo": "0.x"
+    },
+    "main": "main",
+    "description": "EF是ER与ESUI整合而成的高效率业务系统开发框架。",
+    "homepage": "https://github.com/ecomfe/ef",
+    "edp": {
+        "wwwroot": "/",
+        "depDir": "dep",
+        "srcDir": "src",
+        "loaderAutoConfig": "js,htm,html,tpl,vm,phtml",
+        "loaderUrl": "http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-0/esl.js",
+        "dependencies": {
+            "er": "3.1.x",
+            "esui": "3.1.x",
+            "underscore": "1.5.x",
+            "mini-event": "1.x",
+            "etpl": "2.x",
+            "moment": "2.x",
+            "eoo": "0.x"
+        }
+    }
+}

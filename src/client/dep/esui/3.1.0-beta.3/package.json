@@ -1,0 +1,41 @@
+{
+    "name": "esui",
+    "version": "3.1.0-beta.3",
+    "maintainers": [
+        {
+            "name": "otakustay",
+            "email": "otakustay@live.com"
+        }
+    ],
+    "contributors": [
+        {
+            "name": "erik",
+            "email": "errorrik@gmail.com"
+        },
+        {
+            "name": "DDDBear"
+        },
+        {
+            "name": "wurongyao"
+        },
+        {
+            "name": "kitemao"
+        },
+        {
+            "name": "Shen Bin",
+            "email": "bobshenbin@gmail.com"
+        },
+        {
+            "name": "Li Sijin"
+        }
+    ],
+    "dependencies": {
+        "mini-event": "1.x",
+        "underscore": "1.5.x",
+        "moment": "2.x",
+        "etpl": ">=2.0.8"
+    },
+    "main": "main",
+    "description": "ESUI是一个轻巧灵活的高性能UI组件库。",
+    "homepage": "https://github.com/ecomfe/esui"
+}

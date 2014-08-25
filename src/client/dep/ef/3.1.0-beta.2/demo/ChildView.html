@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>ChildView</title>
+    <script src="esl.js"></script>
+    <script>
+        require.config({
+            'packages': [
+                {
+                    'name': 'er',
+                    'location': '../dep/er/3.1.0-beta.3/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'esui',
+                    'location': '../dep/esui/3.1.0-beta.3/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'underscore',
+                    'location': '../dep/underscore/1.5.2/src',
+                    'main': 'underscore'
+                },
+                {
+                    'name': 'etpl',
+                    'location': '../dep/etpl/2.1.2/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'mini-event',
+                    'location': '../dep/mini-event/1.0.0/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'moment',
+                    'location': '../dep/moment/2.7.0/src',
+                    'main': 'moment'
+                },
+                {
+                    'name': 'ef',
+                    'location': '../src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'eoo',
+                    'location': '../dep/eoo/0.0.5/src',
+                    'main': 'oo'
+                }
+            ],
+            'paths': {}
+        });
+    </script>
+    <style>
+        esui-child-view {
+            display: block;
+        }
+        esui-button {
+            display: inline-block;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <esui-child-view data-ui-id="view" data-ui-view-type="TestView"></esui-child-view>
+    <esui-button data-ui-id="refresh">Refresh</esui-button>
+    <script>
+        require(
+            ['esui', 'ef/ChildView', 'esui/Button'],
+            function (ui) {
+                ui.init(document.body);
+                var childView = ui.get('view');
+                ui.get('refresh').on('click', childView.refresh, childView)
+            }
+        );
+    </script>
+</body>
+</html>

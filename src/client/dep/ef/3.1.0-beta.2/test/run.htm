@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Jasmine Spec Runner</title>
+
+    <link rel="stylesheet" href="asset/css/jasmine.css">
+    <script src="asset/js/jasmine.js"></script>
+    <script src="asset/js/async.js"></script>
+    <script src="asset/js/jasmine-html.js"></script>
+    <script src="matchers.js"></script>
+    <script src="asset/js/esl.js"></script>
+
+    <script>
+        require.config({
+            waitSeconds: 1,
+            'packages': [
+                {
+                    'name': 'er',
+                    'location': '../dep/er/3.1.0-beta.3/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'esui',
+                    'location': '../dep/esui/3.1.0-beta.3/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'underscore',
+                    'location': '../dep/underscore/1.5.2/src',
+                    'main': 'underscore'
+                },
+                {
+                    'name': 'etpl',
+                    'location': '../dep/etpl/2.1.2/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'mini-event',
+                    'location': '../dep/mini-event/1.0.0/src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'moment',
+                    'location': '../dep/moment/2.7.0/src',
+                    'main': 'moment'
+                },
+                {
+                    'name': 'ef',
+                    'location': '../src',
+                    'main': 'main'
+                },
+                {
+                    'name': 'eoo',
+                    'location': '../dep/eoo/0.0.5/src',
+                    'main': 'oo'
+                }
+            ],
+            'paths': {}
+        });
+    </script>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        var container = document.getElementById('container');
+        var suits = [
+            'UIView'
+        ];
+        require(
+            suits,
+            function() {
+                require('UIView');
+                var jasmineEnv = jasmine.getEnv();
+                jasmineEnv.updateInterval = 1000;
+
+                var htmlReporter = new jasmine.HtmlReporter();
+
+                jasmineEnv.addReporter(htmlReporter);
+
+                jasmineEnv.specFilter = function(spec) {
+                    return htmlReporter.specFilter(spec);
+                };
+
+                var currentWindowOnload = window.onload;
+
+                window.onload = function() {
+                    if (currentWindowOnload) {
+                        currentWindowOnload();
+                    }
+                    execJasmine();
+                };
+
+                function execJasmine() {
+                    jasmineEnv.execute();
+                }
+            }
+        );
+    </script>
+</body>
+</html>

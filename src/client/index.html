@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>[请输入页面标题]</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <link rel="stylesheet" href="src/common/css/main.css" />
+    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js"></script> 
+</head>
+
+<body>
+<!--[if IE 6]>
+<div class="layout-ie6-out"><div class="layout-ie6-in">
+<![endif]-->
+
+<div class="header">
+    <a class="logo" href="#"><img alt="" title="" src="src/common/img/logo.png" width="177" height="34"></a>
+    <ul id="nav" class="nav"></ul>
+    <div class="user-info">
+        <a class="user-name"></a>
+        <a href="/user/logout">退出</a>
+    </div>
+</div>
+
+<div class="main-area">
+    <div id="main"></div>
+    <div class="copyright">©2014 Baidu</div>
+</div>
+<!--[if IE 6]></div></div><![endif]-->
+
+
+<script>
+require.config({
+    'baseUrl': 'src',
+    'paths': {},
+    'packages': [
+        {
+            'name': 'bat-ria',
+            'location': '../dep/bat-ria/0.2.0/src',
+            'main': 'main'
+        },
+        {
+            'name': 'ef',
+            'location': '../dep/ef/3.1.0-beta.2/src',
+            'main': 'main'
+        },
+        {
+            'name': 'eoo',
+            'location': '../dep/eoo/0.0.8/src',
+            'main': 'oo'
+        },
+        {
+            'name': 'er',
+            'location': '../dep/er/3.1.0-beta.5/src',
+            'main': 'main'
+        },
+        {
+            'name': 'er-track',
+            'location': '../dep/er-track/0.9.1/src',
+            'main': 'main'
+        },
+        {
+            'name': 'esf-ms',
+            'location': '../dep/esf-ms/1.0.2/src'
+        },
+        {
+            'name': 'est',
+            'location': '../dep/est/1.2.2/src'
+        },
+        {
+            'name': 'esui',
+            'location': '../dep/esui/3.1.0-beta.3/src',
+            'main': 'main'
+        },
+        {
+            'name': 'etpl',
+            'location': '../dep/etpl/2.1.2/src',
+            'main': 'main'
+        },
+        {
+            'name': 'mini-event',
+            'location': '../dep/mini-event/1.0.2/src',
+            'main': 'main'
+        },
+        {
+            'name': 'moment',
+            'location': '../dep/moment/2.7.0/src',
+            'main': 'moment'
+        },
+        {
+            'name': 'underscore',
+            'location': '../dep/underscore/1.6.0/src',
+            'main': 'underscore'
+        },
+        {
+            'name': 'urijs',
+            'location': '../dep/urijs/1.12.0/src',
+            'main': 'URI'
+        }
+    ]
+});
+</script>
+
+<script>
+require(['common/main'], function (main) {
+    main.start();
+});
+</script>
+</body>
+</html>
