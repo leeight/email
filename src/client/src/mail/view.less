@@ -4,8 +4,31 @@
  */
 
 .mail-view {
-    .list-header {
-        overflow: hidden;
-        padding: 6px 10px;
+    .mail-subject {
+        h2 {
+            font-size: 18px;
+            margin: 12px 0 9px;
+            display: inline-block;
+        }
+
+        a {
+            margin-left: 10px;
+            position: relative;
+            top: -2px;
+        }
+    }
+
+    .list-summary-table {
+        line-height: 20px;
+    }
+
+    .list-summary {
+        border-bottom: 1px solid #bad5f1;
+    }
+
+    > .mail-body {
+        padding: 10px;
+        border: 1px solid #bad5f1;
+        border-top: none;
     }
 }

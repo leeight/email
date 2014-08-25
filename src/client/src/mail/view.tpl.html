@@ -1,14 +1,17 @@
 <!-- target: TPL_mail_view -->
 <div class="mail-view">
-    <div class="list-header">
+    <div class="mail-subject">
         <h2>${email.subject}</h2>
+        <a href="#/mail/inbox">Inbox</a>
+    </div>
+    <div class="list-header">
         <div class="list-summary">
             <table class="list-summary-table">
                 <tr>
                   <th>发件人：</th>
                   <td>${email.from.Name}&nbsp;${email.from.Address}</td>
                 </tr>
-                <!-- if ${email.to} -->
+                <!-- if: ${email.to} -->
                 <tr>
                   <th>收件人：</th>
                   <td>
