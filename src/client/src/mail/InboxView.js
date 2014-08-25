@@ -7,6 +7,7 @@ define(function (require) {
     // require template
     require('bat-ria/tpl!./inbox.tpl.html');
     var moment = require('moment');
+    var lib = require('esui/lib');
 
     var ListView = require('bat-ria/mvc/ListView');
 
@@ -47,8 +48,13 @@ define(function (require) {
             width: 50,
             title: '发件人',
             content: function (item) {
-                var from = item.from;
-                return '<span title="' + from.Address + '">' + (from.Name || from.Address) + '</span>';
+                var from = item.from || {
+                    Name: '未知来源',
+                    Address: '未知来源'
+                };
+                return '<span title="' + from.Address + '">' +
+                    lib.encodeHTML(from.Name || from.Address) +
+                '</span>';
             }
         },
         {
@@ -56,7 +62,8 @@ define(function (require) {
             title: '标题',
             width: 800,
             content: function (item) {
-                return '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' + item.subject + '</a>';
+                return '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
+                    lib.encodeHTML(item.subject) + '</a>';
             }
         },
         {

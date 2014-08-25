@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crypto/tls"
+	// "crypto/tls"
 	"fmt"
 	"log"
-	"net"
+	// "net"
 	"net/mail"
 	"net/smtp"
 )
@@ -59,15 +59,15 @@ func main() {
 	}
 
 	// set some TLS options, so we can make sure a non-verified cert won't stop us sending
-	host, _, _ := net.SplitHostPort(smtpserver)
-	tlc := &tls.Config{
-		InsecureSkipVerify:       true,
-		ServerName:               host,
-		ClientAuth:               tls.RequireAndVerifyClientCert,
-		PreferServerCipherSuites: true,
-	}
+	// host, _, _ := net.SplitHostPort(smtpserver)
+	// tlc := &tls.Config{
+	// 	InsecureSkipVerify:       true,
+	// 	ServerName:               host,
+	// 	ClientAuth:               tls.RequireAndVerifyClientCert,
+	// 	PreferServerCipherSuites: true,
+	// }
 
-	if err = c.StartTLS(tlc); err != nil {
+	if err = c.StartTLS(nil); err != nil {
 		log.Panic(err)
 	}
 
