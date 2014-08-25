@@ -22,19 +22,22 @@ func (a *loginAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
 }
 
 func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
-	return []byte(a.password), nil
+	if more {
+		return []byte(a.password), nil
+	}
+	return nil, nil
 }
 
 func main() {
 	// the basics
-	from := mail.Address{"李玉北", "liyuei@baidu.com"}
+	from := mail.Address{"李玉北", "liyubei@baidu.com"}
 	to := mail.Address{"leeight", "liyubei@baidu.com"}
 	body := "this is the body line1.\nthis is the body line2.\nthis is the body line3.\n"
 	subject := "this is the subject line"
 
 	// setup the remote smtpserver & auth info
 	smtpserver := "email.baidu.com:25"
-	auth := LoginAuth("liyubei@baidu.com", "zhenxixiaohui@^@262")
+	auth := LoginAuth("internal\\liyubei", "zhenxixiaohui@^@262")
 
 	// setup a map for the headers
 	header := make(map[string]string)

@@ -69,7 +69,7 @@ func (a *plainAuth) Start(server *ServerInfo) (string, []byte, error) {
 		return "", nil, errors.New("wrong host name")
 	}
 	resp := []byte(a.identity + "\x00" + a.username + "\x00" + a.password)
-	return "LOGIN", resp, nil
+	return "PLAIN", resp, nil
 }
 
 func (a *plainAuth) Next(fromServer []byte, more bool) ([]byte, error) {
@@ -77,7 +77,7 @@ func (a *plainAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 		// We've already sent everything.
 		return nil, errors.New("unexpected server challenge")
 	}
-	return []byte("zhenxixiaohui@^@262"), nil
+	return nil, nil
 }
 
 type cramMD5Auth struct {

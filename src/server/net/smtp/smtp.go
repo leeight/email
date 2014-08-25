@@ -97,17 +97,20 @@ func (c *Client) Hello(localName string) error {
 
 // cmd is a convenience function that sends a command and returns the response
 func (c *Client) cmd(expectCode int, format string, args ...interface{}) (int, string, error) {
+	fmt.Printf("\n== BEGIN SESSION ==\n")
+	id, err := c.Text.Cmd(format, args...)
 	fmt.Printf(format, args...)
 	fmt.Println()
-
-	id, err := c.Text.Cmd(format, args...)
 	if err != nil {
 		return 0, "", err
 	}
+	fmt.Printf("--------------\n")
 	c.Text.StartResponse(id)
 	defer c.Text.EndResponse(id)
 	code, msg, err := c.Text.ReadResponse(expectCode)
-	fmt.Printf("%d %s\n", code, msg)
+	fmt.Printf("%d %s", code, msg)
+	fmt.Println()
+	fmt.Printf("== END SESSION ==\n")
 	return code, msg, err
 }
 
@@ -195,31 +198,27 @@ func (c *Client) Auth(a Auth) error {
 		switch code {
 		case 334:
 			msg, err = encoding.DecodeString(msg64)
-			resp, err = a.Next(msg, true)
-			resp64 = make([]byte, encoding.EncodedLen(len(resp)))
-			encoding.Encode(resp64, resp)
-			code, msg64, err = c.cmd(0, string(resp64))
 		case 235:
 			// the last message isn't base64 because it isn't a challenge
 			msg = []byte(msg64)
 		default:
 			err = &textproto.Error{Code: code, Msg: msg64}
 		}
-		// if err == nil {
-		// 	resp, err = a.Next(msg, code == 334)
-		// }
-		// if err != nil {
-		// 	// abort the AUTH
-		// 	c.cmd(501, "*")
-		// 	c.Quit()
-		// 	break
-		// }
-		// if resp == nil {
-		// 	break
-		// }
-		// resp64 = make([]byte, encoding.EncodedLen(len(resp)))
-		// encoding.Encode(resp64, resp)
-		// code, msg64, err = c.cmd(0, string(resp64))
+		if err == nil {
+			resp, err = a.Next(msg, code == 334)
+		}
+		if err != nil {
+			// abort the AUTH
+			c.cmd(501, "*")
+			c.Quit()
+			break
+		}
+		if resp == nil {
+			break
+		}
+		resp64 = make([]byte, encoding.EncodedLen(len(resp)))
+		encoding.Encode(resp64, resp)
+		code, msg64, err = c.cmd(0, string(resp64))
 	}
 	return err
 }
@@ -273,8 +272,6 @@ func (c *Client) Data() (io.WriteCloser, error) {
 	return &dataCloser{c, c.Text.DotWriter()}, nil
 }
 
-var testHookStartTLS func(*tls.Config) // nil, except for tests
-
 // SendMail connects to the server at addr, switches to TLS if
 // possible, authenticates with the optional mechanism a if possible,
 // and then sends an email from address from, to addresses to, with
@@ -289,11 +286,7 @@ func SendMail(addr string, a Auth, from string, to []string, msg []byte) error {
 		return err
 	}
 	if ok, _ := c.Extension("STARTTLS"); ok {
-		config := &tls.Config{ServerName: c.serverName}
-		if testHookStartTLS != nil {
-			testHookStartTLS(config)
-		}
-		if err = c.StartTLS(config); err != nil {
+		if err = c.StartTLS(nil); err != nil {
 			return err
 		}
 	}

@@ -111,6 +111,7 @@ func CreateMail(raw []byte, downloadDir string) (*EMail, error) {
 	email.Bcc = msg.Header.Get(kBcc)
 	email.ReplyTo = msg.Header.Get(kReplyTo)
 	email.Date = date
+	// log.Printf("Subject = [%s]\n", msg.Header.Get(kSubject))
 	email.Subject = RFC2047.Decode(msg.Header.Get(kSubject))
 	email.Status = 0
 
@@ -193,7 +194,7 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 		return []byte(""), err
 	}
 
-	_, params, err := mime.ParseMediaType(c)
+	ct, params, err := mime.ParseMediaType(c)
 	if err != nil {
 		return []byte(""), err
 	}
@@ -209,15 +210,21 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 		body = stripUnnecessaryTags(body)
 
 		var outbuf [512]byte
-		html, inleft, err := cd.Conv(body, outbuf[:])
-		if err != nil || inleft > 0 {
-			return body, nil
+		html, _, err := cd.Conv(body, outbuf[:])
+		if err == nil {
+			body = html
 		}
-
-		return html, nil
-	} else {
-		return body, nil
 	}
+
+	if ct == "text/plain" {
+		body = bytes.Join([][]byte{
+			[]byte("<pre>"),
+			body,
+			[]byte("</pre>"),
+		}, []byte(""))
+	}
+
+	return body, nil
 }
 
 // 删除邮件正文中不必要的内容，只保留<body>和</body>之间的内容

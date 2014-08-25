@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -99,6 +100,21 @@ func decodeRFC2047Word(s string) (string, error) {
 }
 
 func Decode(s string) (ret string) {
+	// 正常情况下，应该是 ?= =?utf-8?B? 的
+	// 但是有的邮件里面空格没有了，导致后面的逻辑
+	// 运行不正常，我们这里处理一下，通过正则表达式检查一下是否
+	// 有如下特征的字符串，有的话，我们删掉再处理
+	// `(\?=)(=\?[^\?]+\?[BQbq]\?)`
+
+	// raw/720430.txt 和 raw/720229.txt 是两种同样的场景但是
+	// 用同样的方式解码是会失败的
+	// =?UTF-8?B?6L+I55WM5Lit56eL6Iez6Ie75LmL56S8LeeRnuWjq0RlbGE=?==?UTF-8?B?ZsOpZS3kuJbnlYzpobbnuqfph5HnrpTmnb7pnLLlt6flhYvlipsg?=
+	// =?utf-8?B?6ZiF5bqmwrDliIbkuqvkvJrmjqjojZDvvJrjgIrogYzlnLrigJznvo7kurrigJ3l?==?utf-8?B?hbvmiJDorrDjgItieeaXhea4uOWNq+inhue+juS4veS/j+S9s+S6uuS4k+WutuS+?==?utf-8?B?r+iBqu+8iDjmnIgyOeaXpe+8iQ==?=
+	pattern := regexp.MustCompile(`(\?=)(=\?[^\?]+\?[BQbq]\?)`)
+	if pattern.Match([]byte(s)) {
+		s = string(pattern.ReplaceAll([]byte(s), []byte("$1 $2")))
+	}
+
 	sep := ""
 	for _, p := range strings.Split(s, " ") {
 		r, err := decodeRFC2047Word(p)

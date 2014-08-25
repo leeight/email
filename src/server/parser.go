@@ -16,7 +16,8 @@ func Usage() {
 }
 
 var (
-	kDownloadDir = "test/downloads"
+	// kDownloadDir = "test/downloads"
+	kDownloadDir = "/Volumes/HDD/Users/leeight/local/leeight.github.com/email-client/test/downloads"
 )
 
 func main() {
