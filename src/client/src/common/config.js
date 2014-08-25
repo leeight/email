@@ -11,7 +11,8 @@ define(function (require) {
         user: '/data/system/user',
         constants: '/data/system/constants',
 
-        inboxList: '/api/inbox'
+        inboxList: '/api/inbox',
+        readMail: '/api/mail/read'
     };
 
     var config = {

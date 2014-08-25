@@ -1,0 +1,31 @@
+<!-- target: TPL_mail_view -->
+<div class="mail-view">
+    <div class="list-header">
+        <h2>${email.subject}</h2>
+        <div class="list-summary">
+            <table class="list-summary-table">
+                <tr>
+                  <th>发件人：</th>
+                  <td>${email.from.Name}&nbsp;${email.from.Address}</td>
+                </tr>
+                <!-- if ${email.to} -->
+                <tr>
+                  <th>收件人：</th>
+                  <td>
+                    <!-- for: ${email.to} as ${item}, ${index} -->
+                    ${item.Name}&nbsp;${item.Address};&nbsp;
+                    <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
+                <tr>
+                  <th>日期：</th>
+                  <td>${email.date}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="mail-body">
+      ${email.message|raw}
+    </div>
+</div>

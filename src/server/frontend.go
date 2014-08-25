@@ -25,6 +25,12 @@ type ListResponse struct {
 	} `json:"page"`
 }
 
+type SimpleResponse struct {
+	Success string            `json:"success"`
+	Message map[string]string `json:"message"`
+	Result  EMailViewModel    `json:"result"`
+}
+
 // 定义邮件类型，View Model
 type EMailViewModel struct {
 	Id      int             `json:"id"`
@@ -52,14 +58,21 @@ func createListPageResponse(r []EMailViewModel) ListResponse {
 	return res
 }
 
+func createSimpleResponse(r EMailViewModel) SimpleResponse {
+	var res SimpleResponse
+	res.Success = "true"
+	res.Result = r
+	return res
+}
+
 func createViewModel(e *base.EMail) EMailViewModel {
 	var evm EMailViewModel
 	evm.Id = e.Id
 	evm.Uidl = e.Uidl
 	evm.Date = e.Date
 	evm.Subject = e.Subject
-	evm.Message = e.Message
 	evm.Status = e.Status
+	evm.Message = e.Message
 	evm.From, _ = mail.ParseAddress(e.From)
 	evm.To, _ = mail.ParseAddressList(e.To)
 	evm.Cc, _ = mail.ParseAddressList(e.Cc)
@@ -68,16 +81,50 @@ func createViewModel(e *base.EMail) EMailViewModel {
 	return evm
 }
 
-func apiHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
+// 获取邮件的详情
+func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("sqlite3", "./foo.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT `id`, `uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `subject`, `date`, `message` FROM mails ORDER BY `id` DESC LIMIT 10")
+	stmt, err := db.Prepare("SELECT `id`, `uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `subject`, `date`, `message` FROM mails WHERE `id` = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	var email base.EMail
+	err = stmt.QueryRow(r.PostFormValue("id")).Scan(
+		&email.Id,
+		&email.Uidl,
+		&email.From,
+		&email.To,
+		&email.Cc,
+		&email.Bcc,
+		&email.ReplyTo,
+		&email.Subject,
+		&email.Date,
+		&email.Message)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	s, _ := json.MarshalIndent(createSimpleResponse(createViewModel(&email)), "", "    ")
+	w.Write(s)
+}
+
+// 获取邮件列表
+func apiListHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("sqlite3", "./foo.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT `id`, `uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `subject`, `date` FROM mails ORDER BY `id` DESC LIMIT 10")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,8 +142,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			&email.Bcc,
 			&email.ReplyTo,
 			&email.Subject,
-			&email.Date,
-			&email.Message)
+			&email.Date)
 		emails = append(emails, createViewModel(&email))
 	}
 	s, _ := json.MarshalIndent(createListPageResponse(emails), "", "    ")
@@ -108,6 +154,7 @@ func addDefaultHeaders(fn http.HandlerFunc) http.HandlerFunc {
 		if origin := r.Header.Get("Origin"); origin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 		}
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -117,7 +164,8 @@ func addDefaultHeaders(fn http.HandlerFunc) http.HandlerFunc {
 
 func main() {
 	// 自定义的API
-	http.HandleFunc("/api/", addDefaultHeaders(apiHandler))
+	http.HandleFunc("/api/", addDefaultHeaders(apiListHandler))
+	http.HandleFunc("/api/mail/read", addDefaultHeaders(apiReadHandler))
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir("/Users/leeight/hd/local/leeight.github.com/email-client")))

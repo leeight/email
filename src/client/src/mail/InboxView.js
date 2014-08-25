@@ -25,15 +25,26 @@ define(function (require) {
     MailInboxView.prototype.template = 'TPL_mail_inbox';
 
     var tableFields = [
-        {
-            field: 'id',
-            title: 'ID',
-            content: function (item) {
-                return '#' + item.id;
-            }
-        },
+        // {
+        //     field: 'id',
+        //     width: 10,
+        //     title: 'ID',
+        //     content: function (item) {
+        //         return '#' + item.id;
+        //     }
+        // },
+        // {
+        //     field: 'status',
+        //     width: 20,
+        //     title: '状态',
+        //     content: function(item) {
+        //         https://ssl.gstatic.com/ui/v1/star/star-lit4.png
+        //         return '<img src="https://ssl.gstatic.com/ui/v1/star/star4.png" align="absmiddle">'
+        //     }
+        // },
         {
             field: 'from',
+            width: 50,
             title: '发件人',
             content: function (item) {
                 var from = item.from;
@@ -43,10 +54,14 @@ define(function (require) {
         {
             field: 'subject',
             title: '标题',
-            content: 'subject'
+            width: 800,
+            content: function (item) {
+                return '<a href="#/mail/view~id=' + item.id + '">' + item.subject + '</a>';
+            }
         },
         {
             field: 'date',
+            width: 100,
             title: '发送日期',
             content: function(item) {
                 return moment(new Date(item.date)).format('YYYY-MM-DD HH:mm:ss')

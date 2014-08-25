@@ -4814,6 +4814,18 @@ button.skin-link-button:hover {
  * @file [Please Input File Description]
  * @author leeight(leeight@gmail.com)
  */
+.mail-view .list-header {
+  overflow: hidden;
+  padding: 6px 10px;
+}
+/**
+ * @file [Please Input File Description]
+ * @author leeight(leeight@gmail.com)
+ */
+/**
+ * @file [Please Input File Description]
+ * @author leeight(leeight@gmail.com)
+ */
 .dev-index {
   line-height: 1.5;
   font-size: 120%;
