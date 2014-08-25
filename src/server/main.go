@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 
 	pop3 "github.com/bytbox/go-pop3"
 	_ "github.com/mattn/go-sqlite3"
@@ -88,7 +89,8 @@ func main() {
 		ioutil.WriteFile("raw/"+uidl+".txt", []byte(raw), 0644)
 		log.Printf("[ SAVE] %d -> raw/%s.txt\n", msg, uidl)
 
-		email, err := base.CreateMail([]byte(raw), kDownloadDir)
+		os.MkdirAll(path.Join(kDownloadDir, uidl), 0755)
+		email, err := base.CreateMail([]byte(raw), path.Join(kDownloadDir, uidl))
 		if err != nil {
 			log.Fatal(err)
 			continue

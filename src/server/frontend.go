@@ -6,6 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"./base"
@@ -46,12 +47,12 @@ type EMailViewModel struct {
 	Status  int             `json:"status"`
 }
 
-func createListPageResponse(r []EMailViewModel) ListResponse {
+func createListPageResponse(r []EMailViewModel, totalCount int, pageNo int, pageSize int) ListResponse {
 	var res ListResponse
 	res.Success = "true"
-	res.Page.TotalCount = 100
-	res.Page.PageNo = 1
-	res.Page.PageSize = 10
+	res.Page.TotalCount = totalCount
+	res.Page.PageNo = pageNo
+	res.Page.PageSize = pageSize
 	res.Page.OrderBy = "id"
 	res.Page.Order = "desc"
 	res.Page.Result = r
@@ -96,7 +97,7 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 	defer stmt.Close()
 
 	var email base.EMail
-	err = stmt.QueryRow(r.PostFormValue("id")).Scan(
+	err = stmt.QueryRow(r.FormValue("id")).Scan(
 		&email.Id,
 		&email.Uidl,
 		&email.From,
@@ -116,6 +117,11 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(s)
 }
 
+var (
+	kDefaultPageSize = 15
+	kDefaultPageNo   = 1
+)
+
 // 获取邮件列表
 func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("sqlite3", "./foo.db")
@@ -124,12 +130,43 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT `id`, `uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `subject`, `date` FROM mails ORDER BY `id` DESC LIMIT 10")
+	// 解析url参数
+	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
+	if err != nil {
+		pageSize = kDefaultPageSize
+	}
+
+	pageNo, err := strconv.Atoi(r.PostFormValue("pageNo"))
+	if err != nil {
+		pageNo = kDefaultPageNo
+	}
+
+	skipCount := (pageNo - 1) * pageSize
+	if skipCount < 0 {
+		skipCount = 0
+	}
+
+	// 准备sql
+	sql := "SELECT " +
+		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
+		"`reply_to`, `subject`, `date` " +
+		"FROM mails " +
+		"ORDER BY `id` DESC " +
+		"LIMIT ?, ?"
+	stmt, err := db.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	// 开始检索
+	rows, err := stmt.Query(skipCount, pageSize)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
+	// 格式化数据
 	emails := make([]EMailViewModel, 0)
 	for rows.Next() {
 		var email base.EMail
@@ -145,7 +182,16 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 			&email.Date)
 		emails = append(emails, createViewModel(&email))
 	}
-	s, _ := json.MarshalIndent(createListPageResponse(emails), "", "    ")
+
+	// 查询总的数据量
+	var totalCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM mails").Scan(&totalCount)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s, %d, %d, %d\n", sql, totalCount, skipCount, pageSize)
+
+	s, _ := json.MarshalIndent(createListPageResponse(emails, totalCount, pageNo, pageSize), "", "    ")
 	w.Write(s)
 }
 
@@ -168,6 +214,6 @@ func main() {
 	http.HandleFunc("/api/mail/read", addDefaultHeaders(apiReadHandler))
 
 	// 其它请求走静态文件
-	http.Handle("/", http.FileServer(http.Dir("/Users/leeight/hd/local/leeight.github.com/email-client")))
+	http.Handle("/", http.FileServer(http.Dir("/Users/leeight/hd/local/leeight.github.com/email-client/src/server")))
 	http.ListenAndServe(":8765", nil)
 }

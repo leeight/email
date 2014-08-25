@@ -56,7 +56,7 @@ define(function (require) {
             title: '标题',
             width: 800,
             content: function (item) {
-                return '<a href="#/mail/view~id=' + item.id + '">' + item.subject + '</a>';
+                return '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' + item.subject + '</a>';
             }
         },
         {

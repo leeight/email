@@ -9,14 +9,34 @@
             <table class="list-summary-table">
                 <tr>
                   <th>发件人：</th>
-                  <td>${email.from.Name}&nbsp;${email.from.Address}</td>
+                  <td><a href="mailto:${email.from.Address}">${email.from.Name}</a></td>
                 </tr>
                 <!-- if: ${email.to} -->
                 <tr>
                   <th>收件人：</th>
                   <td>
                     <!-- for: ${email.to} as ${item}, ${index} -->
-                    ${item.Name}&nbsp;${item.Address};&nbsp;
+                    <a href="mailto:${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
+                <!-- if: ${email.cc} -->
+                <tr>
+                  <th>抄送：</th>
+                  <td>
+                    <!-- for: ${email.cc} as ${item}, ${index} -->
+                    <a href="mailto:${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
+                <!-- if: ${email.bcc} -->
+                <tr>
+                  <th>密送：</th>
+                  <td>
+                    <!-- for: ${email.bcc} as ${item}, ${index} -->
+                    <a href="mailto:${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -24,6 +44,10 @@
                 <tr>
                   <th>日期：</th>
                   <td>${email.date}</td>
+                </tr>
+                <tr>
+                  <th>源文件：</th>
+                  <td><a href="http://127.0.0.1:8765/raw/${uidl}.txt" target="_blank">查看</a></td>
                 </tr>
             </table>
         </div>

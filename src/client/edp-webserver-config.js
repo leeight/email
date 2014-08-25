@@ -57,7 +57,7 @@ exports.getLocations = function () {
             ]
         },
         {
-            location: /^\/api/,
+            location: /^(\/api|\/downloads)/,
             handler: [
                 proxy()
             ]

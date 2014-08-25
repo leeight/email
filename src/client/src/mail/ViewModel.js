@@ -8,6 +8,7 @@ define(function (require) {
     var datasource = require('er/datasource');
     var api = require('common/config').api;
     var batUtil = require('bat-ria/util');
+    var moment = require('moment');
 
     /**
      * [Please Input Model Description]
@@ -24,7 +25,10 @@ define(function (require) {
      */
     MailViewModel.prototype.datasource = {
         email: function(model) {
-            return api.readMail({id: model.get('id')})
+            return api.readMail({id: model.get('id')}).then(function(email){
+                email.date = moment(new Date(email.date)).format('YYYY-MM-DD HH:mm:ss');
+                return email;
+            })
         }
     };
 
