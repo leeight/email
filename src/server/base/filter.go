@@ -93,7 +93,9 @@ func CheckRule(email *EMail, msg *mail.Message, rule []string) bool {
 	// 	break
 	case kHAttachments:
 		// TODO(user) 这个判断准确么
-		return msg.Header.Get("X-Has-Attach") == "yes"
+		a := msg.Header.Get("X-Has-Attach") == "yes"
+		b := msg.Header.Get("X-MS-Has-Attach") == "yes"
+		return a || b
 	default:
 		return operator.Exec(msg.Header.Get(key), rule[2])
 	}

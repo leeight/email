@@ -63,8 +63,14 @@ define(function (require) {
             title: '标题',
             width: 800,
             content: function (item) {
+                var extra = '';
+                if (item.attachments && item.attachments.length) {
+                    extra = '<span class="x-icon-attchments" title="' +
+                    item.attachments.join(' ') + '"></span>';
+                }
+                console.log(extra)
                 return '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
-                    lib.encodeHTML(item.subject) + '</a>';
+                    lib.encodeHTML(item.subject) + '</a>' + extra;
             }
         },
         {
