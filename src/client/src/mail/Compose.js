@@ -5,7 +5,7 @@
 
 define(function (require) {
     var FormAction = require('bat-ria/mvc/FormAction');
-    var util = require('er/util')
+    var util = require('er/util');
 
     /**
      * Action构造函数
@@ -20,16 +20,6 @@ define(function (require) {
     MailCompose.prototype.viewType = require('./ComposeView');
 
     /**
-     * 初始化编辑器
-     */
-    MailCompose.prototype._initEditor = function() {
-        var ue = UE.getEditor('email-body-editor');
-        ue.destroy();
-        ue.reset();
-        console.log(ue);
-    };
-
-    /**
      * inheritDoc
      *
      * @protected
@@ -38,8 +28,17 @@ define(function (require) {
     MailCompose.prototype.initBehavior = function () {
         FormAction.prototype.initBehavior.apply(this, arguments);
 
-        // bind event handlers here
-        this.on('entercomplete', util.bind(this._initEditor, this))
+        // // bind event handlers here
+        // this.on('entercomplete', util.bind(this._initEditor, this));
+
+        // this.view.get('form').on('beforevalidate', function() {
+        //     if (ueditorInstance) {
+        //         debugger;
+        //         var html = ueditorInstance.getContent();
+        //         var message = this.view.get('message');
+        //         message.setValue(html);
+        //     }
+        // });
     };
 
     require('er/util').inherits(MailCompose, FormAction);

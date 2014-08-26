@@ -21,21 +21,6 @@ import (
 	"github.com/qiniu/iconv"
 )
 
-// 定义邮件类型
-type EMail struct {
-	Id      int       `json:"id"`
-	Uidl    string    `json:"uidl"`
-	From    string    `json:"from"`
-	To      string    `json:"to"`
-	Cc      string    `json:"cc"`
-	Bcc     string    `json:"bcc"`
-	ReplyTo string    `json:"reply_to"`
-	Date    time.Time `json:"date"`
-	Subject string    `json:"subject"`
-	Message string    `json:"message"`
-	Status  int       `json:"status"`
-}
-
 // 一些常量定义
 var (
 	kSubject                 = "Subject"

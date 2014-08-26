@@ -3,108 +3,80 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	_ "github.com/mattn/go-sqlite3"
-	"io/ioutil"
+	"fmt"
 	"log"
 	"net/http"
-	"path"
 	"strconv"
-	"time"
+	"strings"
 
+	_ "github.com/mattn/go-sqlite3"
+
+	"./RFC2047"
 	"./base"
 	"./net/mail"
 )
 
 var (
-	kDownloadDir = "downloads"
+	// 服务器的配置信息
+	kConfig          *base.ServerConfig
+	kDefaultPageSize = 15
+	kDefaultPageNo   = 1
 )
 
-// ER所需要的数据格式
-type ListResponse struct {
-	Success string `json:"success"`
-	Page    struct {
-		TotalCount int              `json:"totalCount"`
-		PageNo     int              `json:"pageNo"`
-		PageSize   int              `json:"pageSize"`
-		OrderBy    string           `json:"orderBy"`
-		Order      string           `json:"order"`
-		Result     []EMailViewModel `json:"result"`
-	} `json:"page"`
-}
-
-type SimpleResponse struct {
-	Success string            `json:"success"`
-	Message map[string]string `json:"message"`
-	Result  EMailViewModel    `json:"result"`
-}
-
-// 定义邮件类型，View Model
-type EMailViewModel struct {
-	Id          int             `json:"id"`
-	Uidl        string          `json:"uidl"`
-	From        *mail.Address   `json:"from"`
-	To          []*mail.Address `json:"to"`
-	Cc          []*mail.Address `json:"cc"`
-	Bcc         []*mail.Address `json:"bcc"`
-	ReplyTo     []*mail.Address `json:"reply_to"`
-	Date        time.Time       `json:"date"`
-	Subject     string          `json:"subject"`
-	Message     string          `json:"message"`
-	Attachments []string        `json:"attachments"`
-	Status      int             `json:"status"`
-}
-
-func createListPageResponse(r []EMailViewModel, totalCount int, pageNo int, pageSize int) ListResponse {
-	var res ListResponse
-	res.Success = "true"
-	res.Page.TotalCount = totalCount
-	res.Page.PageNo = pageNo
-	res.Page.PageSize = pageSize
-	res.Page.OrderBy = "id"
-	res.Page.Order = "desc"
-	res.Page.Result = r
-	return res
-}
-
-func createSimpleResponse(r EMailViewModel) SimpleResponse {
-	var res SimpleResponse
-	res.Success = "true"
-	res.Result = r
-	return res
-}
-
-func createViewModel(e *base.EMail) EMailViewModel {
-	var evm EMailViewModel
-	evm.Id = e.Id
-	evm.Uidl = e.Uidl
-	evm.Date = e.Date
-	evm.Subject = e.Subject
-	evm.Status = e.Status
-	evm.Message = e.Message
-	evm.From, _ = mail.ParseAddress(e.From)
-	evm.To, _ = mail.ParseAddressList(e.To)
-	evm.Cc, _ = mail.ParseAddressList(e.Cc)
-	evm.Bcc, _ = mail.ParseAddressList(e.Bcc)
-	evm.ReplyTo, _ = mail.ParseAddressList(e.ReplyTo)
-	evm.Attachments = scanAttachments(e.Uidl)
-	return evm
-}
-
-// 扫描目录，获取附件的列表
-func scanAttachments(uidl string) []string {
-	attachments := make([]string, 0)
-	fileInfos, err := ioutil.ReadDir(path.Join(kDownloadDir, uidl))
-	if err != nil {
-		return attachments
-	}
-
-	for _, item := range fileInfos {
-		if item.IsDir() {
-			continue
+func getAddressList(value string) []*mail.Address {
+	list := make([]*mail.Address, 0)
+	for _, item := range strings.Split(value, "; ") {
+		v, err := mail.ParseAddress(item)
+		if err == nil {
+			list = append(list, v)
 		}
-		attachments = append(attachments, item.Name())
 	}
-	return attachments
+	return list
+}
+
+// 发送邮件
+// 支持from, to, cc, subject, message这5个参数
+func apiPostHandler(w http.ResponseWriter, r *http.Request) {
+	// 准备参数
+	from, err := mail.ParseAddress(r.FormValue("from"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	to := getAddressList(r.FormValue("to"))
+	cc := getAddressList(r.FormValue("cc"))
+
+	subject := r.FormValue("subject")
+	message := r.FormValue("message")
+
+	// 准备Header
+	header := make(map[string]string)
+	header["From"] = from.String()
+	header["To"] = base.AddressToString(to)
+	header["Cc"] = base.AddressToString(cc)
+	header["Subject"] = RFC2047.Encode(subject)
+
+	// 要发送的原始数据
+	raw := base.EnvelopeMail(header, []byte(message))
+	fmt.Println(string(raw))
+
+	// 开始发送邮件
+	smtpserver := kConfig.Smtp.Hostname
+	tls := kConfig.Smtp.Tls
+	auth := base.LoginAuth(kConfig.Smtp.Username, kConfig.Smtp.Password)
+
+	err = base.SendMail(from, to, cc, raw, smtpserver, tls, auth)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	type SimpleResponse struct {
+		Success string            `json:"success"`
+		Message map[string]string `json:"message"`
+		Result  struct{}          `json:"result"`
+	}
+	s, _ := json.MarshalIndent(SimpleResponse{Success: "true"}, "", "    ")
+	w.Write(s)
 }
 
 // 获取邮件的详情
@@ -115,7 +87,12 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("SELECT `id`, `uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `subject`, `date`, `message` FROM mails WHERE `id` = ?")
+	stmt, err := db.Prepare(
+		"SELECT " +
+			"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
+			"`reply_to`, `subject`, `date`, `message` " +
+			"FROM mails " +
+			"WHERE `id` = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -138,14 +115,11 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	s, _ := json.MarshalIndent(createSimpleResponse(createViewModel(&email)), "", "    ")
+	evm := email.ToViewModel(kConfig.Dirs.Download)
+	sr := base.ToSimpleResponse(evm)
+	s, _ := json.MarshalIndent(sr, "", "    ")
 	w.Write(s)
 }
-
-var (
-	kDefaultPageSize = 15
-	kDefaultPageNo   = 1
-)
 
 // 获取邮件列表
 func apiListHandler(w http.ResponseWriter, r *http.Request) {
@@ -192,7 +166,7 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	// 格式化数据
-	emails := make([]EMailViewModel, 0)
+	emails := make([]*base.EMailViewModel, 0)
 	for rows.Next() {
 		var email base.EMail
 		rows.Scan(
@@ -205,7 +179,9 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 			&email.ReplyTo,
 			&email.Subject,
 			&email.Date)
-		emails = append(emails, createViewModel(&email))
+
+		evm := email.ToViewModel(kConfig.Dirs.Download)
+		emails = append(emails, evm)
 	}
 
 	// 查询总的数据量
@@ -216,7 +192,8 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("%s, %d, %d, %d\n", sql, totalCount, skipCount, pageSize)
 
-	s, _ := json.MarshalIndent(createListPageResponse(emails, totalCount, pageNo, pageSize), "", "    ")
+	lpr := base.ToListPageResponse(emails, totalCount, pageNo, pageSize)
+	s, _ := json.MarshalIndent(lpr, "", "    ")
 	w.Write(s)
 }
 
@@ -234,11 +211,14 @@ func addDefaultHeaders(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func main() {
+	kConfig, _ = base.GetConfig("config.yml")
+
 	// 自定义的API
 	http.HandleFunc("/api/", addDefaultHeaders(apiListHandler))
 	http.HandleFunc("/api/mail/read", addDefaultHeaders(apiReadHandler))
+	http.HandleFunc("/api/mail/post", addDefaultHeaders(apiPostHandler))
 
 	// 其它请求走静态文件
-	http.Handle("/", http.FileServer(http.Dir("/Users/leeight/hd/local/leeight.github.com/email-client/src/server")))
+	http.Handle("/", http.FileServer(http.Dir(kConfig.Dirs.Static)))
 	http.ListenAndServe(":8765", nil)
 }

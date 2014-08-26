@@ -2,8 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,46 +13,33 @@ import (
 	"./base"
 )
 
-var (
-	kDownloadDir = "downloads"
-)
-
-func Usage() {
-	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-	flag.PrintDefaults()
-}
-
 func main() {
-	// 参数解析
-	username := flag.String("username", "", "The username")
-	password := flag.String("password", "", "The password")
-
-	flag.Parse()
-
-	log.Printf("username = %s, password = %s",
-		*username, *password)
-
-	if *username == "" || *password == "" {
-		Usage()
-		return
+	config, err := base.GetConfig("config.yml")
+	if err != nil {
+		log.Panic(err)
 	}
 
 	// 开始交互
-	client, err := pop3.DialTLS("email.baidu.com:995")
+	var client *pop3.Client
+	if config.Pop3.Tls {
+		client, err = pop3.DialTLS(config.Pop3.Hostname)
+	} else {
+		client, err = pop3.Dial(config.Pop3.Hostname)
+	}
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer client.Quit()
 
-	err = client.Auth(*username, *password)
+	err = client.Auth(config.Pop3.Username, config.Pop3.Password)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	// 打开数据库
 	db, err := sql.Open("sqlite3", "./foo.db")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 		return
 	}
 	defer db.Close()
@@ -89,8 +74,8 @@ func main() {
 		ioutil.WriteFile("raw/"+uidl+".txt", []byte(raw), 0644)
 		log.Printf("[ SAVE] %d -> raw/%s.txt\n", msg, uidl)
 
-		os.MkdirAll(path.Join(kDownloadDir, uidl), 0755)
-		email, err := base.CreateMail([]byte(raw), path.Join(kDownloadDir, uidl))
+		os.MkdirAll(path.Join(config.Dirs.Download, uidl), 0755)
+		email, err := base.CreateMail([]byte(raw), path.Join(config.Dirs.Download, uidl))
 		if err != nil {
 			log.Fatal(err)
 			continue

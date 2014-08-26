@@ -4,18 +4,7 @@
     <div class="form-block">
         <h3>新邮件</h3>
         <div class="form-body">
-            <div class="form-row">
-                <div class="form-key">收件人：</div>
-                <div class="form-value">
-                    <input data-ui-id="to"
-                           data-ui-type="TextBox"
-                           data-ui-required="required"
-                           data-ui-width="500"
-                           name="to"
-                           data-ui-value="${formData.to}" />
-                </div>
-            </div>
-            <div class="form-row">
+            <div class="form-row" style="display: none">
                 <div class="form-key">发件人：</div>
                 <div class="form-value">
                     <input data-ui-id="from"
@@ -26,6 +15,27 @@
                            data-ui-value="liyubei@baidu.com" />
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-key">收件人：</div>
+                <div class="form-value">
+                    <input data-ui-id="to"
+                           data-ui-type="TextBox"
+                           data-ui-required="required"
+                           data-ui-width="500"
+                           name="to"
+                           data-ui-value="" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-key">抄送：</div>
+                <div class="form-value">
+                    <input data-ui-id="cc"
+                           data-ui-type="TextBox"
+                           data-ui-width="500"
+                           name="cc"
+                           data-ui-value="" />
+                </div>
+            </div>
             <div class="form-row subject-row">
                 <div class="form-key">标题：</div>
                 <div class="form-value">
@@ -34,11 +44,11 @@
                            data-ui-required="required"
                            data-ui-width="500"
                            name="subject"
-                           data-ui-value="${formData.name}" />
+                           data-ui-value="" />
                 </div>
             </div>
             <div class="form-row">
-                <script id="email-body-editor" name="content" type="text/plain">这里写你的初始化内容</script>
+                <script id="email-body-editor" name="content" type="text/plain"></script>
             </div>
         </div>
     </div>

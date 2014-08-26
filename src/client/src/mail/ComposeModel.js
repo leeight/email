@@ -11,17 +11,17 @@ define(function (require) {
 
     /**
      * [Please Input Model Description]
-     * 
+     *
      * @constructor
      */
     function MailComposeModel() {
         FormModel.apply(this, arguments);
 
         // 表单数据请求器
-        this.formRequester = api.aa9659a0cDetail;
+        // this.formRequester = api.aa9659a0cDetail;
 
         // 表单提交请求器 (*)
-        this.submitRequester = api.aa9659a0cUpdate;
+        this.submitRequester = api.mailPost;
     }
 
 

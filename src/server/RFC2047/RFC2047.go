@@ -98,6 +98,16 @@ func decodeRFC2047Word(dec []byte, charset string) (string, error) {
 	panic("unreachable")
 }
 
+func Encode(s string) string {
+	message := []byte(s)
+
+	encoding := base64.StdEncoding
+	message64 := make([]byte, encoding.EncodedLen(len(message)))
+	encoding.Encode(message64, message)
+
+	return "=?UTF-8?B?" + string(message64) + "?="
+}
+
 func Decode(s string) string {
 	// 正常情况下，应该是 ?= =?utf-8?B? 的
 	// 但是有的邮件里面空格没有了，导致后面的逻辑

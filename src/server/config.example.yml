@@ -1,0 +1,15 @@
+pop3:
+  username: liyubei
+  password: password
+  hostname: email.baidu.com:995
+  tls: true
+
+smtp:
+  username: internal\liyubei
+  password: password
+  hostname: email.baidu.com:25
+  tls: true
+
+dirs:
+  download: downloads
+  raw: raw

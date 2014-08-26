@@ -13,30 +13,31 @@ import (
 	"./base"
 )
 
-var (
-	kDownloadDir = "downloads"
-)
-
 // 读取raw目录里面的原始信息，开始重建索引数据
 // 1. sqlite的数据会被清空，重写
 // 2. 附件的内容会被重新生成
 func main() {
+	config, err := base.GetConfig("config.yml")
+	if err != nil {
+		log.Panic(err)
+	}
+
 	fileInfos, err := ioutil.ReadDir("raw")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
 	// 打开数据库
 	db, err := sql.Open("sqlite3", "./foo.db")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 		return
 	}
 	defer db.Close()
 
 	_, err = db.Exec("DELETE FROM `mails`")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 		return
 	}
 
@@ -70,8 +71,8 @@ func main() {
 			continue
 		}
 
-		os.MkdirAll(path.Join(kDownloadDir, uidl), 0755)
-		email, err := base.CreateMail(raw, path.Join(kDownloadDir, uidl))
+		os.MkdirAll(path.Join(config.Dirs.Download, uidl), 0755)
+		email, err := base.CreateMail(raw, path.Join(config.Dirs.Download, uidl))
 		if err != nil {
 			log.Fatal(err)
 			continue

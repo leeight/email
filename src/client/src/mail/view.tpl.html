@@ -9,7 +9,7 @@
             <table class="list-summary-table">
                 <tr>
                   <th>发件人：</th>
-                  <td><a href="mailto:${email.from.Address}">${email.from.Name}</a></td>
+                  <td><a href="mailto:${email.from.Address}"><!-- if: ${email.from.Name} -->${email.from.Name}<!-- else -->${email.from.Address}<!-- /if --></a></td>
                 </tr>
                 <!-- if: ${email.to} -->
                 <tr>
