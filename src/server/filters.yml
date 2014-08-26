@@ -1,0 +1,19 @@
+# 邮件的过滤器配置信息
+- filter:
+  name: 过滤器1
+  disable: true
+  stop: true
+  condition:
+    match: ANY
+    rules:
+      - [From, Is, liyubei@baidu.com]
+      - [To, Contains, baidu.com]
+  action:
+    label: ALL
+
+- filter:
+  name: 过滤器2
+  condition:
+    match: ALL
+  action:
+    delete: ALL
