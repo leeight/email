@@ -40,7 +40,7 @@ var (
 
 // 从邮件的正文中创建一个邮件对象 EMail 然后存储到
 // sqlite里面去
-func CreateMail(raw []byte, downloadDir string) (*EMail, error) {
+func NewMail(raw []byte, downloadDir string) (*EMail, error) {
 	var email EMail
 
 	// 编码转化函数

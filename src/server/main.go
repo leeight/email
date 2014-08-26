@@ -75,7 +75,7 @@ func main() {
 		log.Printf("[ SAVE] %d -> raw/%s.txt\n", msg, uidl)
 
 		os.MkdirAll(path.Join(config.Dirs.Download, uidl), 0755)
-		email, err := base.CreateMail([]byte(raw), path.Join(config.Dirs.Download, uidl))
+		email, err := base.NewMail([]byte(raw), path.Join(config.Dirs.Download, uidl))
 		if err != nil {
 			log.Fatal(err)
 			continue

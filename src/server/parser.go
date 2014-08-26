@@ -31,7 +31,7 @@ func main() {
 	}
 
 	raw, _ := ioutil.ReadFile(*rawPtr)
-	email, err := base.CreateMail(raw, kDownloadDir)
+	email, err := base.NewMail(raw, kDownloadDir)
 	if err != nil {
 		log.Fatal(err)
 	}

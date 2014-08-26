@@ -5,4 +5,5 @@ all:
 	go build rebuild_index.go
 	go build sent_mail.go
 	go build sqlite3.go
+	go build yml.go
 

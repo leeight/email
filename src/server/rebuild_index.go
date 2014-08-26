@@ -72,7 +72,7 @@ func main() {
 		}
 
 		os.MkdirAll(path.Join(config.Dirs.Download, uidl), 0755)
-		email, err := base.CreateMail(raw, path.Join(config.Dirs.Download, uidl))
+		email, err := base.NewMail(raw, path.Join(config.Dirs.Download, uidl))
 		if err != nil {
 			log.Fatal(err)
 			continue
