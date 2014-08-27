@@ -45,7 +45,7 @@ type Filter struct {
 		Match string
 		Rules [][]string
 	}
-	Action map[string]string
+	Action map[string]interface{}
 }
 
 func CheckRule(email *EMail, msg *mail.Message, rule []string) bool {
@@ -104,8 +104,8 @@ func CheckRule(email *EMail, msg *mail.Message, rule []string) bool {
 }
 
 // 判断邮件是否符合规则
-func (filter *Filter) Match(email *EMail) bool {
-	raw, err := ioutil.ReadFile(path.Join("raw", email.Uidl+".txt"))
+func (filter *Filter) Match(email *EMail, rawDir string) bool {
+	raw, err := ioutil.ReadFile(path.Join(rawDir, email.Uidl+".txt"))
 	if err != nil {
 		log.Fatal(err)
 		return false
@@ -158,13 +158,13 @@ func (filter *Filter) TakeAction(email *EMail) error {
 }
 
 // 针对一封邮件，运行一边所有的Filter
-func RunFilter(email *EMail, filters []Filter) error {
+func RunFilter(email *EMail, filters []Filter, rawDir string) error {
 	for _, filter := range filters {
 		if filter.Disable {
 			continue
 		}
 
-		if filter.Match(email) {
+		if filter.Match(email, rawDir) {
 			err := filter.TakeAction(email)
 			if err != nil {
 				return err

@@ -49,13 +49,13 @@ func (this ExistsOperator) Exec(a interface{}, b string) bool {
 }
 
 func NewOperator(t string) Operator {
-	if t == "Is" {
+	switch t {
+	case "Is":
 		return IsOperator{}
-	} else if t == "Contains" {
+	case "Contains":
 		return ContainsOperator{}
-	} else if t == "Exists" {
+	case "Exists":
 		return ExistsOperator{}
-	} else {
-		return nil
 	}
+	return nil
 }

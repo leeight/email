@@ -17,3 +17,6 @@
     match: ALL
   action:
     delete: ALL
+    hello: true
+    ivalue: 10
+    x:

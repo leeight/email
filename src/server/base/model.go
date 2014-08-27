@@ -1,6 +1,7 @@
 package base
 
 import (
+	"bytes"
 	"io/ioutil"
 	"path"
 	"time"
@@ -54,6 +55,7 @@ type EMailViewModel struct {
 	Date        time.Time       `json:"date"`
 	Subject     string          `json:"subject"`
 	Message     string          `json:"message"`
+	Importance  string          `json:"importance"`
 	Attachments []string        `json:"attachments"`
 	Status      int             `json:"status"`
 }
@@ -101,6 +103,12 @@ func setAttachments(downloadDir, uidl string) []string {
 
 func (this *EMail) ToViewModel(downloadDir string) *EMailViewModel {
 	var evm EMailViewModel
+	var msg *mail.Message
+
+	raw, err := ioutil.ReadFile(path.Join("raw", this.Uidl+".txt"))
+	if err == nil {
+		msg, _ = mail.ReadMessage(bytes.NewBuffer(raw))
+	}
 
 	evm.Id = this.Id
 	evm.Uidl = this.Uidl
@@ -114,6 +122,10 @@ func (this *EMail) ToViewModel(downloadDir string) *EMailViewModel {
 	evm.Bcc, _ = mail.ParseAddressList(this.Bcc)
 	evm.ReplyTo, _ = mail.ParseAddressList(this.ReplyTo)
 	evm.Attachments = setAttachments(downloadDir, this.Uidl)
+
+	if msg != nil {
+		evm.Importance = msg.Header.Get("Importance")
+	}
 
 	return &evm
 }

@@ -96,16 +96,19 @@ var tests = []testpair{
 }
 
 func TestCheckRule(t *testing.T) {
-	email, _ := readEMail("716010")
+	email, err := readEMail("716010")
+	if err != nil {
+		t.Error(err)
+	}
 
 	raw, err := ioutil.ReadFile(path.Join("..", "raw", "716010.txt"))
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 
 	msg, err := mail.ReadMessage(bytes.NewBuffer(raw))
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 
 	for _, item := range tests {
@@ -113,5 +116,53 @@ func TestCheckRule(t *testing.T) {
 		if x != item.expected {
 			t.Error("For", item.rule, "expected", item.expected, "get", x)
 		}
+	}
+}
+
+func TestMatchAll(t *testing.T) {
+	var filter base.Filter
+	filter.Condition.Match = "All"
+	filter.Condition.Rules = [][]string{
+		{"From", "Is", "huqiaoxin@baidu.com"},
+		{"To", "Contains", "tanghaiyang@baidu.com"},
+		{"To", "Contains", "zhengheng"},
+		{"To", "Contains", "chengang04"},
+		{"To", "Contains", "tianxiao@baidu.com"},
+		{"To", "Contains", "kongyue"},
+		{"To", "Contains", "wangchenggang01"},
+		{"To", "Contains", "guoyi01"},
+		{"To", "Contains", "biyingying"},
+		{"To", "Contains", "chujingbo"},
+		{"Cc", "Contains", "cuiyuhong"},
+		{"Cc", "Contains", "lakerchen"},
+		{"Cc", "Contains", "wuhaiyun"},
+		{"Cc", "Contains", "bdd-core"},
+	}
+
+	email, err := readEMail("716010")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if filter.Match(email, path.Join("..", "raw")) != true {
+		t.Error("filter.Match", email.Uidl, "expected", true, "get", false)
+	}
+}
+
+func TestMatchAny(t *testing.T) {
+	var filter base.Filter
+	filter.Condition.Match = "Any"
+	filter.Condition.Rules = make([][]string, len(tests))
+	for i, item := range tests {
+		filter.Condition.Rules[i] = item.rule
+	}
+
+	email, err := readEMail("716010")
+	if err != nil {
+		t.Error(err)
+	}
+
+	if filter.Match(email, path.Join("..", "raw")) != true {
+		t.Error("filter.Match", email.Uidl, "expected", true, "get", false)
 	}
 }

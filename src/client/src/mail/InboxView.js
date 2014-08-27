@@ -68,7 +68,13 @@ define(function (require) {
                     extra = '<span class="x-icon-attchments" title="' +
                     item.attachments.join(' ') + '"></span>';
                 }
-                return '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
+
+                var prefix = '';
+                if (item.importance) {
+                    prefix = '<i>' + item.importance + '</i>';
+                }
+
+                return prefix + '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
                     lib.encodeHTML(item.subject) + '</a>' + extra;
             }
         },
