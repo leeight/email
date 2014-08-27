@@ -5,6 +5,7 @@ sqlite3
 frontend
 body.html
 foo.db
+test.db
 raw.txt
 raw
 src/server/raw

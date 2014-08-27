@@ -92,13 +92,12 @@ define(function (require) {
      * @inheritDoc
      */
     MailInboxView.prototype.uiProperties = {
-
         table: {
             fields: tableFields,
-            sortable: true,
-            columnResizable: true
+            sortable: false,
+            columnResizable: true,
+            select: 'multi'
         }
-
     };
 
     /**

@@ -224,6 +224,57 @@ func stripUnnecessaryTags(html []byte) []byte {
 	return html
 }
 
+// 给邮件添加一个Tag，比如LabelAction可能会用到
+func (this *EMail) AddLabel(label string, db *sql.DB) error {
+	// 事先已经保证了 tags 和 mail_tags 这两个表从存在了，所以直接操作就好了
+
+	// 先查询 tagId，如果没有的话，插入新的
+	var tagId int64
+	stmt, err := db.Prepare("SELECT `id` FROM tags WHERE `name` = ?")
+	if err != nil {
+		return err
+	}
+
+	err = stmt.QueryRow(label).Scan(&tagId)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return err
+		}
+
+		// 不存在，那么插入一条新的数据喽
+		result, err := db.Exec("INSERT INTO tags (`name`) VALUES (?)", label)
+		if err != nil {
+			return err
+		}
+
+		tagId, err = result.LastInsertId()
+		if err != nil {
+			return err
+		}
+	}
+
+	// 先检查有没有重复的记录，如果有的话，就不需要插入了
+	var mailTagCount int
+	err = db.QueryRow("SELECT COUNT(`id`) FROM mail_tags WHERE `mid` = ? AND `tid` = ?",
+		this.Id, tagId).Scan(&mailTagCount)
+	if err != nil {
+		return err
+	}
+	if mailTagCount > 0 {
+		// 纳尼，数据已经存在了？
+		return nil
+	}
+
+	// 给 mail_tags 插入一条记录即可
+	_, err = db.Exec("INSERT INTO mail_tags (`mid`, `tid`) VALUES (?, ?)",
+		this.Id, tagId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (email *EMail) Store(db *sql.DB) error {
 	tx, err := db.Begin()
 	if err != nil {
