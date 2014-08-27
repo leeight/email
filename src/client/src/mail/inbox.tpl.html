@@ -1,24 +1,41 @@
 <!-- target: TPL_mail_inbox -->
 <div class="mail-inbox">
-    <div class="list-header">
-        <div class="list-batch">
-            <div data-ui-type="Button" data-ui-id="create" data-ui-skin="spring-add">新建</div>
-            <div data-ui-type="Button" data-ui-id="refresh">刷新</div>
-            <!-- &nbsp;|&nbsp; -->
-            <div data-ui-type="Button" data-ui-id="archive" data-ui-disabled="true">归档</div>
-            <div data-ui-type="Button" data-ui-id="delete" data-ui-disabled="true">删除</div>
-        </div>
-        <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
-            <input data-ui-id="keyword"
-                   data-ui-type="TextBox"
-                   data-ui-required="required"
-                   data-ui-width="300"
-                   placeholder="请输入关键词"
-                   name="keyword" />
-            <!-- <div data-ui-type="Button" data-ui-id="search"
-                data-ui-extension-submit-type="AutoSubmit">搜索</div> -->
-        </form>
+    <div class="est-sidebar">
+        <ul>
+        <!-- for: ${labels} as ${item} -->
+            <!-- if: ${item.id} == ${label} -->
+            <li class="active">
+            <!-- else -->
+            <li>
+            <!-- /if -->
+                <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+            </li>
+        <!-- /for -->
+            <li><a href="#/mail/inbox">Sent Mail</a></li>
+            <li><a href="#/mail/inbox">All Mail</a></li>
+        </ul>
     </div>
-    <!-- import: listTable -->
-    <!-- import: listPager -->
+    <div class="est-main">
+        <div class="list-header">
+            <div class="list-batch">
+                <div data-ui-type="Button" data-ui-id="create" data-ui-skin="spring-add">新建</div>
+                <div data-ui-type="Button" data-ui-id="refresh">刷新</div>
+                <!-- &nbsp;|&nbsp; -->
+                <div data-ui-type="Button" data-ui-id="archive" data-ui-disabled="true">归档</div>
+                <div data-ui-type="Button" data-ui-id="delete" data-ui-disabled="true">删除</div>
+            </div>
+            <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
+                <input data-ui-id="keyword"
+                       data-ui-type="TextBox"
+                       data-ui-required="required"
+                       data-ui-width="300"
+                       placeholder="请输入关键词"
+                       name="keyword" />
+                <!-- <div data-ui-type="Button" data-ui-id="search"
+                    data-ui-extension-submit-type="AutoSubmit">搜索</div> -->
+            </form>
+        </div>
+        <!-- import: listTable -->
+        <!-- import: listPager -->
+    </div>
 </div>

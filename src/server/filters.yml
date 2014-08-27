@@ -35,3 +35,12 @@
       - [To, Contains, bdd-core@baidu.com]
   action:
     Label: bdd-core
+
+- filter:
+  name: Gitlab
+  condition:
+    match: Any
+    rules:
+      - [From, Contains, gitlab.baidu.com]
+  action:
+    Label: Gitlab

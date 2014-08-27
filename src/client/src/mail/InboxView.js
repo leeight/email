@@ -46,7 +46,7 @@ define(function (require) {
         // },
         {
             field: 'from',
-            width: 50,
+            width: 100,
             title: '发件人',
             content: function (item) {
                 var from = item.from || {
@@ -61,7 +61,7 @@ define(function (require) {
         {
             field: 'subject',
             title: '标题',
-            width: 800,
+            width: 700,
             content: function (item) {
                 var extra = '';
                 if (item.attachments && item.attachments.length) {

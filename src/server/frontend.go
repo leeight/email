@@ -168,6 +168,11 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 		pageNo = kDefaultPageNo
 	}
 
+	labelId, err := strconv.Atoi(r.PostFormValue("label"))
+	if err != nil {
+		labelId = -1
+	}
+
 	skipCount := (pageNo - 1) * pageSize
 	if skipCount < 0 {
 		skipCount = 0
@@ -177,9 +182,12 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	sql := "SELECT " +
 		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
 		"`reply_to`, `subject`, `date` " +
-		"FROM mails " +
-		"ORDER BY `id` DESC " +
-		"LIMIT ?, ?"
+		"FROM mails "
+	if labelId > 0 {
+		sql += "WHERE `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ") "
+	}
+	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
+	log.Printf(sql)
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		log.Fatal(err)
@@ -214,7 +222,11 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 查询总的数据量
 	var totalCount int
-	err = db.QueryRow("SELECT COUNT(*) FROM mails").Scan(&totalCount)
+	sql = "SELECT COUNT(*) FROM mails "
+	if labelId > 0 {
+		sql += "WHERE `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ")"
+	}
+	err = db.QueryRow(sql).Scan(&totalCount)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -11,7 +11,7 @@ define(function (require) {
 
     /**
      * [Please Input Model Description]
-     * 
+     *
      * @constructor
      */
     function MailInboxModel() {
@@ -25,7 +25,11 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    MailInboxModel.prototype.datasource = null;
+    MailInboxModel.prototype.datasource = {
+        labels: function(model) {
+            return api.labelList({});
+        }
+    }
 
     /**
      * @inheritDoc

@@ -13,7 +13,8 @@ define(function (require) {
 
         inboxList: '/api/inbox',
         readMail: '/api/mail/read',
-        mailPost: '/api/mail/post'
+        mailPost: '/api/mail/post',
+        labelList: '/api/labels'
     };
 
     var config = {
