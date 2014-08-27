@@ -11,25 +11,6 @@ import (
 	"../net/mail"
 )
 
-// ER所需要的数据格式
-type ListResponse struct {
-	Success string `json:"success"`
-	Page    struct {
-		TotalCount int               `json:"totalCount"`
-		PageNo     int               `json:"pageNo"`
-		PageSize   int               `json:"pageSize"`
-		OrderBy    string            `json:"orderBy"`
-		Order      string            `json:"order"`
-		Result     []*EMailViewModel `json:"result"`
-	} `json:"page"`
-}
-
-type SimpleResponse struct {
-	Success string            `json:"success"`
-	Message map[string]string `json:"message"`
-	Result  *EMailViewModel   `json:"result"`
-}
-
 // 定义邮件类型，Database Model
 type EMail struct {
 	Id      int       `json:"id"`
@@ -62,29 +43,66 @@ type EMailViewModel struct {
 	Status      int             `json:"status"`
 }
 
-func ToSimpleResponse(this *EMailViewModel) *SimpleResponse {
-	var res SimpleResponse
-	res.Success = "true"
-	res.Result = this
-	return &res
+type Response interface {
+	Ok() bool
 }
 
-func ToListPageResponse(
-	this []*EMailViewModel,
-	totalCount int,
-	pageNo int,
-	pageSize int,
-) *ListResponse {
-	var res ListResponse
-	res.Success = "true"
-	res.Page.TotalCount = totalCount
-	res.Page.PageNo = pageNo
-	res.Page.PageSize = pageSize
-	res.Page.OrderBy = "id"
-	res.Page.Order = "desc"
-	res.Page.Result = this
+// ER所需要的数据格式
+type SimpleResponse struct {
+	Success string      `json:"success"`
+	Message interface{} `json:"message"`
+	Result  interface{} `json:"result"`
+}
 
-	return &res
+type PageType struct {
+	TotalCount int         `json:"totalCount"`
+	PageNo     int         `json:"pageNo"`
+	PageSize   int         `json:"pageSize"`
+	OrderBy    string      `json:"orderBy"`
+	Order      string      `json:"order"`
+	Result     interface{} `json:"result"`
+}
+
+type ListResponse struct {
+	Success string      `json:"success"`
+	Message interface{} `json:"message"`
+	Page    PageType    `json:"page"`
+}
+
+func (this SimpleResponse) Ok() bool {
+	return true
+}
+
+func (this ListResponse) Ok() bool {
+	return true
+}
+
+func NewSimpleResponse(ok string, args ...interface{}) Response {
+	if args == nil {
+		type DefaultResult struct{}
+		return &SimpleResponse{Success: ok, Result: DefaultResult{}}
+	}
+
+	if len(args) == 1 {
+		// args = [ [A, B, C] ] -> args = [A, B, C]
+		return &SimpleResponse{Success: ok, Result: args[0].(interface{})}
+	} else {
+		return &SimpleResponse{Success: ok, Result: args}
+	}
+}
+
+func NewListResponse(ok string, totalCount int, pageNo int, pageSize int, args ...interface{}) Response {
+	return &ListResponse{
+		Success: ok,
+		Page: PageType{
+			TotalCount: totalCount,
+			PageNo:     pageNo,
+			PageSize:   pageSize,
+			OrderBy:    "id",
+			Order:      "desc",
+			Result:     args[0].(interface{}),
+		},
+	}
 }
 
 func setAttachments(downloadDir, uidl string) []string {

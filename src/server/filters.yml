@@ -25,3 +25,13 @@
       - [From, Is, du-learning@baidu.com]
   action:
     Label: 度学堂
+
+- filter:
+  name: bdd-core
+  condition:
+    match: Any
+    rules:
+      - [Cc, Contains, bdd-core@baidu.com]
+      - [To, Contains, bdd-core@baidu.com]
+  action:
+    Label: bdd-core

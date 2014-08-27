@@ -92,7 +92,7 @@ func main() {
 
 	// 最后通过执行attach来迁移数据
 	// sqlite3 foo.db
-	// > attach "tmp.db" as tmp
+	// > attach "tmp.db" as tmp;
 	// > delete from tags;
 	// > delete from mail_tags;
 	// > insert into tags select * from tmp.tags;

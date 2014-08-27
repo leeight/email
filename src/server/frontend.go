@@ -70,12 +70,8 @@ func apiPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	type SimpleResponse struct {
-		Success string            `json:"success"`
-		Message map[string]string `json:"message"`
-		Result  struct{}          `json:"result"`
-	}
-	s, _ := json.MarshalIndent(SimpleResponse{Success: "true"}, "", "    ")
+	s, _ := json.MarshalIndent(
+		base.NewSimpleResponse("true"), "", "    ")
 	w.Write(s)
 }
 
@@ -116,8 +112,40 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	evm := email.ToViewModel(kConfig.Dirs.Download)
-	sr := base.ToSimpleResponse(evm)
+	sr := base.NewSimpleResponse("true", evm)
 	s, _ := json.MarshalIndent(sr, "", "    ")
+	w.Write(s)
+}
+
+// 获取所有的Label列表
+func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("sqlite3", "./foo.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT `id`, `name` FROM tags;")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	type Label struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+	labels := make([]Label, 0)
+	for rows.Next() {
+		var label Label
+		err = rows.Scan(&label.Id, &label.Name)
+		if err != nil {
+			log.Fatal(err)
+			continue
+		}
+		labels = append(labels, label)
+	}
+
+	s, _ := json.MarshalIndent(base.NewSimpleResponse("true", labels), "", "    ")
 	w.Write(s)
 }
 
@@ -192,20 +220,20 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("%s, %d, %d, %d\n", sql, totalCount, skipCount, pageSize)
 
-	lpr := base.ToListPageResponse(emails, totalCount, pageNo, pageSize)
+	lpr := base.NewListResponse("true", totalCount, pageNo, pageSize, emails)
 	s, _ := json.MarshalIndent(lpr, "", "    ")
 	w.Write(s)
 }
 
 func addDefaultHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if origin := r.Header.Get("Origin"); origin != "" {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-		}
+		// if origin := r.Header.Get("Origin"); origin != "" {
+		// 	w.Header().Set("Access-Control-Allow-Origin", origin)
+		// }
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		// w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		// w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token")
+		// w.Header().Set("Access-Control-Allow-Credentials", "true")
 		fn(w, r)
 	}
 }
@@ -217,6 +245,7 @@ func main() {
 	http.HandleFunc("/api/", addDefaultHeaders(apiListHandler))
 	http.HandleFunc("/api/mail/read", addDefaultHeaders(apiReadHandler))
 	http.HandleFunc("/api/mail/post", addDefaultHeaders(apiPostHandler))
+	http.HandleFunc("/api/labels", addDefaultHeaders(apiLabelsHandler))
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(kConfig.Dirs.Static)))
