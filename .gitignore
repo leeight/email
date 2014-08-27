@@ -6,6 +6,7 @@ frontend
 body.html
 foo.db
 test.db
+tmp.db
 raw.txt
 raw
 src/server/raw

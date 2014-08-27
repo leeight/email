@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 
 	"gopkg.in/yaml.v1"
 
@@ -10,13 +9,7 @@ import (
 )
 
 func main() {
-	data, err := ioutil.ReadFile("filters.yml")
-	if err != nil {
-		panic(err)
-	}
-
-	var filters []base.Filter
-	err = yaml.Unmarshal(data, &filters)
+	filters, err := base.GetFilters("filters.yml")
 	if err != nil {
 		panic(err)
 	}

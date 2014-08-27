@@ -2,10 +2,12 @@ package base
 
 import (
 	"bytes"
-	// "fmt"
+	"database/sql"
+	"gopkg.in/yaml.v1"
 	"io/ioutil"
 	"log"
 	"path"
+	"strings"
 
 	"../net/mail"
 )
@@ -153,28 +155,63 @@ func (filter *Filter) Match(email *EMail, rawDir string) bool {
 }
 
 // 如果符合规则的话，也就是通过Match判断的话，执行规则定义的动作
-func (filter *Filter) TakeAction(email *EMail) error {
+func (filter *Filter) TakeAction(email *EMail, db *sql.DB) error {
+	for k, v := range filter.Action {
+		action := NewAction(k)
+		if action != nil {
+			err := action.Exec(email, v, db)
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
+		}
+	}
 	return nil
 }
 
 // 针对一封邮件，运行一边所有的Filter
-func RunFilter(email *EMail, filters []Filter, rawDir string) error {
+func RunFilter(email *EMail, filters []Filter, rawDir string, db *sql.DB) error {
+	names := make([]string, 0)
 	for _, filter := range filters {
 		if filter.Disable {
 			continue
 		}
 
 		if filter.Match(email, rawDir) {
-			err := filter.TakeAction(email)
+			err := filter.TakeAction(email, db)
 			if err != nil {
 				return err
 			}
+			names = append(names, filter.Name)
 
 			if filter.Stop {
+				log.Printf("(%d, %s) => %v",
+					email.Id, email.Uidl, strings.Join(names, " => "))
+				// 匹配之后就停止，那么就不继续了
 				return nil
 			}
 		}
 	}
 
+	if len(names) > 0 {
+		log.Printf("(%d, %s) => %v",
+			email.Id, email.Uidl, strings.Join(names, " => "))
+	}
+
 	return nil
+}
+
+func GetFilters(file string) ([]Filter, error) {
+	data, err := ioutil.ReadFile("filters.yml")
+	if err != nil {
+		return nil, err
+	}
+
+	var filters []Filter
+	err = yaml.Unmarshal(data, &filters)
+	if err != nil {
+		return nil, err
+	}
+
+	return filters, nil
 }

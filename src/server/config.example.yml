@@ -13,3 +13,4 @@ smtp:
 dirs:
   download: downloads
   raw: raw
+  static: /Users/leeight/hd/local/leeight.github.com/email-client/src/server

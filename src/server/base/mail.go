@@ -227,20 +227,16 @@ func stripUnnecessaryTags(html []byte) []byte {
 // 给邮件添加一个Tag，比如LabelAction可能会用到
 func (this *EMail) AddLabel(label string, db *sql.DB) error {
 	// 事先已经保证了 tags 和 mail_tags 这两个表从存在了，所以直接操作就好了
+	// log.Println("Email AddLabel")
 
 	// 先查询 tagId，如果没有的话，插入新的
 	var tagId int64
-	stmt, err := db.Prepare("SELECT `id` FROM tags WHERE `name` = ?")
-	if err != nil {
+	err := db.QueryRow("SELECT `id` FROM tags WHERE `name` = ?", label).Scan(&tagId)
+	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 
-	err = stmt.QueryRow(label).Scan(&tagId)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			return err
-		}
-
+	if tagId <= 0 {
 		// 不存在，那么插入一条新的数据喽
 		result, err := db.Exec("INSERT INTO tags (`name`) VALUES (?)", label)
 		if err != nil {
@@ -257,7 +253,7 @@ func (this *EMail) AddLabel(label string, db *sql.DB) error {
 	var mailTagCount int
 	err = db.QueryRow("SELECT COUNT(`id`) FROM mail_tags WHERE `mid` = ? AND `tid` = ?",
 		this.Id, tagId).Scan(&mailTagCount)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 	if mailTagCount > 0 {

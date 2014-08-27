@@ -1,22 +1,27 @@
 # 邮件的过滤器配置信息
 - filter:
   name: 过滤器1
-  disable: true
-  stop: true
   condition:
-    match: ANY
+    match: Any
     rules:
-      - [From, Is, liyubei@baidu.com]
-      - [To, Contains, baidu.com]
+      - [To, Contains, liyubei@baidu.com]
   action:
-    label: ALL
+    Label: ToMe
 
 - filter:
   name: 过滤器2
   condition:
-    match: ALL
+    match: Any
+    rules:
+      - [Cc, Contains, liyubei@baidu.com]
   action:
-    delete: ALL
-    hello: true
-    ivalue: 10
-    x:
+    Label: CcMe
+
+- filter:
+  name: 过滤器3
+  condition:
+    match: Any
+    rules:
+      - [From, Is, du-learning@baidu.com]
+  action:
+    Label: 度学堂
