@@ -68,7 +68,6 @@ define(function (require) {
                     extra = '<span class="x-icon-attchments" title="' +
                     item.attachments.join(' ') + '"></span>';
                 }
-                console.log(extra)
                 return '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
                     lib.encodeHTML(item.subject) + '</a>' + extra;
             }
