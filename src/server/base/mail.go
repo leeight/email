@@ -192,7 +192,7 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 		cd, _ := iconv.Open("utf-8", charset)
 		defer cd.Close()
 
-		body = stripUnnecessaryTags(body)
+		body = StripUnnecessaryTags(body)
 
 		var outbuf [512]byte
 		html, _, err := cd.Conv(body, outbuf[:])
@@ -210,26 +210,6 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 	}
 
 	return body, nil
-}
-
-// 删除邮件正文中不必要的内容，只保留<body>和</body>之间的内容
-func stripUnnecessaryTags(html []byte) []byte {
-	pattern := regexp.MustCompile(`</?body[^>]*>`)
-	indexs := pattern.FindAllIndex(html, 2)
-	if indexs != nil {
-		if len(indexs) == 2 {
-			start := indexs[0][1]
-			end := indexs[1][0]
-			return html[start:end]
-		} else if len(indexs) == 1 {
-			// 有的邮件里面只有<body>，没有结束的</body>
-			// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=963&uidl=720375
-			// 估计大部分都是自己写程序发送的，正常的User-Agent是不会出现这个问题的
-			start := indexs[0][1]
-			return html[start:]
-		}
-	}
-	return html
 }
 
 // 给邮件添加一个Tag，比如LabelAction可能会用到
