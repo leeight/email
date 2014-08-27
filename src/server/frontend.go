@@ -220,5 +220,6 @@ func main() {
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(kConfig.Dirs.Static)))
+	log.Println("Server started http://localhost:8765")
 	http.ListenAndServe(":8765", nil)
 }

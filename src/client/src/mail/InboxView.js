@@ -101,6 +101,9 @@ define(function (require) {
     MailInboxView.prototype.uiEvents = {
         'create:click': function() {
             locator.redirect('/mail/compose');
+        },
+        'refresh:click': function() {
+            locator.reload();
         }
     };
 

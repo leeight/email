@@ -1,13 +1,27 @@
 package base
 
 import (
-	"gopkg.in/yaml.v1"
 	"io/ioutil"
+	"time"
+
+	"gopkg.in/yaml.v1"
+)
+
+const (
+	kDefaultInterval = 60
 )
 
 type pop3Type struct {
 	Username, Password, Hostname string
 	Tls                          bool
+	Interval                     time.Duration
+}
+
+func (this pop3Type) GetInterval() time.Duration {
+	if this.Interval <= 0 {
+		return kDefaultInterval
+	}
+	return this.Interval
 }
 
 type smtpType struct {

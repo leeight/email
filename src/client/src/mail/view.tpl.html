@@ -9,14 +9,14 @@
             <table class="list-summary-table">
                 <tr>
                   <th>发件人：</th>
-                  <td><a href="mailto:${email.from.Address}"><!-- if: ${email.from.Name} -->${email.from.Name}<!-- else -->${email.from.Address}<!-- /if --></a></td>
+                  <td><a href="#/mail/compose~to=${email.from.Address}"><!-- if: ${email.from.Name} -->${email.from.Name}<!-- else -->${email.from.Address}<!-- /if --></a></td>
                 </tr>
                 <!-- if: ${email.to} -->
                 <tr>
                   <th>收件人：</th>
                   <td>
                     <!-- for: ${email.to} as ${item}, ${index} -->
-                    <a href="mailto:${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <a href="#/mail/compose~to=${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -26,7 +26,7 @@
                   <th>抄送：</th>
                   <td>
                     <!-- for: ${email.cc} as ${item}, ${index} -->
-                    <a href="mailto:${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <a href="#/mail/compose~to=${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -36,7 +36,7 @@
                   <th>密送：</th>
                   <td>
                     <!-- for: ${email.bcc} as ${item}, ${index} -->
-                    <a href="mailto:${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <a href="#/mail/compose~to=${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
