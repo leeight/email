@@ -8,16 +8,16 @@ define(function (require) {
     require('bat-ria/tpl!./view.tpl.html');
 
     var BaseView = require('bat-ria/mvc/BaseView');
-    
+
     /**
      * [Please Input View Description]
-     * 
+     *
      * @constructor
      */
     function MailViewView() {
         BaseView.apply(this, arguments);
     }
-    
+
     /**
      * @inheritDoc
      */
