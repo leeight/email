@@ -2,6 +2,7 @@ package base
 
 import (
 	"bytes"
+	"database/sql"
 	"io/ioutil"
 	"path"
 	"time"
@@ -40,6 +41,7 @@ type EMailViewModel struct {
 	Message     string          `json:"message"`
 	Importance  string          `json:"importance"`
 	Attachments []string        `json:"attachments"`
+	Labels      []*LabelType    `json:"labels"`
 	Status      int             `json:"status"`
 }
 
@@ -52,6 +54,11 @@ type SimpleResponse struct {
 	Success string      `json:"success"`
 	Message interface{} `json:"message"`
 	Result  interface{} `json:"result"`
+}
+
+type LabelType struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type PageType struct {
@@ -121,7 +128,7 @@ func setAttachments(downloadDir, uidl string) []string {
 	return attachments
 }
 
-func (this *EMail) ToViewModel(downloadDir string) *EMailViewModel {
+func (this *EMail) ToViewModel(downloadDir string, db *sql.DB) *EMailViewModel {
 	var evm EMailViewModel
 	var msg *mail.Message
 
@@ -142,6 +149,16 @@ func (this *EMail) ToViewModel(downloadDir string) *EMailViewModel {
 	evm.Bcc, _ = mail.ParseAddressList(this.Bcc)
 	evm.ReplyTo, _ = mail.ParseAddressList(this.ReplyTo)
 	evm.Attachments = setAttachments(downloadDir, this.Uidl)
+
+	rows, err := db.Query("SELECT `id`, `name` FROM tags WHERE `id` IN (SELECT `tid` FROM mail_tags WHERE `mid` = ?)", this.Id)
+	if err == nil {
+		evm.Labels = make([]*LabelType, 0)
+		for rows.Next() {
+			var label LabelType
+			rows.Scan(&label.Id, &label.Name)
+			evm.Labels = append(evm.Labels, &label)
+		}
+	}
 
 	if msg != nil {
 		evm.Importance = msg.Header.Get("Importance")

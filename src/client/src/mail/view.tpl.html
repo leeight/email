@@ -3,6 +3,11 @@
     <div class="mail-subject">
         <h2>${email.subject}</h2>
         <a href="#/mail/inbox">Inbox</a>
+        <!-- if: ${email.labels} -->
+            <!-- for: ${email.labels} as ${item} -->
+            <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+            <!-- /for -->
+        <!-- /if -->
     </div>
     <div class="list-header">
         <div class="list-summary">

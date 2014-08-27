@@ -54,6 +54,11 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 			return
 		}
 
+		filters, err := base.GetFilters("filters.yml")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		uidls, err := client.UidlAll()
 		for _, msg := range msgs {
 			uidl := uidls[msg]
@@ -96,6 +101,14 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 				log.Fatal(err)
 				continue
 			}
+
+			if filters != nil {
+				err = base.RunFilter(email, filters[:], config.Dirs.Raw, db)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
 			log.Printf("[ SAVE] %d -> %s\n", msg, uidl)
 		}
 

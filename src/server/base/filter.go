@@ -180,6 +180,7 @@ func RunFilter(email *EMail, filters []Filter, rawDir string, db *sql.DB) error 
 		if filter.Match(email, rawDir) {
 			err := filter.TakeAction(email, db)
 			if err != nil {
+				log.Fatal(err)
 				return err
 			}
 			names = append(names, filter.Name)

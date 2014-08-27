@@ -111,7 +111,7 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	evm := email.ToViewModel(kConfig.Dirs.Download)
+	evm := email.ToViewModel(kConfig.Dirs.Download, db)
 	sr := base.NewSimpleResponse("true", evm)
 	s, _ := json.MarshalIndent(sr, "", "    ")
 	w.Write(s)
@@ -216,7 +216,7 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 			&email.Subject,
 			&email.Date)
 
-		evm := email.ToViewModel(kConfig.Dirs.Download)
+		evm := email.ToViewModel(kConfig.Dirs.Download, db)
 		emails = append(emails, evm)
 	}
 
