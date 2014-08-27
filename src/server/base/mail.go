@@ -216,10 +216,18 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 func stripUnnecessaryTags(html []byte) []byte {
 	pattern := regexp.MustCompile(`</?body[^>]*>`)
 	indexs := pattern.FindAllIndex(html, 2)
-	if indexs != nil && len(indexs) == 2 {
-		start := indexs[0][1]
-		end := indexs[1][0]
-		return html[start:end]
+	if indexs != nil {
+		if len(indexs) == 2 {
+			start := indexs[0][1]
+			end := indexs[1][0]
+			return html[start:end]
+		} else if len(indexs) == 1 {
+			// 有的邮件里面只有<body>，没有结束的</body>
+			// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=963&uidl=720375
+			// 估计大部分都是自己写程序发送的，正常的User-Agent是不会出现这个问题的
+			start := indexs[0][1]
+			return html[start:]
+		}
 	}
 	return html
 }
@@ -272,23 +280,44 @@ func (this *EMail) AddLabel(label string, db *sql.DB) error {
 }
 
 func (email *EMail) Store(db *sql.DB) (int64, error) {
-	tx, err := db.Begin()
+	var stmt *sql.Stmt
+	var tx *sql.Tx
+	var result sql.Result
+	var err error
+
+	tx, err = db.Begin()
 	if err != nil {
 		return 0, err
 	}
 
-	stmt, err := tx.Prepare(
-		"INSERT INTO mails " +
-			"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, `subject`, `message`) " +
-			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	if email.Id > 0 {
+		stmt, err = tx.Prepare(
+			"UPDATE mails SET " +
+				"`uidl` = ?, `from` = ?, `to` = ?, `cc` = ?, `bcc` = ?, " +
+				"`reply_to` = ?, `date` = ?, `subject` = ?, `message` = ? " +
+				"WHERE `id` = ?")
+	} else {
+		stmt, err = tx.Prepare(
+			"INSERT INTO mails " +
+				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, `subject`, `message`) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	}
 
 	if err != nil {
 		return 0, err
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
-		email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message)
+	if email.Id > 0 {
+		// 更新
+		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
+			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message, email.Id)
+	} else {
+		// 插入
+		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
+			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message)
+	}
+
 	if err != nil {
 		return 0, err
 	}
@@ -296,6 +325,10 @@ func (email *EMail) Store(db *sql.DB) (int64, error) {
 	err = tx.Commit()
 	if err != nil {
 		return 0, err
+	}
+
+	if email.Id > 0 {
+		return email.Id, nil
 	}
 
 	id, err := result.LastInsertId()
