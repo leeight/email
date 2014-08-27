@@ -271,10 +271,10 @@ func (this *EMail) AddLabel(label string, db *sql.DB) error {
 	return nil
 }
 
-func (email *EMail) Store(db *sql.DB) error {
+func (email *EMail) Store(db *sql.DB) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	stmt, err := tx.Prepare(
@@ -283,15 +283,25 @@ func (email *EMail) Store(db *sql.DB) error {
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
+	result, err := stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
 		email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }

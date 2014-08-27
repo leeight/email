@@ -14,7 +14,7 @@ import (
 
 // 定义邮件类型，Database Model
 type EMail struct {
-	Id      int       `json:"id"`
+	Id      int64     `json:"id"`
 	Uidl    string    `json:"uidl"`
 	From    string    `json:"from"`
 	To      string    `json:"to"`
@@ -29,7 +29,7 @@ type EMail struct {
 
 // 定义邮件类型，View Model
 type EMailViewModel struct {
-	Id          int             `json:"id"`
+	Id          int64           `json:"id"`
 	Uidl        string          `json:"uidl"`
 	From        *mail.Address   `json:"from"`
 	To          []*mail.Address `json:"to"`

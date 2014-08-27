@@ -96,7 +96,7 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 
 			// 保存到数据库
 			email.Uidl = string(uidl)
-			err = email.Store(db)
+			email.Id, err = email.Store(db)
 			if err != nil {
 				log.Fatal(err)
 				continue
