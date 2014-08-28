@@ -1,5 +1,14 @@
 # 邮件的过滤器配置信息
 - filter:
+  name: Spam Filter
+  condition:
+    match: Any
+    rules:
+      - [From, '!Contains', '@baidu.com']
+  action:
+    Label: Spam
+
+- filter:
   name: 过滤器1
   condition:
     match: Any
@@ -44,3 +53,14 @@
       - [From, Contains, gitlab.baidu.com]
   action:
     Label: Gitlab
+
+- filter:
+  name: 图+
+  condition:
+    match: Any
+    rules:
+      - [Cc, Contains, imageplus]
+      - [To, Contains, imageplus]
+      - [Subject, Contains, 图+]
+  action:
+    Label: 图+

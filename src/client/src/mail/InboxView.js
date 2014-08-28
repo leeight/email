@@ -105,7 +105,19 @@ define(function (require) {
      */
     MailInboxView.prototype.uiEvents = {
         'create:click': function() {
-            locator.redirect('/mail/compose');
+            this.waitActionDialog({
+                title: '新邮件',
+                width: 740,
+                needFoot: true,
+                url: '/mail/compose',
+                actionOptions: {
+                    // dbName: selectItem.dbName,
+                    // instanceId: me.model.get('instance').instanceId
+                }
+            });
+            //.then( util.bind( ok, this ) );
+
+            // locator.redirect('/mail/compose');
         },
         'refresh:click': function() {
             locator.reload();

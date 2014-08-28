@@ -15,7 +15,11 @@ func main() {
 	}
 	fmt.Printf("Length = %d\n", len(filters))
 	fmt.Printf("Name = %s\n", filters[0].Name)
-	fmt.Printf("Rules[0][0] = %s\n", filters[0].Condition.Rules[0][0])
+	fmt.Printf("%s, %s, %s\n",
+		filters[0].Condition.Rules[0][0],
+		filters[0].Condition.Rules[0][1],
+		filters[0].Condition.Rules[0][2],
+	)
 	fmt.Printf("Action[\"label\"] = %s\n", filters[0].Action["label"])
 	fmt.Printf("Action[\"label\"] = %s\n", filters[1].Action["label"])
 	d, err := yaml.Marshal(&filters)

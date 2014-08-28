@@ -13,6 +13,9 @@ type Operator interface {
 type IsOperator struct{}
 type ContainsOperator struct{}
 type ExistsOperator struct{}
+type NegativeOperator struct {
+	wrapper Operator
+}
 
 func (this IsOperator) Exec(a interface{}, b string) bool {
 	return a == b
@@ -44,18 +47,37 @@ func (this ContainsOperator) Exec(a interface{}, b string) bool {
 	return false
 }
 
+// TODO(user) 暂未实现
 func (this ExistsOperator) Exec(a interface{}, b string) bool {
-	return a == b
+	return false
+}
+
+func (this NegativeOperator) Exec(a interface{}, b string) bool {
+	return !this.wrapper.Exec(a, b)
 }
 
 func NewOperator(t string) Operator {
+	var o Operator
+	var negative = strings.HasPrefix(t, "!")
+
+	if negative {
+		t = strings.Replace(t, "!", "", 1)
+	}
+
 	switch t {
 	case "Is":
-		return IsOperator{}
+		o = IsOperator{}
 	case "Contains":
-		return ContainsOperator{}
+		o = ContainsOperator{}
 	case "Exists":
-		return ExistsOperator{}
+		o = ExistsOperator{}
+	default:
+		return nil
 	}
-	return nil
+
+	if negative {
+		o = NegativeOperator{wrapper: o}
+	}
+
+	return o
 }
