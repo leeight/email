@@ -32,21 +32,22 @@ define(function (require) {
         BaseAction.prototype.initBehavior.apply(this, arguments);
 
         // 处理邮件正文内部链接的点击行为
-        lib.g('mail-body').onmousedown = function(opt_evt) {
-            var evt = opt_evt || window.event;
-            var node = evt.target || evt.srcElement;
-            if (node.nodeType === 1 && node.nodeName === 'A') {
-                if (/^mailto:/.test(node.href)) {
-                    node.href = '#/mail/compose~to=' + node.href.replace('mailto:', '')
-                }
-                else if (node.target !== '_blank') {
-                    node.target = '_blank';
-                }
+        var view = this.view;
+        $('#mail-body a').click(function() {
+            var node = this;
+            if (/^mailto:/.test(node.href)) {
+                util.composeMail(view, null, {
+                    to: node.href.replace('mailto:', '')
+                });
+                return false;
             }
-        }
+            else if (node.target !== '_blank') {
+                node.target = '_blank';
+            }
+        });
 
         this.view.get('reply').on('click', this._replyMail, this);
-        this.view.get('replyAll').on('click', this._replyMail, this);
+        this.view.get('replyAll').on('click', this._replyAllMail, this);
         this.view.get('forward').on('click', this._forwardMail, this);
     };
 
@@ -79,7 +80,38 @@ define(function (require) {
             subject: subject,
             message: message
         });
-    }
+    };
+
+    /**
+     * 后端的frontend.go很脆弱，需要编码的就记得编码，例如：
+     * "=?utf-8?b?5p2O546J5YyX?=" <liyubei@baidu.com>
+     */
+    MailView.prototype._replyAllMail = function() {
+        var email = this.model.get('email');
+
+        var subject = email.subject;
+        var message = '<br>' +
+            'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
+            '<br><blockquote>\n' + email.message + '\n</blockquote>';
+        var to = [ mail.encodeAddress(email.from) ];
+        var cc = [];
+        u.each(email.to || [], function(item){
+            to.push(mail.encodeAddress(item));
+        });
+        u.each(email.cc || [], function(item){
+            cc.push(mail.encodeAddress(item));
+        });
+        if (!/^(RE|回复)[:：]/i.test(email.subject)) {
+            subject = '回复:' + subject;
+        }
+
+        util.composeMail(this.view, '回复邮件', {
+            to: to.join(', '),
+            cc: cc.join(', '),
+            subject: subject,
+            message: message
+        });
+    };
 
 
     // ---------- Forwarded message ----------
@@ -111,7 +143,7 @@ define(function (require) {
             subject: subject,
             message: message
         });
-    }
+    };
 
     require('er/util').inherits(MailView, BaseAction);
     return MailView;
