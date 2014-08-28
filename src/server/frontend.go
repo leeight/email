@@ -39,8 +39,9 @@ func getAddressList(value string) []*mail.Address {
 func apiPostHandler(w http.ResponseWriter, r *http.Request) {
 	// 准备参数
 	from, err := mail.ParseAddress(r.FormValue("from"))
-	if err != nil {
+	if err != nil || from == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	to := getAddressList(r.FormValue("to"))
@@ -68,6 +69,7 @@ func apiPostHandler(w http.ResponseWriter, r *http.Request) {
 	err = base.SendMail(from, to, cc, raw, smtpserver, tls, auth)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	s, _ := json.MarshalIndent(
@@ -125,18 +127,14 @@ func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT `id`, `name` FROM tags;")
+	rows, err := db.Query("SELECT `id`, `name` FROM tags ORDER BY `name`;")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	type Label struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-	labels := make([]Label, 0)
+	labels := make([]base.LabelType, 0)
 	for rows.Next() {
-		var label Label
+		var label base.LabelType
 		err = rows.Scan(&label.Id, &label.Name)
 		if err != nil {
 			log.Fatal(err)

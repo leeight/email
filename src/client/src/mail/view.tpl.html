@@ -14,14 +14,22 @@
             <table class="list-summary-table">
                 <tr>
                   <th>发件人：</th>
-                  <td><a href="#/mail/compose~to=${email.from.Address}"><!-- if: ${email.from.Name} -->${email.from.Name}<!-- else -->${email.from.Address}<!-- /if --></a></td>
+                  <td>
+                    <a href="#/mail/compose~to=${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
+                    &nbsp;|&nbsp;
+                    <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
+                    &nbsp;|&nbsp;
+                    <a data-ui-type="Link" data-ui-id="replyAll" href="javascript:void(0)">全部回复</a>
+                    &nbsp;|&nbsp;
+                    <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
+                  </td>
                 </tr>
                 <!-- if: ${email.to} -->
                 <tr>
                   <th>收件人：</th>
                   <td>
                     <!-- for: ${email.to} as ${item}, ${index} -->
-                    <a href="#/mail/compose~to=${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <a href="#/mail/compose~to=${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -31,7 +39,7 @@
                   <th>抄送：</th>
                   <td>
                     <!-- for: ${email.cc} as ${item}, ${index} -->
-                    <a href="#/mail/compose~to=${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <a href="#/mail/compose~to=${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -41,7 +49,7 @@
                   <th>密送：</th>
                   <td>
                     <!-- for: ${email.bcc} as ${item}, ${index} -->
-                    <a href="#/mail/compose~to=${item.Address}"><!-- if: ${item.Name} -->${item.Name}<!-- else -->${item.Address}<!-- /if --></a>;&nbsp;
+                    <a href="#/mail/compose~to=${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -52,7 +60,9 @@
                 </tr>
                 <tr>
                   <th>源文件：</th>
-                  <td><a href="http://127.0.0.1:8765/raw/${uidl}.txt" target="_blank">查看</a></td>
+                  <td>
+                    <a href="http://127.0.0.1:8765/raw/${uidl}.txt" target="_blank">查看</a>
+                  </td>
                 </tr>
                 <!-- if: ${email.attachments.length} -->
                 <tr>

@@ -31,11 +31,18 @@ define(function (require) {
             ueditorInstance.destroy();
         }
         ueditorInstance = UE.getEditor('email-body-editor');
-
-        var to = this.get('to');
-        var input = to.getFocusTarget();
-        if (input) {
-            input.focus();
+        var message = this.model.get('message');
+        if (message) {
+            ueditorInstance.ready(function(editor) {
+                ueditorInstance.setContent(message);
+                ueditorInstance.focus();
+            });
+        } else {
+            var to = this.get('to');
+            var input = to.getFocusTarget();
+            if (input) {
+                input.focus();
+            }
         }
     };
 

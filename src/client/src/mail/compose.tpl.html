@@ -2,7 +2,7 @@
 <div class="mail-compose">
 <form data-ui-type="Form" data-ui-id="form" data-ui-auto-validate="true" method="POST">
     <div class="form-block">
-        <!-- <h3>新邮件</h3> -->
+        <h3>新邮件</h3>
         <div class="form-body">
             <div class="form-row" style="display: none">
                 <div class="form-key">发件人：</div>
@@ -33,7 +33,7 @@
                            data-ui-type="TextBox"
                            data-ui-width="500"
                            name="cc"
-                           data-ui-value="" />
+                           data-ui-value="${cc}" />
                 </div>
             </div>
             <div class="form-row subject-row">
@@ -44,7 +44,7 @@
                            data-ui-required="required"
                            data-ui-width="500"
                            name="subject"
-                           data-ui-value="" />
+                           data-ui-value="${subject}" />
                 </div>
             </div>
             <div class="form-row">

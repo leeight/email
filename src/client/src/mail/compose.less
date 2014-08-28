@@ -13,10 +13,18 @@
         background-color: #FFEEAA;
     }
 
+
+    .form-row {
+        padding: 0;
+        // margin: 0;
+    }
+
     .subject-row {
         border: 1px solid #CFCFCF;
         border-left: none;
         border-right: none;
+        padding: 3px 0;
+        margin-bottom: 5px;
     }
 
     .form-title-bar {
@@ -30,7 +38,6 @@
         position: relative;
     }
 
-
     .form-data-body {
         padding: 15px 10px;
         border-left: 1px solid #BAD5F1;
@@ -39,13 +46,15 @@
         background-image: -webkit-gradient(linear, 0 0, 0 2, from(#ececec), to(#ffffff));
         background-image: -moz-linear-gradient(top, #ececec, #ffffff 2px, #ffffff);
     }
-
 }
 
 .ui-dialog-body-panel {
     .mail-compose {
         .form-block {
             border: none;
+        }
+        h3 {
+            display: none;
         }
     }
 }

@@ -1,33 +1,30 @@
 # 邮件的过滤器配置信息
 - filter:
   name: Spam Filter
+  stop: true
   condition:
-    match: Any
+    match: All
     rules:
-      - [From, '!Contains', '@baidu.com']
+      - [From, '!Contains', baidu.com]
+      - [From, '!Contains', yinxiang.com]
+      - [From, '!Contains', platform.n.shifen.com]
+      - [From, '!Contains', gitlab.baidu.com]
+      - [From, '!Contains', ct_rsv@ctrip.com]
   action:
     Label: Spam
 
 - filter:
-  name: 过滤器1
+  name: 发给我的
   condition:
     match: Any
     rules:
       - [To, Contains, liyubei@baidu.com]
-  action:
-    Label: ToMe
-
-- filter:
-  name: 过滤器2
-  condition:
-    match: Any
-    rules:
       - [Cc, Contains, liyubei@baidu.com]
   action:
-    Label: CcMe
+    Label: SentToMe
 
 - filter:
-  name: 过滤器3
+  name: 度学堂
   condition:
     match: Any
     rules:
@@ -51,6 +48,7 @@
     match: Any
     rules:
       - [From, Contains, gitlab.baidu.com]
+      - [From, Contains, platform.n.shifen.com]
   action:
     Label: Gitlab
 

@@ -50,11 +50,11 @@ define(function (require) {
             title: '发件人',
             content: function (item) {
                 var from = item.from || {
-                    Name: '未知来源',
-                    Address: '未知来源'
+                    name: '未知来源',
+                    address: '未知来源'
                 };
-                return '<span title="' + from.Address + '">' +
-                    lib.encodeHTML(from.Name || from.Address) +
+                return '<span title="' + from.address + '">' +
+                    lib.encodeHTML(from.name || from.address) +
                 '</span>';
             }
         },
@@ -104,21 +104,8 @@ define(function (require) {
      * @inheritDoc
      */
     MailInboxView.prototype.uiEvents = {
-        'create:click': function() {
-            this.waitActionDialog({
-                title: '新邮件',
-                width: 740,
-                needFoot: true,
-                url: '/mail/compose',
-                actionOptions: {
-                    // dbName: selectItem.dbName,
-                    // instanceId: me.model.get('instance').instanceId
-                }
-            });
-            //.then( util.bind( ok, this ) );
-
-            // locator.redirect('/mail/compose');
-        },
+        // 'create:click': function() {
+        // },
         'refresh:click': function() {
             locator.reload();
         }

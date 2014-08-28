@@ -289,7 +289,7 @@ define(function (require) {
      */
     BaseView.prototype.waitActionDialog = function () {
         var dialog = this.popActionDialog.apply(this, arguments);
-        
+
         var deferred = new Deferred();
 
         dialog.on('actionloaded', deferred.resolver.resolve);

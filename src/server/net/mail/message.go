@@ -134,8 +134,8 @@ func (h Header) AddressList(key string) ([]*Address, error) {
 // An address such as "Barry Gibbs <bg@example.com>" is represented
 // as Address{Name: "Barry Gibbs", Address: "bg@example.com"}.
 type Address struct {
-	Name    string // Proper name; may be empty.
-	Address string // user@domain
+	Name    string `json:"name"`    // Proper name; may be empty.
+	Address string `json:"address"` // user@domain
 }
 
 // Parses a single RFC 5322 address, e.g. "Barry Gibbs <bg@example.com>"

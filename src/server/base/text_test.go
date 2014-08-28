@@ -12,7 +12,7 @@ func TestStripUnnecessaryTags(t *testing.T) {
     </xml><![endif]--><!--[if gte mso 9]><xml>
     <o:shapelayout v:ext="edit">
     <o:idmap v:ext="edit" data="1" />
-    </o:shapelayout></xml><![endif]-->WORLD`
+    </o:shapelayout></xml><![endif]--><style>a{color:red}</STYLE>WORLD`
 
 	output := base.StripUnnecessaryTags([]byte(input))
 	if string(output) != "HELLOWORLD" {

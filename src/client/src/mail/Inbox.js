@@ -5,10 +5,12 @@
 
 define(function (require) {
     var ListAction = require('bat-ria/mvc/ListAction');
+    var util = require('common/util');
+    var u = require('underscore');
 
     /**
      * Action构造函数
-     * 
+     *
      * @constructor
      */
     function MailInbox() {
@@ -27,7 +29,8 @@ define(function (require) {
     MailInbox.prototype.initBehavior = function () {
         ListAction.prototype.initBehavior.apply(this, arguments);
 
-        // bind event handlers here
+        this.view.get('create').on('click',
+            u.partial(util.composeMail, this.view, '撰写邮件', null));
     };
 
     require('er/util').inherits(MailInbox, ListAction);
