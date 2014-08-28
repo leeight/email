@@ -75,7 +75,7 @@ func main() {
 	}
 
 	// 打开数据库
-	db, err := sql.Open("sqlite3", "./foo.db")
+	db, err := sql.Open("sqlite3", config.DbPath())
 	if err != nil {
 		log.Panic(err)
 		return
@@ -85,14 +85,14 @@ func main() {
 	if *rawPtr != "" {
 		// 用户指定例如文件，例如
 		// rebuild -raw=raw/720375.txt
-		rebuild(path.Base(*rawPtr), db, config.Dirs.Download, true)
+		rebuild(path.Base(*rawPtr), db, config.DownloadDir(), true)
 	} else {
 		_, err = db.Exec("DELETE FROM `mails`")
 		if err != nil {
 			log.Panic(err)
 		}
 
-		fileInfos, err := ioutil.ReadDir(config.Dirs.Raw)
+		fileInfos, err := ioutil.ReadDir(config.RawDir())
 		if err != nil {
 			log.Panic(err)
 		}
@@ -101,7 +101,7 @@ func main() {
 			if item.IsDir() {
 				continue
 			}
-			rebuild(item.Name(), db, config.Dirs.Download, false)
+			rebuild(item.Name(), db, config.DownloadDir(), false)
 		}
 	}
 }

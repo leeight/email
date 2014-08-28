@@ -14,8 +14,10 @@ import (
 	"../net/mail"
 )
 
+var config *base.ServerConfig
+
 func readEMail(uidl string) (*base.EMail, error) {
-	db, err := sql.Open("sqlite3", "../foo.db")
+	db, err := sql.Open("sqlite3", config.DbPath())
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -96,12 +98,14 @@ var tests = []testpair{
 }
 
 func TestCheckRule(t *testing.T) {
+	config, _ = base.GetConfig("../config.yml")
+
 	email, err := readEMail("716010")
 	if err != nil {
 		t.Error(err)
 	}
 
-	raw, err := ioutil.ReadFile(path.Join("..", "raw", "716010.txt"))
+	raw, err := ioutil.ReadFile(path.Join(config.RawDir(), "716010.txt"))
 	if err != nil {
 		t.Error(err)
 	}
@@ -120,6 +124,8 @@ func TestCheckRule(t *testing.T) {
 }
 
 func TestMatchAll(t *testing.T) {
+	config, _ = base.GetConfig("../config.yml")
+
 	var filter base.Filter
 	filter.Condition.Match = "All"
 	filter.Condition.Rules = [][]string{
@@ -144,12 +150,14 @@ func TestMatchAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	if filter.Match(email, path.Join("..", "raw")) != true {
+	if filter.Match(email, config.RawDir()) != true {
 		t.Error("filter.Match", email.Uidl, "expected", true, "get", false)
 	}
 }
 
 func TestMatchAny(t *testing.T) {
+	config, _ = base.GetConfig("../config.yml")
+
 	var filter base.Filter
 	filter.Condition.Match = "Any"
 	filter.Condition.Rules = make([][]string, len(tests))
@@ -162,7 +170,7 @@ func TestMatchAny(t *testing.T) {
 		t.Error(err)
 	}
 
-	if filter.Match(email, path.Join("..", "raw")) != true {
+	if filter.Match(email, config.RawDir()) != true {
 		t.Error("filter.Match", email.Uidl, "expected", true, "get", false)
 	}
 }

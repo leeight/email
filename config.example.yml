@@ -3,6 +3,7 @@ pop3:
   password: password
   hostname: email.baidu.com:995
   tls: true
+  interval: 60
 
 smtp:
   username: internal\liyubei
@@ -11,6 +12,4 @@ smtp:
   tls: true
 
 dirs:
-  download: downloads
-  raw: raw
-  static: /Users/leeight/hd/local/leeight.github.com/email-client/src/server
+  base: data/baidu.com/liyubei

@@ -46,7 +46,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	db, err := sql.Open("sqlite3", "./foo.db")
+	db, err := sql.Open("sqlite3", config.DbPath())
 	if err != nil {
 		log.Panic(err)
 		return
@@ -69,7 +69,7 @@ func main() {
 	// FIXME(user) 如果继续用db的话，存在database is locked的问题
 	tmpdb := getTmpDB()
 
-	rawDir := config.Dirs.Raw
+	rawDir := config.RawDir()
 	for rows.Next() {
 		var email base.EMail
 		rows.Scan(

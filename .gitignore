@@ -1,18 +1,25 @@
 node_modules
+
+# bin目录
 main
 parser
 sqlite3
 frontend
+yml
+rebuild
+run_filters
+sent_mail
+
+# 临时文件
 body.html
 foo.db
 test.db
 tmp.db
 raw.txt
-raw
-src/server/raw
-test/testdata/
-rebuild_index
-downloads
-sent_mail
+
+/data/*
+/test/*
+/src/server/raw
+/src/server/filters.yml
+/src/server/downloads
 config.yml
-yml

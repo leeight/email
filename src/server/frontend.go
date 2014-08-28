@@ -79,7 +79,7 @@ func apiPostHandler(w http.ResponseWriter, r *http.Request) {
 
 // 获取邮件的详情
 func apiReadHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("sqlite3", "./foo.db")
+	db, err := sql.Open("sqlite3", kConfig.DbPath())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -113,7 +113,7 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	evm := email.ToViewModel(kConfig.Dirs.Download, db)
+	evm := email.ToViewModel(kConfig.DownloadDir(), db)
 	sr := base.NewSimpleResponse("true", evm)
 	s, _ := json.MarshalIndent(sr, "", "    ")
 	w.Write(s)
@@ -121,7 +121,7 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 
 // 获取所有的Label列表
 func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("sqlite3", "./foo.db")
+	db, err := sql.Open("sqlite3", kConfig.DbPath())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -149,7 +149,7 @@ func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
 
 // 获取邮件列表
 func apiListHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("sqlite3", "./foo.db")
+	db, err := sql.Open("sqlite3", kConfig.DbPath())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -214,7 +214,7 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 			&email.Subject,
 			&email.Date)
 
-		evm := email.ToViewModel(kConfig.Dirs.Download, db)
+		evm := email.ToViewModel(kConfig.DownloadDir(), db)
 		emails = append(emails, evm)
 	}
 
@@ -258,7 +258,7 @@ func main() {
 	http.HandleFunc("/api/labels", addDefaultHeaders(apiLabelsHandler))
 
 	// 其它请求走静态文件
-	http.Handle("/", http.FileServer(http.Dir(kConfig.Dirs.Static)))
+	http.Handle("/", http.FileServer(http.Dir(kConfig.Dirs.Base)))
 	log.Println("Server started http://localhost:8765")
 	http.ListenAndServe(":8765", nil)
 }

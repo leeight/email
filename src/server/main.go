@@ -40,7 +40,7 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 		}
 
 		// 打开数据库
-		db, err := sql.Open("sqlite3", "./foo.db")
+		db, err := sql.Open("sqlite3", config.DbPath())
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -87,8 +87,9 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 			ioutil.WriteFile("raw/"+uidl+".txt", []byte(raw), 0644)
 			log.Printf("[ SAVE] %d -> raw/%s.txt\n", msg, uidl)
 
-			os.MkdirAll(path.Join(config.Dirs.Download, uidl), 0755)
-			email, err := base.NewMail([]byte(raw), path.Join(config.Dirs.Download, uidl))
+			os.MkdirAll(path.Join(config.DownloadDir(), uidl), 0755)
+			email, err := base.NewMail([]byte(raw),
+				path.Join(path.Base(config.DownloadDir()), uidl))
 			if err != nil {
 				log.Fatal(err)
 				continue
@@ -103,7 +104,7 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 			}
 
 			if filters != nil {
-				err = base.RunFilter(email, filters[:], config.Dirs.Raw, db)
+				err = base.RunFilter(email, filters[:], config.RawDir(), db)
 				if err != nil {
 					log.Fatal(err)
 				}
