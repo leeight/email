@@ -11,11 +11,12 @@ import (
 )
 
 func main() {
-	from, err := mail.ParseAddress(`=?utf-8?b?Q2FvLFBhbnBhbg==?= <caopanpan@baidu.com>`)
+	from, err := mail.ParseAddress(`"=?GB2312?B?0MK9qCDOxLG+zsS1tS50eHQ=?=" <chaoyanster@gmail.com>`)
 	if err != nil {
 		log.Panic(err)
 	}
-	log.Printf("%v", from)
+	log.Printf("%s, %s", from.Name, from.Address)
+	return
 
 	filters, err := base.GetFilters("filters.yml")
 	if err != nil {

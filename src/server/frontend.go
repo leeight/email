@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -21,6 +22,7 @@ var (
 	kConfig          *base.ServerConfig
 	kDefaultPageSize = 15
 	kDefaultPageNo   = 1
+	log              = base.NewLogger("frontend")
 )
 
 func getAddressList(value string) []*mail.Address {
@@ -81,7 +83,7 @@ func apiPostHandler(w http.ResponseWriter, r *http.Request) {
 func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("sqlite3", kConfig.DbPath())
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 	defer db.Close()
 
@@ -92,7 +94,7 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 			"FROM mails " +
 			"WHERE `id` = ?")
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 	defer stmt.Close()
 
@@ -110,7 +112,7 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 		&email.Message)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 
 	evm := email.ToViewModel(kConfig.DownloadDir(), db)
@@ -123,13 +125,13 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("sqlite3", kConfig.DbPath())
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 	defer db.Close()
 
 	rows, err := db.Query("SELECT `id`, `name` FROM tags ORDER BY `name`;")
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 
 	labels := make([]base.LabelType, 0)
@@ -137,7 +139,7 @@ func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
 		var label base.LabelType
 		err = rows.Scan(&label.Id, &label.Name)
 		if err != nil {
-			log.Fatal(err)
+			log.Warning("%s", err)
 			continue
 		}
 		labels = append(labels, label)
@@ -151,7 +153,7 @@ func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
 func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("sqlite3", kConfig.DbPath())
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 	defer db.Close()
 
@@ -185,17 +187,17 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 		sql += "WHERE `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ") "
 	}
 	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
-	log.Printf(sql)
+	log.Info(sql)
 	stmt, err := db.Prepare(sql)
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 	defer stmt.Close()
 
 	// 开始检索
 	rows, err := stmt.Query(skipCount, pageSize)
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
 	defer rows.Close()
 
@@ -226,9 +228,9 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = db.QueryRow(sql).Scan(&totalCount)
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 	}
-	log.Printf("%s, %d, %d, %d\n", sql, totalCount, skipCount, pageSize)
+	log.Info("%s, %d, %d, %d\n", sql, totalCount, skipCount, pageSize)
 
 	lpr := base.NewListResponse("true", totalCount, pageNo, pageSize, emails)
 	s, _ := json.MarshalIndent(lpr, "", "    ")
@@ -249,7 +251,17 @@ func addDefaultHeaders(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func main() {
-	kConfig, _ = base.GetConfig("config.yml")
+	configPtr := flag.String("config", "config.yml", "The config file path")
+	flag.Parse()
+
+	var err error
+	kConfig, err = base.GetConfig(*configPtr)
+	if err != nil {
+		log.Warning("%s", err)
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+		return
+	}
 
 	// 自定义的API
 	http.HandleFunc("/api/", addDefaultHeaders(apiListHandler))
@@ -259,6 +271,6 @@ func main() {
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(kConfig.Dirs.Base)))
-	log.Println("Server started http://localhost:8765")
+	log.Info("Server started http://localhost:8765")
 	http.ListenAndServe(":8765", nil)
 }

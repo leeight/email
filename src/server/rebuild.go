@@ -3,18 +3,21 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/op/go-logging"
 
 	"./base"
 )
 
-func rebuild(file string, db *sql.DB, downloadDir string, update bool) error {
+var log = logging.MustGetLogger("rebuild")
+
+func rebuild(file string, db *sql.DB, config *base.ServerConfig, update bool) error {
 	ext := path.Ext(file)
 	baseName := strings.Replace(file, ext, "", 1)
 	uidl := baseName
@@ -22,30 +25,31 @@ func rebuild(file string, db *sql.DB, downloadDir string, update bool) error {
 	// BEGIN 检查是否存在
 	var id int64 = -1
 	err := db.QueryRow("SELECT `id` FROM mails WHERE `uidl` = ?", uidl).Scan(&id)
-	if err != nil {
-		log.Fatal(err)
+	if err != nil && err != sql.ErrNoRows {
+		log.Warning("%s", err)
 		return err
 	}
 
 	if !update {
 		// 不是UPDATE，那么是INSERT，测试需要判断一下是否存在
 		if err == nil && id > 0 {
-			log.Printf("[FOUND] %s, id = %d\n", uidl, id)
+			log.Info("[FOUND] %s, id = %d\n", uidl, id)
 			return err
 		}
 	}
 	// END
 
-	raw, err := ioutil.ReadFile(path.Join("raw", file))
+	raw, err := ioutil.ReadFile(path.Join(config.RawDir(), file))
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 		return err
 	}
 
-	os.MkdirAll(path.Join(downloadDir, uidl), 0755)
-	email, err := base.NewMail(raw, path.Join(downloadDir, uidl))
+	os.MkdirAll(path.Join(config.DownloadDir(), uidl), 0755)
+	email, err := base.NewMail(raw,
+		path.Join(path.Base(config.DownloadDir()), uidl))
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 		return err
 	}
 
@@ -54,10 +58,10 @@ func rebuild(file string, db *sql.DB, downloadDir string, update bool) error {
 	email.Id = id
 	_, err = email.Store(db)
 	if err != nil {
-		log.Fatal(err)
+		log.Warning("%s", err)
 		return err
 	}
-	log.Printf("[ SAVE] %s\n", uidl)
+	log.Info("[ SAVE] %s\n", uidl)
 	return nil
 }
 
@@ -67,11 +71,14 @@ func rebuild(file string, db *sql.DB, downloadDir string, update bool) error {
 func main() {
 	// 参数解析
 	rawPtr := flag.String("raw", "", "The raw file path")
+	configPtr := flag.String("config", "config.yml", "The config file path")
 	flag.Parse()
 
-	config, err := base.GetConfig("config.yml")
+	config, err := base.GetConfig(*configPtr)
 	if err != nil {
-		log.Panic(err)
+		log.Warning("%s", err)
+		fmt.Fprintf(os.Stderr, "\nUsage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
 	}
 
 	// 打开数据库
@@ -85,7 +92,7 @@ func main() {
 	if *rawPtr != "" {
 		// 用户指定例如文件，例如
 		// rebuild -raw=raw/720375.txt
-		rebuild(path.Base(*rawPtr), db, config.DownloadDir(), true)
+		rebuild(path.Base(*rawPtr), db, config, true)
 	} else {
 		_, err = db.Exec("DELETE FROM `mails`")
 		if err != nil {
@@ -101,7 +108,7 @@ func main() {
 			if item.IsDir() {
 				continue
 			}
-			rebuild(item.Name(), db, config.DownloadDir(), false)
+			rebuild(item.Name(), db, config, false)
 		}
 	}
 }

@@ -47,11 +47,20 @@ func NewMail(raw []byte, downloadDir string) (*EMail, error) {
 	cd, _ := iconv.Open("utf-8", "gb2312")
 	defer cd.Close()
 
-	msg, _ := mail.ReadMessage(bytes.NewBuffer(raw))
+	msg, err := mail.ReadMessage(bytes.NewBuffer(raw))
+	if err != nil {
+		return nil, err
+	}
 
 	// 解析文档的类型
-	mediaType, params, err := mime.ParseMediaType(
-		msg.Header.Get(kContentType))
+	contentType := msg.Header.Get(kContentType)
+
+	// 如果没有文档类型的话，默认以text/plain来处理
+	if contentType == "" {
+		contentType = "text/plain; charset=\"utf-8\""
+	}
+
+	mediaType, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +79,7 @@ func NewMail(raw []byte, downloadDir string) (*EMail, error) {
 			reader = msg.Body
 		}
 
-		body, _ := decodeMesssageBody(reader, msg.Header.Get(kContentType))
+		body, _ := decodeMesssageBody(reader, contentType)
 		email.Message = string(body)
 	} else if strings.HasPrefix(mediaType, "multipart/") {
 		// 邮件里面可能有附件或者截图之类的东东
@@ -83,10 +92,14 @@ func NewMail(raw []byte, downloadDir string) (*EMail, error) {
 			if err != nil {
 				return nil, err
 			}
-			decodeMessageMultipart(part, &email, downloadDir)
+			err = decodeMessageMultipart(part, &email, downloadDir)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
+	// TODO(user) 这个日期格式需要改成可以配置的，否则解析会不正确的
 	date, _ := time.Parse("Mon, 2 Jan 2006 15:04:05 -0700",
 		msg.Header.Get(kDate))
 
@@ -131,11 +144,20 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir stri
 		body, _ := ioutil.ReadAll(reader)
 
 		// TODO(user) 文件名的确定方案
+		// "Content-ID"
+		// "X-Attachment-Id"
+		// Content-Disposition: attachment; filename="DSC_0541.JPG"
 		filename := part.Header.Get(kContentId)
 		filename = strings.Replace(filename, "<", "", 1)
 		filename = strings.Replace(filename, ">", "", 1)
+		if filename == "" {
+			filename = part.FileName()
+		}
 
-		ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
+		if filename != "" {
+			// log.Println(path.Join(downloadDir, filename))
+			ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
+		}
 	} else if part.Header.Get(kContentDisposition) != "" {
 		// 附件
 		body, _ := ioutil.ReadAll(reader)
@@ -165,7 +187,10 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir stri
 			if err != nil {
 				return err
 			}
-			decodeMessageMultipart(subpart, email, downloadDir)
+			err = decodeMessageMultipart(subpart, email, downloadDir)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
