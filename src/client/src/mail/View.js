@@ -33,8 +33,12 @@ define(function (require) {
 
         // 处理邮件正文内部链接的点击行为
         var view = this.view;
-        $('#mail-body a').click(function() {
+        $('#mail-body a, .list-summary-table a').click(function() {
             var node = this;
+            if (/javascript:/.test(node.href)) {
+                return;
+            }
+
             if (/^mailto:/.test(node.href)) {
                 util.composeMail(view, null, {
                     to: node.href.replace('mailto:', '')
@@ -71,12 +75,12 @@ define(function (require) {
             cc.push(mail.encodeAddress(item));
         });
         if (!/^(RE|回复)[:：]/i.test(email.subject)) {
-            subject = '回复:' + subject;
+            subject = '回复: ' + subject;
         }
 
         util.composeMail(this.view, '回复邮件', {
-            to: to.join(', '),
-            cc: cc.join(', '),
+            to: to.join('; '),
+            cc: cc.join('; '),
             subject: subject,
             message: message
         });
@@ -102,12 +106,12 @@ define(function (require) {
             cc.push(mail.encodeAddress(item));
         });
         if (!/^(RE|回复)[:：]/i.test(email.subject)) {
-            subject = '回复:' + subject;
+            subject = '回复: ' + subject;
         }
 
         util.composeMail(this.view, '回复邮件', {
-            to: to.join(', '),
-            cc: cc.join(', '),
+            to: to.join('; '),
+            cc: cc.join('; '),
             subject: subject,
             message: message
         });
@@ -134,7 +138,7 @@ define(function (require) {
             '<br><br>\n' + email.message + '';
 
         if (!/^(Fwd|转发)[:：]/i.test(email.subject)) {
-            subject = '转发:' + subject;
+            subject = '转发: ' + subject;
         }
 
         util.composeMail(this.view, '转发邮件', {

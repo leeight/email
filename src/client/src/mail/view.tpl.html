@@ -15,7 +15,7 @@
                 <tr>
                   <th>发件人：</th>
                   <td>
-                    <a href="#/mail/compose~to=${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
+                    <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
                     &nbsp;|&nbsp;
                     <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
                     &nbsp;|&nbsp;
@@ -29,7 +29,7 @@
                   <th>收件人：</th>
                   <td>
                     <!-- for: ${email.to} as ${item}, ${index} -->
-                    <a href="#/mail/compose~to=${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -39,7 +39,7 @@
                   <th>抄送：</th>
                   <td>
                     <!-- for: ${email.cc} as ${item}, ${index} -->
-                    <a href="#/mail/compose~to=${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
@@ -49,7 +49,7 @@
                   <th>密送：</th>
                   <td>
                     <!-- for: ${email.bcc} as ${item}, ${index} -->
-                    <a href="#/mail/compose~to=${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
                     <!-- /for -->
                   </td>
                 </tr>
