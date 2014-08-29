@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 
+	"code.google.com/p/go.net/publicsuffix"
 	"gopkg.in/yaml.v1"
 
 	"./base"
@@ -11,6 +13,15 @@ import (
 )
 
 func main() {
+	domain, _ := publicsuffix.EffectiveTLDPlusOne("email.baidu.com")
+	log.Printf("Domain = %s\n", domain)
+
+	host, port, err := net.SplitHostPort("email.baidu.com:")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("host = [%s], port = [%s]\n", host, port)
+
 	from, err := mail.ParseAddress(`"=?GB2312?B?0MK9qCDOxLG+zsS1tS50eHQ=?=" <chaoyanster@gmail.com>`)
 	if err != nil {
 		log.Panic(err)

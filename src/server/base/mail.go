@@ -40,7 +40,7 @@ var (
 
 // 从邮件的正文中创建一个邮件对象 EMail 然后存储到
 // sqlite里面去
-func NewMail(raw []byte, downloadDir string) (*EMail, error) {
+func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	var email EMail
 
 	// 编码转化函数
@@ -92,7 +92,7 @@ func NewMail(raw []byte, downloadDir string) (*EMail, error) {
 			if err != nil {
 				return nil, err
 			}
-			err = decodeMessageMultipart(part, &email, downloadDir)
+			err = decodeMessageMultipart(part, &email, downloadDir, prefix)
 			if err != nil {
 				return nil, err
 			}
@@ -116,7 +116,7 @@ func NewMail(raw []byte, downloadDir string) (*EMail, error) {
 	return &email, nil
 }
 
-func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir string) error {
+func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, prefix string) error {
 	contentType := part.Header.Get(kContentType)
 	contentTransferEncoding := part.Header.Get(kContentTransferEncoding)
 
@@ -136,7 +136,7 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir stri
 
 		// XXX(user) src="cid:d3b11fe4b395a6995fcdb51988247200.png"
 		var r = regexp.MustCompile(`src="cid:([^"]+)"`)
-		body = r.ReplaceAll(body, []byte("src=\""+downloadDir+"/$1\""))
+		body = r.ReplaceAll(body, []byte("src=\""+prefix+"/$1\""))
 
 		email.Message = string(body)
 	} else if strings.HasPrefix(contentType, "image/") {
@@ -187,7 +187,7 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir stri
 			if err != nil {
 				return err
 			}
-			err = decodeMessageMultipart(subpart, email, downloadDir)
+			err = decodeMessageMultipart(subpart, email, downloadDir, prefix)
 			if err != nil {
 				return err
 			}

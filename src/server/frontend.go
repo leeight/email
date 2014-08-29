@@ -64,7 +64,7 @@ func apiPostHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(string(raw))
 
 	// 开始发送邮件
-	smtpserver := kConfig.Smtp.Hostname
+	smtpserver := kConfig.Smtp.GetHostName()
 	tls := kConfig.Smtp.Tls
 	auth := base.LoginAuth(kConfig.Smtp.Username, kConfig.Smtp.Password)
 
@@ -271,6 +271,6 @@ func main() {
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(kConfig.Dirs.Base)))
-	log.Info("Server started http://localhost:8765")
-	http.ListenAndServe(":8765", nil)
+	log.Info("Server started http://localhost:" + strconv.Itoa(kConfig.Http.Port))
+	http.ListenAndServe(":"+strconv.Itoa(kConfig.Http.Port), nil)
 }

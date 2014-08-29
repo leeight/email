@@ -41,7 +41,7 @@ func main() {
 	// return
 
 	// setup the remote smtpserver & auth info
-	smtpserver := config.Smtp.Hostname
+	smtpserver := config.Smtp.GetHostName()
 	tls := config.Smtp.Tls
 	auth := base.LoginAuth(config.Smtp.Username, config.Smtp.Password)
 

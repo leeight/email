@@ -23,7 +23,7 @@ func StripUnnecessaryTags(html []byte) []byte {
 	}
 
 	// 删除 <!--[if 和 <![endif]--> 之间的内容
-	p2 := regexp.MustCompile(`(?si)((<!--\[if.*endif\]-->)|(<style>.*</style>))`)
+	p2 := regexp.MustCompile(`(?si)((<!--\[if.*endif\]-->)|(<style[^>]*>.*</style>))`)
 	html = p2.ReplaceAll(html, []byte(""))
 
 	return html

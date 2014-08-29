@@ -31,7 +31,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	email, err := base.NewMail(raw, kDownloadDir)
+	email, err := base.NewMail(raw, kDownloadDir, "test/downloads")
 	if err != nil {
 		log.Fatal(err)
 	}

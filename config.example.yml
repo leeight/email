@@ -1,15 +1,17 @@
+http:
+  port: 8765
+
 pop3:
   username: liyubei
   password: password
-  hostname: email.baidu.com:995
+  host: email.baidu.com
+  port: 995
   tls: true
   interval: 60
 
 smtp:
   username: internal\liyubei
   password: password
-  hostname: email.baidu.com:25
+  host: email.baidu.com
+  port: 25
   tls: true
-
-dirs:
-  base: data/baidu.com/liyubei

@@ -26,7 +26,7 @@ exports.dumpAddress = function (addresses) {
             dump.push('"' + item.name + '"' + ' &lt;' + item.address + '&gt;');
         }
         else {
-            dump.push(item.addresses);
+            dump.push(item.address);
         }
     });
     return dump.join(', ');

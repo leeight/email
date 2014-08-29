@@ -26,9 +26,9 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 		var client *pop3.Client
 		var err error
 		if config.Pop3.Tls {
-			client, err = pop3.DialTLS(config.Pop3.Hostname)
+			client, err = pop3.DialTLS(config.Pop3.GetHostName())
 		} else {
-			client, err = pop3.Dial(config.Pop3.Hostname)
+			client, err = pop3.Dial(config.Pop3.GetHostName())
 		}
 		if err != nil {
 			log.Warning("%s", err)
@@ -86,9 +86,10 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 				[]byte(raw), 0644)
 			log.Info("[ SAVE] %d -> %s/%s.txt\n", msg, config.RawDir(), uidl)
 
-			os.MkdirAll(path.Join(config.DownloadDir(), uidl), 0755)
-			email, err := base.NewMail([]byte(raw),
-				path.Join(path.Base(config.DownloadDir()), uidl))
+			downloadDir := path.Join(config.DownloadDir(), uidl)
+			prefix := path.Join(path.Base(config.DownloadDir()), uidl)
+			os.MkdirAll(downloadDir, 0755)
+			email, err := base.NewMail([]byte(raw), downloadDir, prefix)
 			if err != nil {
 				log.Warning("%s", err)
 				continue

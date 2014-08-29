@@ -105,7 +105,7 @@ define(function (require) {
         u.each(email.cc || [], function(item){
             cc.push(mail.encodeAddress(item));
         });
-        if (!/^(RE|回复)[:：]/i.test(email.subject)) {
+        if (!/^(RE|回复|答复)[:：]/i.test(email.subject)) {
             subject = '回复: ' + subject;
         }
 

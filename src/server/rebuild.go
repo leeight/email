@@ -45,9 +45,10 @@ func rebuild(file string, db *sql.DB, config *base.ServerConfig, update bool) er
 		return err
 	}
 
-	os.MkdirAll(path.Join(config.DownloadDir(), uidl), 0755)
-	email, err := base.NewMail(raw,
-		path.Join(path.Base(config.DownloadDir()), uidl))
+	downloadDir := path.Join(config.DownloadDir(), uidl)
+	prefix := path.Join(path.Base(config.DownloadDir()), uidl)
+	os.MkdirAll(downloadDir, 0755)
+	email, err := base.NewMail(raw, downloadDir, prefix)
 	if err != nil {
 		log.Warning("%s", err)
 		return err
