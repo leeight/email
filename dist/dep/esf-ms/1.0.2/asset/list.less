@@ -1,0 +1,280 @@
+
+// variable: 列表 header区域 相关
+@sys-list-header-background: #e5eafa;
+@sys-list-header-margin: 0;
+@sys-list-header-padding: 10px;
+@sys-list-header-border-width: 1px;
+@sys-list-header-border-style: solid;
+@sys-list-header-border-color: #ddd;
+
+
+// variable: 列表 功能块区域 相关
+@sys-list-functional-block-background: false;
+@sys-list-functional-block-padding: 10px;
+@sys-list-functional-block-margin: 0;
+@sys-list-functional-block-border-width: 0 1px 1px;
+@sys-list-functional-block-border-style: solid;
+@sys-list-functional-block-border-color: #ddd;
+
+
+// variable: 列表 数据概况汇总区域 相关
+@sys-list-summary-float: right;
+@sys-list-summary-margin: 0;
+@sys-list-summary-padding: 0;
+@sys-list-summary-border-width: 0;
+@sys-list-summary-border-color: #e8e8e8;
+@sys-list-summary-border-style: solid;
+
+// variable: 列表 数据概况汇总区域 概况项 相关
+@sys-list-summary-item-float: left;
+@sys-list-summary-item-title-color: #999;
+@sys-list-summary-item-info-color: #333;
+@sys-list-summary-item-info-font-size: 18px;
+@sys-list-summary-item-width: 80px;
+
+// variable: 列表 时间区间筛选 相关
+@sys-list-date-range-float: left;
+@sys-list-date-range-margin: 0;
+@sys-list-date-range-padding: 0;
+
+// variable: 列表 tab导航 相关
+@sys-list-functional-tab-margin: 10px 0 0 0;
+@sys-list-functional-tab-padding: 0;
+@sys-list-functional-tab-border-width: 0 0 1px;
+@sys-list-functional-tab-border-color: #ddd;
+@sys-list-functional-tab-border-style: solid;
+
+// variable: 列表 tab导航 数据项 相关
+@sys-list-tab-item-height: 28px;
+@sys-list-tab-item-font-size: 14px;
+@sys-list-tab-item-color: #636F88;
+@sys-list-tab-item-color-active: #333;
+@sys-list-tab-item-padding: 0 12px;
+@sys-list-tab-item-margin: 0 6px 0 0;
+@sys-list-tab-item-has-border: true;
+@sys-list-tab-item-border-color: #ced9e8;
+@sys-list-tab-item-border-color-active: #ddd;
+@sys-list-tab-item-border-radius: 5px 5px 0 0;
+@sys-list-tab-item-bg-gradient: true;
+@sys-list-tab-item-bg-top-color: #f2f6ff;
+@sys-list-tab-item-bg-bottom-color: #eaf1f9;
+@sys-list-tab-item-bg-top-color-active: #f9f9f9;
+@sys-list-tab-item-bg-bottom-color-active: #f9f9f9;
+@sys-list-tab-item-active-sink: 1px;
+
+
+// variable: 列表 操作区域 相关
+@sys-list-operator-margin: 0;
+@sys-list-operator-padding: 10px 8px;
+@sys-list-operator-border-width: 0 1px;
+@sys-list-operator-border-color: #ddd;
+@sys-list-operator-border-style: solid;
+@sys-list-operator-background: #f9f9f9;
+@sys-list-operator-gap: 3px;
+
+// variable: 列表 表格 相关
+// 这里可设置的项比较少，定义更多的列表样式可以重定义ui相关样式
+@sys-list-table-border-color: #ddd;
+@sys-list-table-head-background: #f9f9f9;
+
+// variable: 列表 页信息条 相关
+@sys-list-page-info-margin: 0;
+@sys-list-page-info-padding: 5px;
+@sys-list-page-info-border-width: 0 1px 1px;
+@sys-list-page-info-border-color: #ddd;
+@sys-list-page-info-border-style: solid;
+@sys-list-page-info-background: #f9f9f9;
+
+
+// --------- 下面是具体样式定义 --------
+
+
+.list-header {
+    background: @sys-list-header-background;
+    .sysm-margin-padding-border(
+        @sys-list-header-margin,
+        @sys-list-header-padding,
+        @sys-list-header-border-width,
+        @sys-list-header-border-style,
+        @sys-list-header-border-color
+    );
+}
+
+
+.list-functional-block {
+    .clearfix();
+    .sysm-background(@sys-list-functional-block-background);
+    .sysm-margin-padding-border(
+        @sys-list-functional-block-margin,
+        @sys-list-functional-block-padding,
+        @sys-list-functional-block-border-width,
+        @sys-list-functional-block-border-style,
+        @sys-list-functional-block-border-color
+    );
+}
+
+
+.list-summary {
+    .sysm-float(@sys-list-summary-float);
+    .sysm-margin-padding-border(
+        @sys-list-summary-margin,
+        @sys-list-summary-padding,
+        @sys-list-summary-border-width,
+        @sys-list-summary-border-style,
+        @sys-list-summary-border-color
+    );
+
+    li {
+        .sysm-float(@sys-list-summary-item-float);
+        .sysm-width(@sys-list-summary-item-width);
+    }
+}
+
+
+.list-summary-item-info {
+    font-size: @sys-list-summary-item-info-font-size;
+    color: @sys-list-summary-item-info-color;
+    display: block;
+}
+
+
+.list-summary-item-title {
+    color: @sys-list-summary-item-title-color;
+    display: block;
+}
+
+
+.list-date-range {
+    .sysm-float(@sys-list-date-range-float);
+    margin: @sys-list-date-range-margin;
+    padding: @sys-list-date-range-padding;
+}
+
+
+.list-functional-tab {
+    .sysm-margin-padding-border(
+        @sys-list-functional-tab-margin,
+        @sys-list-functional-tab-padding,
+        @sys-list-functional-tab-border-width,
+        @sys-list-functional-tab-border-style,
+        @sys-list-functional-tab-border-color
+    );
+
+    .ui-tab-navigator {
+        border: 0;
+        position: relative;
+        top: 1px;
+        overflow: visible;
+        height: @sys-list-tab-item-height;
+    }
+}
+
+
+.sysm-list-tab-item-border(@has-border, @color) when (@has-border = false) {
+    border-width: 0;
+}
+.sysm-list-tab-item-border(@has-border, @color) when not (@has-border = false) {
+    border-width: 1px 1px 0;
+    border-color: @color;
+}
+
+.list-functional-tab .ui-tab-navigator .ui-tab-item {
+    .box-sizing(content-box);
+    .border-radius(@sys-list-tab-item-border-radius);
+    .sysm-background-top-linear(
+        @sys-list-tab-item-bg-gradient, 
+        @sys-list-tab-item-bg-top-color, 
+        @sys-list-tab-item-bg-bottom-color
+    );
+
+    .sysm-list-tab-item-height(@has-border) when (@has-border = false) {
+        height: @sys-list-tab-item-height - 1px;
+        line-height: @sys-list-tab-item-height - 1px;
+    }
+    .sysm-list-tab-item-height(@has-border) when not (@has-border = false) {
+        height: @sys-list-tab-item-height - 2px;
+        line-height: @sys-list-tab-item-height - 2px;
+    }
+    .sysm-list-tab-item-height(@sys-list-tab-item-has-border);
+    font-size: @sys-list-tab-item-font-size;
+    font-weight: bold;
+    color: @sys-list-tab-item-color;
+    .sysm-padding(@sys-list-tab-item-padding);
+    .sysm-margin(@sys-list-tab-item-margin);
+
+    
+    .sysm-list-tab-item-border(
+        @sys-list-tab-item-has-border, 
+        @sys-list-tab-item-border-color
+    );
+    border-bottom: 1px solid @sys-list-functional-tab-border-color;
+}
+
+
+.list-functional-tab .ui-tab-navigator .ui-tab-item-active {
+    .sysm-background-top-linear(
+        @sys-list-tab-item-bg-gradient, 
+        @sys-list-tab-item-bg-top-color-active, 
+        @sys-list-tab-item-bg-bottom-color-active
+    );
+    color: @sys-list-tab-item-color-active;
+
+    .sysm-list-tab-item-active-sink(@sink) when not (@sink = false) {
+        border-bottom: 1px solid @sys-list-tab-item-bg-bottom-color-active;
+    }
+    .sysm-list-tab-item-border(
+        @sys-list-tab-item-has-border, 
+        @sys-list-tab-item-border-color-active
+    );
+    .sysm-list-tab-item-active-sink(@sys-list-tab-item-active-sink);
+}
+
+
+.list-operator {
+    .sysm-background(@sys-list-operator-background);
+    .sysm-margin-padding-border(
+        @sys-list-operator-margin,
+        @sys-list-operator-padding,
+        @sys-list-operator-border-width,
+        @sys-list-operator-border-style,
+        @sys-list-operator-border-color
+    );
+
+    .ui-commandmenu,
+    .ui-button,
+    .ui-select {
+        .inline-block();
+        margin-right: @sys-list-operator-gap;
+    }
+}
+
+
+.ui-table .ui-table-head table,
+.ui-table .ui-table-body table,
+.ui-table .ui-table-foot table,
+.ui-table .ui-table-head,
+.ui-table .ui-table-body,
+.ui-table .ui-table-foot,
+.ui-table .ui-table-cell,
+.ui-table .ui-table-hcell,
+.ui-table .ui-table-row {
+    border-color: @sys-list-table-border-color;
+}
+
+
+.ui-table .ui-table-head {
+    .sysm-background(@sys-list-table-head-background);
+}
+
+.ui-pager {
+    .sysm-background(@sys-list-page-info-background);
+    .sysm-margin-padding-border(
+        @sys-list-page-info-margin,
+        @sys-list-page-info-padding,
+        @sys-list-page-info-border-width,
+        @sys-list-page-info-border-style,
+        @sys-list-page-info-border-color
+    );
+}
+
+

@@ -1,0 +1,45 @@
+
+// variable: 版权信息相关
+@sys-copyright-color: #999;
+@sys-copyright-margin: 30px 0 0 0;
+@sys-copyright-padding: 4px 0 0 0;
+@sys-copyright-border-width: 1px 0 0;
+@sys-copyright-border-style: solid;
+@sys-copyright-border-color: #EDEDED;
+@sys-copyright-line-height: 20px;
+@sys-copyright-link-color: #999;
+@sys-copyright-link-underline: true;
+
+
+
+
+// --------- 下面是具体样式定义 --------
+
+.copyright {
+    .sysm-margin-padding-border(
+        @sys-copyright-margin,
+        @sys-copyright-padding,
+        @sys-copyright-border-width,
+        @sys-copyright-border-style,
+        @sys-copyright-border-color
+    );
+    .sysm-color(@sys-copyright-color);
+    .sysm-line-height(@sys-copyright-line-height);
+
+    a:link, 
+    a:visited, 
+    a:hover, 
+    a:active {
+        .sysm-color(@sys-copyright-link-color);
+
+        .sysm-copyright-link-underline(@has) when (@has = true) {
+            text-decoration: underline;
+        }
+        .sysm-copyright-link-underline(@has) when (@has = false) {
+            text-decoration: none;
+        }
+        .sysm-copyright-link-underline(@sys-copyright-link-underline);
+    }
+}
+
+

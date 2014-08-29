@@ -1,0 +1,105 @@
+
+// margin设置
+.sysm-margin(@margin) when not (@margin = 0) {
+    margin: @margin;
+}
+
+// padding设置
+.sysm-padding(@padding) when not (@padding = 0) {
+    padding: @padding;
+}
+
+// margin/padding/border 设置
+.sysm-margin-padding-border(
+    @margin,
+    @padding,
+    @border-width,
+    @border-style,
+    @border-color
+) {
+    .sysm-margin(@margin);
+    .sysm-padding(@padding);
+}
+
+.sysm-margin-padding-border(
+    @margin,
+    @padding,
+    @border-width,
+    @border-style,
+    @border-color
+) 
+    when (@border-width = 0)
+{
+    border: 0;
+}
+
+.sysm-margin-padding-border(
+    @margin,
+    @padding,
+    @border-width,
+    @border-style,
+    @border-color
+) 
+    when not (@border-width = 0) and not (@border-width = false)
+{
+    border-width: @border-width;
+    border-style: @border-style;
+    border-color: @border-color;
+}
+
+// 宽度设置
+.sysm-width(@length) when not (@length = false) {
+    width: @length;
+}
+
+// 高度设置
+.sysm-height(@length) when not (@length = false) {
+    height: @length;
+}
+
+// 字体颜色设置
+.sysm-color(@color) when not (@color = false) {
+    color: @color;
+}
+
+// 字体大小设置
+.sysm-font-size(@size) when not (@size = false) {
+    font-size: @size;
+}
+
+// 字体设置
+.sysm-font-family(@family) when not (@family = false) {
+    font-family: @family;
+}
+
+// 字体行高设置
+.sysm-line-height(@length) when not (@length = false) {
+    line-height: @length;
+}
+
+// 浮动设置
+.sysm-float(@float) when not (@float = false) {
+    float: @float;
+}
+
+
+// 背景值设置
+.sysm-background(@bg) when not (@bg = false) {
+    background: @bg;
+}
+
+
+// 设置至上而下的线性渐变背景
+.sysm-background-top-linear(@gradient,@top-color,@bottom-color) {
+    background: average(@top-color, @bottom-color);
+}
+.sysm-background-top-linear(@gradient,@top-color,@bottom-color) 
+    when (@gradient = true) 
+{ 
+    background: -webkit-linear-gradient(top,@top-color,@bottom-color);
+    background: -moz-linear-gradient(top,@top-color,@bottom-color);
+    background: -ms-linear-gradient(top,@top-color,@bottom-color);
+    background: -o-linear-gradient(top,@top-color,@bottom-color);
+}
+
+

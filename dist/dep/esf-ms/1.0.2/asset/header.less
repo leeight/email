@@ -1,0 +1,164 @@
+
+// variable: header主区域相关
+@sys-header-background-color: #264597;
+@sys-header-background-image: false;
+// @sys-header-background-image: "img/header-bg.jpg";
+@sys-header-height: 50px;
+
+// variable: logo相关
+@sys-logo-width: 98px;
+@sys-logo-height: 32px;
+@sys-logo-margin: 11px 0 0 14px;
+
+// variable: 主导航条相关
+@sys-nav-left-gap: 20px;
+@sys-nav-height: 29px;
+@sys-nav-item-border-top-length: 1px;
+@sys-nav-item-border-top-color: #79a3ff;
+@sys-nav-item-border-top-color-current: #fff;
+@sys-nav-font-size: 14px;
+@sys-nav-item-gap: 5px;
+@sys-nav-item-padding: 0 12px;
+@sys-nav-item-radius: 3px 3px 0 0;
+@sys-nav-item-color: #fff;
+@sys-nav-item-color-current: #333;
+@sys-nav-item-underline: false;
+@sys-nav-item-bg-gradient: true;
+@sys-nav-item-bg-top-color: #5581e5;
+@sys-nav-item-bg-bottom-color: #4770c7;
+@sys-nav-item-bg-top-color-current: #eaeaea;
+@sys-nav-item-bg-bottom-color-current: #fafafa;
+
+// variable: 用户信息相关
+@sys-userinfo-right: 14px;
+@sys-userinfo-top: 6px;
+@sys-userinfo-color: #ededed;
+@sys-userinfo-seperator-color: #eee;
+@sys-userinfo-seperator-width: 1px;
+@sys-userinfo-username-bold: true;
+@sys-userinfo-item-padding: 0 10px;
+
+
+// --------- 下面是具体样式定义 --------
+
+.logo {
+    float: left;
+    margin: @sys-logo-margin;
+    width: @sys-logo-width;
+    height: @sys-logo-height;
+}
+
+.header {
+    position: relative;
+
+    .sysm-header-background(@color, @img) when (@img = false) {
+        background: @color;
+    }
+    .sysm-header-background(@color, @img) when (isstring(@img)) {
+        background: @color url(@img) top right no-repeat;
+    }
+
+    .sysm-header-background(
+        @sys-header-background-color,
+        @sys-header-background-image
+    );
+    height: @sys-header-height;
+}
+
+.nav {
+    margin-top: @sys-header-height - @sys-nav-height;
+    margin-left: @sys-nav-left-gap;
+    float: left;
+}
+
+.nav li {
+    float: left;
+
+    .sysm-nav-item-border-radius(@radius) 
+        when not (@radius = false)
+    {
+         .border-radius(@radius);
+    }
+    .sysm-nav-item-border-radius(@sys-nav-item-radius);
+
+    border-top: @sys-nav-item-border-top-length solid @sys-nav-item-border-top-color;
+    font-size: @sys-nav-font-size;
+    height: @sys-nav-height - @sys-nav-item-border-top-length;
+    line-height: @sys-nav-height;
+    margin-right: @sys-nav-item-gap;
+
+    .sysm-background-top-linear(
+        @sys-nav-item-bg-gradient, 
+        @sys-nav-item-bg-top-color, 
+        @sys-nav-item-bg-bottom-color
+    );
+}
+
+.nav .nav-item-current {
+    border-top: @sys-nav-item-border-top-length solid @sys-nav-item-border-top-color-current;
+
+    .sysm-background-top-linear(
+        @sys-nav-item-bg-gradient, 
+        @sys-nav-item-bg-top-color-current, 
+        @sys-nav-item-bg-bottom-color-current
+    );
+}
+
+.nav a,
+.nav a:link,
+.nav a:visited,
+.nav a:hover,
+.nav a:active {
+    display:block;
+
+    padding: @sys-nav-item-padding;
+    color: @sys-nav-item-color;
+
+    .sysm-nav-item-underline(@has) when (@has = true) {
+        text-decoration: underline;
+    }
+    .sysm-nav-item-underline(@has) when (@has = false) {
+        text-decoration: none;
+    }
+    .sysm-nav-item-underline(@sys-nav-item-underline);
+}
+
+.nav .nav-item-current a,
+.nav .nav-item-current a:link,
+.nav .nav-item-current a:visited,
+.nav .nav-item-current a:hover,
+.nav .nav-item-current a:active {
+    color: @sys-nav-item-color-current;
+}
+
+.user-info {
+    position: absolute;
+    top: @sys-userinfo-top;
+    right: @sys-userinfo-right;
+}
+
+.user-info li {
+    float: left;
+    padding: @sys-userinfo-item-padding;
+    border-left: @sys-userinfo-seperator-width solid @sys-userinfo-seperator-color;
+}
+
+.user-info a,
+.user-info a:link,
+.user-info a:visited,
+.user-info a:hover,
+.user-info a:active {
+    color: @sys-userinfo-color;
+    text-decoration: none;
+}
+
+.user-info .user-name {
+    border-left: 0;
+
+    .sysx-userinfo-username-bold(@isBold) when (@isBold = true) {
+        font-weight: bold;
+    }
+    .sysx-userinfo-username-bold(@sys-userinfo-username-bold);
+}
+
+

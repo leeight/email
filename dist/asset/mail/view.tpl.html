@@ -1,0 +1,83 @@
+<!-- target: TPL_mail_view -->
+<div class="mail-view">
+    <div class="mail-subject">
+        <h2>${email.subject}</h2>
+        <a href="#/mail/inbox">Inbox</a>
+        <!-- if: ${email.labels} -->
+            <!-- for: ${email.labels} as ${item} -->
+            <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+            <!-- /for -->
+        <!-- /if -->
+    </div>
+    <div class="list-header">
+        <div class="list-summary">
+            <table class="list-summary-table">
+                <tr>
+                  <th>发件人：</th>
+                  <td>
+                    <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
+                    &nbsp;|&nbsp;
+                    <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
+                    &nbsp;|&nbsp;
+                    <a data-ui-type="Link" data-ui-id="replyAll" href="javascript:void(0)">全部回复</a>
+                    &nbsp;|&nbsp;
+                    <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
+                  </td>
+                </tr>
+                <!-- if: ${email.to} -->
+                <tr>
+                  <th>收件人：</th>
+                  <td>
+                    <!-- for: ${email.to} as ${item}, ${index} -->
+                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                    <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
+                <!-- if: ${email.cc} -->
+                <tr>
+                  <th>抄送：</th>
+                  <td>
+                    <!-- for: ${email.cc} as ${item}, ${index} -->
+                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                    <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
+                <!-- if: ${email.bcc} -->
+                <tr>
+                  <th>密送：</th>
+                  <td>
+                    <!-- for: ${email.bcc} as ${item}, ${index} -->
+                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                    <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
+                <tr>
+                  <th>日期：</th>
+                  <td>${email.date}</td>
+                </tr>
+                <tr>
+                  <th>源文件：</th>
+                  <td>
+                    <a href="http://127.0.0.1:8765/raw/${uidl}.txt" target="_blank">查看</a>
+                  </td>
+                </tr>
+                <!-- if: ${email.attachments.length} -->
+                <tr>
+                  <th>附件：</th>
+                  <td>
+                      <!-- for: ${email.attachments} as ${item}, ${index} -->
+                      <a href="http://127.0.0.1:8765/downloads/${uidl}/${item}" target="_blank">${item}</a>&nbsp;&nbsp;
+                      <!-- /for -->
+                  </td>
+                </tr>
+                <!-- /if -->
+            </table>
+        </div>
+    </div>
+    <div class="mail-body" id="mail-body">
+      ${email.message|raw}
+    </div>
+</div>

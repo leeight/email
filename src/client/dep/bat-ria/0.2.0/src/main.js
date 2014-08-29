@@ -34,8 +34,8 @@ define(
             var Deferred = require('er/Deferred');
 
             return Deferred.all(
-                Deferred.when(config.api.user()),
-                Deferred.when(config.api.constants())
+                // Deferred.when(config.api.user()),
+                // Deferred.when(config.api.constants())
             );
         }
 
@@ -96,7 +96,7 @@ define(
 
             // 读取必要信息后初始化系统
             return loadData()
-                .then(initData)
+                // .then(initData)
                 .then(init);
         }
 

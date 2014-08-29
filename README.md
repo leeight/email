@@ -1,51 +1,46 @@
-nodejs 还是 golang 呢？
+部署的方式
 
-如果使用 golang，可以顺便熟悉这种语言，而且 golang 内置了 smtp 的库，不需要依赖第三方的东东了
+## 环境准备
 
-发送邮件：<http://golang.org/pkg/net/smtp/>
+1. 安装 [golang](http://golang.org)
+2. 检出依赖代码 `git clone http://gitlab.baidu.com/liyubei/gopath.git`
+3. 设置环境变量 `export GOPATH=$(pwd)/gopath`
+4. 检出项目代码 `git clone http://gitlab.baidu.com/baidu/email.git`
 
-解析邮件的内容（支持附件么？）：<http://golang.org/pkg/net/mail/>
+## 项目BUILD
 
-
-数据结构的设计：
+### 预编译依赖的模块
 
 ```
-  Thread
-    Message 1
-    Message 2
-    ...
-    Message N
-
-  Message
-    List<Header>
-    Body
-    List<Attachment>
-
-  Header
-    Key
-    Value
-
-  Raw
+go install github.com/qiniu/iconv
+go install github.com/op/go-logging
+go install github.com/alexcesaro/mail/quotedprintable
+go install github.com/mattn/go-sqlite3
+go install github.com/bytbox/go-pop3
+go install code.google.com/p/go.net/publicsuffix
+go install gopkg.in/yaml.v1
 ```
 
-这些字段是干啥的？
+### 编译项目的模块
 
-1. Message-Id
-2. Thread-Topic
-3. Thread-Index
+```
+cd email && make -C src/server
+```
 
+## 启动服务
 
-一些规范的阅读
+### 邮件收取
 
-1. rfc 2045
-2. rfc 2047
-3. http://en.wikipedia.org/wiki/Post_Office_Protocol
-4. http://support.microsoft.com/kb/216366/en-us
-5. http://www.faqs.org/rfcs/rfc1939.html
-6. http://en.wikipedia.org/wiki/SMTP_Authentication
-7. http://kb.mozillazine.org/How_do_I_check_for_new_messages_in_other_folders
-8. msgFilterRules.dat：<http://kb.mozillazine.org/Message_Filters>
-9. http://wiki.babel.baidu.com/twiki/bin/view/Com/Client/POP%E5%8D%8F%E8%AE%AE%E5%92%8CIMAP%E5%8D%8F%E8%AE%AE
+将`email/config.example.yml`复制为`config.yml`，然后把用户名和密码替换为你的账户即可。
 
-如果要通过POP3下载所有的邮件，需要一批一批的下载，STAT Command只会返回一部分的内容。
-下载完毕之后，执行QUIT，然后开启新的Session，继续下载。参考：<http://markmail.org/message/ezkomyyw6vjiznrt#query:+page:1+mid:ezkomyyw6vjiznrt+state:results>
+需要注意的是`smtp`部分的用户名是`internal\username`，不是`username`
+
+配置更新之后，执行 `bin/main` 即可，此时会自动创建 `data/baidu.com/username` 目录来存放收取的邮件或者解析出来的附件
+
+第一次收取邮件花费的时间比较久，请耐心等待
+
+### 邮件浏览
+
+邮件收取完毕之后，把`dist`目录的内容全部拷贝到`data/baidu.com/username`下面，然后执行 `bin/frontend` 就可以启动webserver来查看数据了。
+
+正常启动之后，可以通过 <http://localhost:8765/index.html#/mail/inbox> 来查看邮件
