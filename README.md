@@ -5,7 +5,7 @@
 1. 安装 [golang](http://golang.org)
 2. 检出依赖代码 `git clone http://gitlab.baidu.com/liyubei/gopath.git`
 3. 设置环境变量 `export GOPATH=$(pwd)/gopath`
-4. 检出项目代码 `git clone http://gitlab.baidu.com/baidu/email.git`
+4. 检出项目代码 `git clone http://gitlab.baidu.com/baidu/email.git && git checkout 0.0.1-alpha.1`
 
 ## 项目BUILD
 
