@@ -16,6 +16,8 @@ define(
         function requireConfigs() {
             require('../mail/config');
             require('../dev/config');
+
+            require('ui/MailAddressInput');
         }
 
         requireConfigs();

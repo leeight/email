@@ -56,7 +56,12 @@ define(function (require) {
      * @inheritDoc
      */
     MailComposeView.prototype.uiProperties = {
-
+        cc: {
+            value: '@cc'
+        },
+        to: {
+            value: '@to'
+        }
     };
 
     /**

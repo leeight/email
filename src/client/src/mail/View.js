@@ -66,21 +66,22 @@ define(function (require) {
         var message = '<br>' +
             'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
             '<br><blockquote>\n' + email.message + '\n</blockquote>';
-        var to = [ mail.encodeAddress(email.from) ];
+        var to = [ email.from ];
         var cc = [];
         u.each(email.to || [], function(item){
-            cc.push(mail.encodeAddress(item));
+            cc.push(item);
         });
         u.each(email.cc || [], function(item){
-            cc.push(mail.encodeAddress(item));
+            cc.push(item);
         });
         if (!/^(RE|回复)[:：]/i.test(email.subject)) {
             subject = '回复: ' + subject;
         }
 
+        console.log(to);
         util.composeMail(this.view, '回复邮件', {
-            to: to.join('; '),
-            cc: cc.join('; '),
+            to: to,
+            cc: cc,
             subject: subject,
             message: message
         });
@@ -97,21 +98,21 @@ define(function (require) {
         var message = '<br>' +
             'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
             '<br><blockquote>\n' + email.message + '\n</blockquote>';
-        var to = [ mail.encodeAddress(email.from) ];
+        var to = [ email.from ];
         var cc = [];
         u.each(email.to || [], function(item){
-            to.push(mail.encodeAddress(item));
+            to.push(item);
         });
         u.each(email.cc || [], function(item){
-            cc.push(mail.encodeAddress(item));
+            cc.push(item);
         });
         if (!/^(RE|回复|答复)[:：]/i.test(email.subject)) {
             subject = '回复: ' + subject;
         }
 
         util.composeMail(this.view, '回复邮件', {
-            to: to.join('; '),
-            cc: cc.join('; '),
+            to: to,
+            cc: cc,
             subject: subject,
             message: message
         });
