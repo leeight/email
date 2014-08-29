@@ -188,12 +188,12 @@ define(function(require) {
     /**
      * 获取输入控件的原始值，原始值的格式由控件自身决定
      *
-     * @return {Mixed}
+     * @return {string}
      */
     MailAddressInput.prototype.getRawValue = function() {
+        var value = [];
         var preview = lib.g(this.helper.getId('preview'));
         var children = lib.getChildren(preview);
-        var rawValue = [];
 
         u.each(children, function(child) {
             if (child.nodeName !== 'DIV') {
@@ -202,26 +202,12 @@ define(function(require) {
 
             var address = child.dataset['address'];
             var name = child.dataset['name'];
-            rawValue.push({
+            value.push(mail.encodeAddress({
                 name: name,
                 address: address
-            })
+            }));
         });
 
-        return rawValue;
-    };
-
-    /**
-     * 获取输入控件的值的字符串形式
-     *
-     * @return {string}
-     */
-    MailAddressInput.prototype.getValue = function() {
-        var rawValue = this.getRawValue();
-        var value = [];
-        u.each(rawValue, function(item) {
-            value.push(mail.encodeAddress(item));
-        });
         return value.join('; ');
     };
 
@@ -231,16 +217,9 @@ define(function(require) {
             {
                 name: [ 'rawValue' ],
                 paint: function(mai, rawValue) {
-                    if (!u.isArray(rawValue)) {
-                        // TODO(user) 清空
-                        return;
-                    }
-
                     u.each(rawValue, function(item){
                         mai.addItem(item);
                     });
-
-                    console.log(rawValue);
                 }
             }
         );

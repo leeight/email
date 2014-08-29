@@ -23,7 +23,7 @@ define(function (require) {
         api: apiConfig,
 
         // ER默认路径
-        index: '/dev/index'
+        index: '/mail/inbox'
 
         // // 系统名称
         // systemName: '品牌广告',
