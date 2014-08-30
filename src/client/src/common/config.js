@@ -14,6 +14,8 @@ define(function (require) {
         inboxList: '/api/inbox',
         readMail: '/api/mail/read',
         mailPost: '/api/mail/post',
+        markAsRead: '/api/mail/mark_as_read',
+        deleteMails: '/api/mail/delete',
         labelList: '/api/labels'
     };
 

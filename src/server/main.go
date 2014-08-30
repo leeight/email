@@ -161,7 +161,9 @@ func main() {
 		  'date' DATETIME,                    -- 发送的日期
 		  'subject' VARCHAR(1024),            -- 邮件的标题
 		  'message' text,                     -- 邮件的征文，已经解析过了
-		  'status' INTEGER                    -- 邮件的状态（程序里面去判断）
+		  'status' INTEGER,                   -- 邮件的状态（程序里面去判断）
+		  'is_read' INTEGER,									-- 是否已经读过了
+		  'is_delete' INTEGER,								-- 是否已经删除
 		);
     CREATE TABLE tags (
       id INTEGER NOT NULL PRIMARY KEY,

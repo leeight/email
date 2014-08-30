@@ -1568,21 +1568,37 @@ define(
         function getRowBaseArgs(table, rowIndex) {
             var datasource = table.datasource || [];
             var dataLen = datasource.length;
+
+            var rowClass = [
+                getClass(table, 'row'),
+                getClass(table, 'row-' + ((rowIndex % 2) ? 'odd' : 'even')),
+                isRowSelected(table, rowIndex)
+                    ? getClass(table, 'row-selected')
+                    : '',
+                dataLen - 1 == rowIndex
+                    ? getClass(table, 'row-last')
+                    : ''
+            ];
+
+            if (table.rows && table.rows.getRowClass) {
+                var xyzClass = table.rows.getRowClass(
+                    datasource[rowIndex], rowIndex);
+                if (u.isString(xyzClass)) {
+                    rowClass.push(getClass(table, xyzClass));
+                }
+                else if (u.isArray(xyzClass)) {
+                    u.each(xyzClass, function(item){
+                        rowClass.push(getClass(table, item));
+                    });
+                }
+            }
+
             return {
                 tdCellClass : getClass(table, 'cell'),
                 tdBreakClass : getClass(table, 'cell-break'),
                 tdTextClass : getClass(table, 'cell-text'),
                 fieldLen: table.realFields.length,
-                rowClass: [
-                    getClass(table, 'row'),
-                    getClass(table, 'row-' + ((rowIndex % 2) ? 'odd' : 'even')),
-                    isRowSelected(table, rowIndex)
-                        ? getClass(table, 'row-selected')
-                        : '',
-                    dataLen - 1 == rowIndex
-                        ? getClass(table, 'row-last')
-                        : ''
-                ].join(' ')
+                rowClass: rowClass.join(' ')
             };
         }
 

@@ -29,7 +29,21 @@ define(function (require) {
         labels: function(model) {
             return api.labelList({});
         }
-    }
+    };
+
+    /**
+     * @param {Array.<string>} ids 把ids的邮件标记为已读
+     */
+    MailInboxModel.prototype.markAsRead = function(ids) {
+        return api.markAsRead({ids: ids});
+    };
+
+    /**
+     * @param {Array.<string>} ids 把ids的邮件标记为已删除
+     */
+    MailInboxModel.prototype.deleteMails = function(ids) {
+        return api.deleteMails({ids: ids});
+    };
 
     /**
      * @inheritDoc

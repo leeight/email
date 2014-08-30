@@ -26,9 +26,7 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    MailViewView.prototype.uiProperties = {
-
-    };
+    MailViewView.prototype.uiProperties = {};
 
     /**
      * @inheritDoc

@@ -300,12 +300,13 @@ func (email *EMail) Store(db *sql.DB) (int64, error) {
 			"UPDATE mails SET " +
 				"`uidl` = ?, `from` = ?, `to` = ?, `cc` = ?, `bcc` = ?, " +
 				"`reply_to` = ?, `date` = ?, `subject` = ?, `message` = ? " +
+				"`is_read` = ?, `is_delete` = ? " +
 				"WHERE `id` = ?")
 	} else {
 		stmt, err = tx.Prepare(
 			"INSERT INTO mails " +
-				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, `subject`, `message`) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, `subject`, `message`, `is_read`, `is_delete`) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)")
 	}
 
 	if err != nil {
@@ -316,7 +317,8 @@ func (email *EMail) Store(db *sql.DB) (int64, error) {
 	if email.Id > 0 {
 		// 更新
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
-			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message, email.Id)
+			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message,
+			email.IsRead, email.IsDelete, email.Id)
 	} else {
 		// 插入
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,

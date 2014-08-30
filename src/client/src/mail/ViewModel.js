@@ -39,6 +39,13 @@ define(function (require) {
     };
 
 
+    /**
+     * @param {Array.<string>} ids 把ids的邮件标记为已删除
+     */
+    MailViewModel.prototype.deleteMails = function(ids) {
+        return api.deleteMails({ids: ids});
+    };
+
     // return模块
     require('er/util').inherits(MailViewModel, BaseModel);
     return MailViewModel;

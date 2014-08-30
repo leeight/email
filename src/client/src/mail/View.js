@@ -53,6 +53,13 @@ define(function (require) {
         this.view.get('reply').on('click', this._replyMail, this);
         this.view.get('replyAll').on('click', this._replyAllMail, this);
         this.view.get('forward').on('click', this._forwardMail, this);
+        this.view.get('delete').on('click', this._deleteMail, this);
+    };
+
+    MailView.prototype._deleteMail = function() {
+        var email = this.model.get('email');
+        var ids = [email.id];
+        this.model.deleteMails(ids).then(u.bind(this.back, this));
     };
 
     /**

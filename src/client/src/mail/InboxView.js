@@ -8,7 +8,8 @@ define(function (require) {
     require('bat-ria/tpl!./inbox.tpl.html');
     var moment = require('moment');
     var lib = require('esui/lib');
-    var locator = require('er/locator')
+    var locator = require('er/locator');
+    var u = require('underscore');
 
     var ListView = require('bat-ria/mvc/ListView');
 
@@ -27,14 +28,14 @@ define(function (require) {
     MailInboxView.prototype.template = 'TPL_mail_inbox';
 
     var tableFields = [
-        // {
-        //     field: 'id',
-        //     width: 10,
-        //     title: 'ID',
-        //     content: function (item) {
-        //         return '#' + item.id;
-        //     }
-        // },
+        {
+            field: 'id',
+            width: 10,
+            title: 'ID',
+            content: function (item) {
+                return '<span title="' + item.uidl + '">#' + item.id + '</span>';
+            }
+        },
         // {
         //     field: 'status',
         //     width: 20,
@@ -88,12 +89,21 @@ define(function (require) {
         }
     ];
 
+    var tableRows = {
+        getRowClass: function(item, index) {
+            if (!item.is_read) {
+                return 'row-unread';
+            }
+        }
+    }
+
     /**
      * @inheritDoc
      */
     MailInboxView.prototype.uiProperties = {
         table: {
             fields: tableFields,
+            rows: tableRows,
             sortable: false,
             columnResizable: true,
             select: 'multi'
@@ -104,10 +114,37 @@ define(function (require) {
      * @inheritDoc
      */
     MailInboxView.prototype.uiEvents = {
-        // 'create:click': function() {
-        // },
         'refresh:click': function() {
             locator.reload();
+        },
+        'markAsRead:click': function() {
+            var ids = u.map(this.get('table').getSelectedItems(), function(item) {
+                return item.id;
+            });
+            this.model.markAsRead(ids).then(function(){
+                locator.reload();
+            })
+        },
+        'delete:click': function() {
+            var ids = u.map(this.get('table').getSelectedItems(), function(item) {
+                return item.id;
+            });
+            this.model.deleteMails(ids).then(function(){
+                locator.reload();
+            })
+        },
+        'table:select': function(evt) {
+            var selectedIndex = evt.selectedIndex;
+            if (selectedIndex && selectedIndex.length) {
+                // this.get('archive').enable();
+                this.get('markAsRead').enable();
+                this.get('delete').enable();
+            }
+            else {
+                // this.get('archive').disable();
+                this.get('markAsRead').disable();
+                this.get('delete').disable();
+            }
         }
     };
 

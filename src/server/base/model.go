@@ -14,17 +14,19 @@ import (
 
 // 定义邮件类型，Database Model
 type EMail struct {
-	Id      int64     `json:"id"`
-	Uidl    string    `json:"uidl"`
-	From    string    `json:"from"`
-	To      string    `json:"to"`
-	Cc      string    `json:"cc"`
-	Bcc     string    `json:"bcc"`
-	ReplyTo string    `json:"reply_to"`
-	Date    time.Time `json:"date"`
-	Subject string    `json:"subject"`
-	Message string    `json:"message"`
-	Status  int       `json:"status"`
+	Id       int64     `json:"id"`
+	Uidl     string    `json:"uidl"`
+	From     string    `json:"from"`
+	To       string    `json:"to"`
+	Cc       string    `json:"cc"`
+	Bcc      string    `json:"bcc"`
+	ReplyTo  string    `json:"reply_to"`
+	Date     time.Time `json:"date"`
+	Subject  string    `json:"subject"`
+	Message  string    `json:"message"`
+	Status   int       `json:"status"`
+	IsRead   int       `json:"is_read"`
+	IsDelete int       `json:"is_delete"`
 }
 
 // 定义邮件类型，View Model
@@ -43,6 +45,8 @@ type EMailViewModel struct {
 	Attachments []string        `json:"attachments"`
 	Labels      []*LabelType    `json:"labels"`
 	Status      int             `json:"status"`
+	IsRead      int             `json:"is_read"`
+	IsDelete    int             `json:"is_delete"`
 }
 
 type Response interface {
@@ -57,8 +61,9 @@ type SimpleResponse struct {
 }
 
 type LabelType struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	UnreadCount int    `json:"unread_count"`
 }
 
 type PageType struct {
@@ -143,6 +148,8 @@ func (this *EMail) ToViewModel(downloadDir string, db *sql.DB) *EMailViewModel {
 	evm.Subject = this.Subject
 	evm.Status = this.Status
 	evm.Message = this.Message
+	evm.IsRead = this.IsRead
+	evm.IsDelete = this.IsDelete
 	evm.From, _ = mail.ParseAddress(this.From)
 	evm.To, _ = mail.ParseAddressList(this.To)
 	evm.Cc, _ = mail.ParseAddressList(this.Cc)

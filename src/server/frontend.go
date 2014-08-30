@@ -36,6 +36,46 @@ func getAddressList(value string) []*mail.Address {
 	return list
 }
 
+func apiMarkAsReadHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("sqlite3", kConfig.DbPath())
+	if err != nil {
+		log.Warning("%s", err)
+	}
+	defer db.Close()
+
+	sql := "UPDATE mails SET `is_read` = 1 WHERE `id` IN (" + r.FormValue("ids") + ")"
+
+	log.Info(sql)
+	_, err = db.Exec(sql)
+	if err != nil {
+		log.Warning("%s", err)
+	}
+
+	s, _ := json.MarshalIndent(
+		base.NewSimpleResponse("true"), "", "    ")
+	w.Write(s)
+}
+
+func apiDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("sqlite3", kConfig.DbPath())
+	if err != nil {
+		log.Warning("%s", err)
+	}
+	defer db.Close()
+
+	sql := "UPDATE mails SET `is_delete` = 1 WHERE `id` IN (" + r.FormValue("ids") + ")"
+
+	log.Info(sql)
+	_, err = db.Exec(sql)
+	if err != nil {
+		log.Warning("%s", err)
+	}
+
+	s, _ := json.MarshalIndent(
+		base.NewSimpleResponse("true"), "", "    ")
+	w.Write(s)
+}
+
 // 发送邮件
 // 支持from, to, cc, subject, message这5个参数
 func apiPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -87,19 +127,14 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare(
-		"SELECT " +
-			"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
-			"`reply_to`, `subject`, `date`, `message` " +
-			"FROM mails " +
-			"WHERE `id` = ?")
-	if err != nil {
-		log.Warning("%s", err)
-	}
-	defer stmt.Close()
+	sql := "SELECT " +
+		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
+		"`reply_to`, `subject`, `date`, `message` " +
+		"FROM mails " +
+		"WHERE `id` = ?"
 
 	var email base.EMail
-	err = stmt.QueryRow(r.FormValue("id")).Scan(
+	err = db.QueryRow(sql, r.FormValue("id")).Scan(
 		&email.Id,
 		&email.Uidl,
 		&email.From,
@@ -111,6 +146,11 @@ func apiReadHandler(w http.ResponseWriter, r *http.Request) {
 		&email.Date,
 		&email.Message)
 
+	if err != nil {
+		log.Warning("%s", err)
+	}
+
+	_, err = db.Exec("UPDATE mails SET `is_read` = 1 WHERE `id` = ?", r.FormValue("id"))
 	if err != nil {
 		log.Warning("%s", err)
 	}
@@ -134,7 +174,7 @@ func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Warning("%s", err)
 	}
 
-	labels := make([]base.LabelType, 0)
+	labels := make([]*base.LabelType, 0)
 	for rows.Next() {
 		var label base.LabelType
 		err = rows.Scan(&label.Id, &label.Name)
@@ -142,7 +182,19 @@ func apiLabelsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Warning("%s", err)
 			continue
 		}
-		labels = append(labels, label)
+		labels = append(labels, &label)
+	}
+
+	// FIXME(user) 性能肯定有问题的呀
+	// 计算未读的数据量
+	// SELECT COUNT(*) FROM mails WHERE is_read = 0 AND id IN (SELECT mid FROM mail_tags WHERE tid = 5);
+	for _, label := range labels {
+		sql := "SELECT COUNT(*) FROM mails WHERE is_read = 0 " +
+			"AND id IN (SELECT mid FROM mail_tags WHERE tid = ?);"
+		err = db.QueryRow(sql, label.Id).Scan(&label.UnreadCount)
+		if err != nil {
+			log.Warning("%s", err)
+		}
 	}
 
 	s, _ := json.MarshalIndent(base.NewSimpleResponse("true", labels), "", "    ")
@@ -181,10 +233,12 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	// 准备sql
 	sql := "SELECT " +
 		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
-		"`reply_to`, `subject`, `date` " +
+		"`reply_to`, `subject`, `date`, `is_read` " +
 		"FROM mails "
 	if labelId > 0 {
-		sql += "WHERE `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ") "
+		sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ") "
+	} else {
+		sql += "WHERE `is_delete` != 1 "
 	}
 	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
 	log.Info(sql)
@@ -214,7 +268,8 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 			&email.Bcc,
 			&email.ReplyTo,
 			&email.Subject,
-			&email.Date)
+			&email.Date,
+			&email.IsRead)
 
 		evm := email.ToViewModel(kConfig.DownloadDir(), db)
 		emails = append(emails, evm)
@@ -224,7 +279,9 @@ func apiListHandler(w http.ResponseWriter, r *http.Request) {
 	var totalCount int
 	sql = "SELECT COUNT(*) FROM mails "
 	if labelId > 0 {
-		sql += "WHERE `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ")"
+		sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ")"
+	} else {
+		sql += "WHERE `is_delete` != 1 "
 	}
 	err = db.QueryRow(sql).Scan(&totalCount)
 	if err != nil {
@@ -267,6 +324,8 @@ func main() {
 	http.HandleFunc("/api/", addDefaultHeaders(apiListHandler))
 	http.HandleFunc("/api/mail/read", addDefaultHeaders(apiReadHandler))
 	http.HandleFunc("/api/mail/post", addDefaultHeaders(apiPostHandler))
+	http.HandleFunc("/api/mail/mark_as_read", addDefaultHeaders(apiMarkAsReadHandler))
+	http.HandleFunc("/api/mail/delete", addDefaultHeaders(apiDeleteHandler))
 	http.HandleFunc("/api/labels", addDefaultHeaders(apiLabelsHandler))
 
 	// 其它请求走静态文件
