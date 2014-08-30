@@ -168,11 +168,13 @@ define(function(require) {
      * @param {{name:string,address:string}} item 需要添加的选项
      */
     MailAddressInput.prototype.addItem = function(item) {
-        var tpl = '<div class="${itemClass}" data-name="${name}" data-address="${address}">' +
+        var tpl = '<div class="${itemClass}" ' +
+            'title="${address}" data-name="${name}" ' +
+            'data-address="${address}">' +
             '<span>${name}</span><i>&nbsp;</i></div>';
 
         var html = lib.format(tpl, {
-            name: item.name,
+            name: item.name || item.address.replace(/@.*/g, ''),
             address: item.address,
             itemClass: this.helper.getPartClasses('preview-item')
         });

@@ -20,6 +20,10 @@
                     <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
                     &nbsp;|&nbsp;
                     <a data-ui-type="Link" data-ui-id="replyAll" href="javascript:void(0)">全部回复</a>
+                    <!-- if: ${email.attachments.length} -->
+                    &nbsp;|&nbsp;
+                    <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="replyWithAttachments" href="javascript:void(0)">带附件回复</a>
+                    <!-- /if -->
                     &nbsp;|&nbsp;
                     <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
                   </td>
