@@ -22,7 +22,7 @@ func main() {
 	}
 	log.Printf("host = [%s], port = [%s]\n", host, port)
 
-	from, err := mail.ParseAddress(`"=?GB2312?B?0MK9qCDOxLG+zsS1tS50eHQ=?=" <chaoyanster@gmail.com>`)
+	from, err := mail.ParseAddress(`=?UTF-8?B?5p2O546J5YyX?=<liyubei@baidu.com>`)
 	if err != nil {
 		log.Panic(err)
 	}

@@ -15,3 +15,7 @@ smtp:
   host: email.baidu.com
   port: 25
   tls: true
+
+frontend:
+  from: username@baidu.com
+  name: username

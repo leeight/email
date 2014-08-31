@@ -40,8 +40,10 @@ define(function (require) {
             }
 
             if (/^mailto:/.test(node.href)) {
+                var address = node.title;
+                var name = node.innerHTML;
                 util.composeMail(view, null, {
-                    to: node.href.replace('mailto:', '')
+                    to: [ {name: name, address: address} ]
                 });
                 return false;
             }

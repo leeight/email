@@ -63,11 +63,17 @@ func (this smtpType) GetHostName() string {
 	return fixHostname(this.Host, this.Port, kDefautlSmtpPort)
 }
 
+type frontendType struct {
+	From string `json:"from"`
+	Name string `json:"name"`
+}
+
 type ServerConfig struct {
-	Http httpType
-	Pop3 pop3Type
-	Smtp smtpType
-	Dirs struct {
+	Http     httpType
+	Pop3     pop3Type
+	Smtp     smtpType
+	Frontend frontendType
+	Dirs     struct {
 		Base string
 	}
 }

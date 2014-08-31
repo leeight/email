@@ -80,7 +80,8 @@ func apiDeleteHandler(w http.ResponseWriter, r *http.Request) {
 // 支持from, to, cc, subject, message这5个参数
 func apiPostHandler(w http.ResponseWriter, r *http.Request) {
 	// 准备参数
-	from, err := mail.ParseAddress(r.FormValue("from"))
+	from, err := mail.ParseAddress(RFC2047.Encode(kConfig.Frontend.Name) +
+		" <" + kConfig.Frontend.From + ">")
 	if err != nil || from == nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -300,6 +301,7 @@ func addDefaultHeaders(fn http.HandlerFunc) http.HandlerFunc {
 		// 	w.Header().Set("Access-Control-Allow-Origin", origin)
 		// }
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		// w.Header().Set("X-From", RFC2047.Encode(kConfig.Frontend.Name)+"<"+kConfig.Frontend.From+">")
 		// w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		// w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token")
 		// w.Header().Set("Access-Control-Allow-Credentials", "true")
