@@ -14,6 +14,18 @@
     Label: Spam
 
 - filter:
+  name: HTTPs
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [From, Contains, https@baidu.com]
+      - [To, Contains, https@baidu.com]
+      - [Subject, Contains, https]
+  action:
+    Label: HTTPs
+
+- filter:
   name: 发给我的
   condition:
     match: Any

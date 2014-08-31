@@ -38,6 +38,13 @@ define(function (require) {
                     address: 'leeight@gmail.com'
                 }
             ]
+        },
+        attachments: {
+            datasource: [
+                {title: 'foo', value: 'foo', checked: true},
+                {title: 'bar', value: 'bar', checked: true},
+                {title: 'bar2', value: 'bar2', checked: true},
+            ]
         }
     };
 
@@ -47,6 +54,9 @@ define(function (require) {
     DevIndexView.prototype.uiEvents = {
         'get:click': function() {
             console.log(this.get('mai').getValue());
+        },
+        'attachments:change': function() {
+            console.log(this.get('attachments').getRawValue());
         }
     };
 

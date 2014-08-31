@@ -57,6 +57,10 @@ define(function (require) {
     };
 
     MailView.prototype._deleteMail = function() {
+        if (!confirm('Are you sure?')) {
+            return;
+        }
+
         var email = this.model.get('email');
         var ids = [email.id];
         this.model.deleteMails(ids).then(u.bind(this.back, this));
@@ -149,11 +153,16 @@ define(function (require) {
             subject = '转发: ' + subject;
         }
 
+
+        var attachments = u.map(email.attachments, function(item){
+            return { title: item, value: item, checked: true };
+        });
         util.composeMail(this.view, '转发邮件', {
             to: '',
             cc: '',
             subject: subject,
-            message: message
+            message: message,
+            attachments: attachments
         });
     };
 

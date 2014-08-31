@@ -8,6 +8,7 @@ define(function (require) {
     require('bat-ria/tpl!./compose.tpl.html');
 
     var FormView = require('bat-ria/mvc/FormView');
+    var u = require('underscore');
     var ueditorInstance = null;
 
     /**
@@ -55,13 +56,23 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    MailComposeView.prototype.uiProperties = {
-        cc: {
-            value: '@cc'
-        },
-        to: {
-            value: '@to'
-        }
+    MailComposeView.prototype.getUIProperties = function() {
+        var rawValue = u.map(this.model.get('attachments'), function(item){
+            return item.value;
+        })
+        var uiProperties = {
+            cc: {
+                value: '@cc'
+            },
+            to: {
+                value: '@to'
+            },
+            attachments: {
+                datasource: '@attachments',
+                rawValue: rawValue
+            }
+        };
+        return uiProperties;
     };
 
     /**

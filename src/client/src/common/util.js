@@ -15,7 +15,8 @@ exports.composeMail = function(view, opt_title, opt_actionOptions) {
     view.waitActionDialog({
         title: opt_title || '撰写邮件',
         width: 740,
-        height: 480,
+        // height: 480,
+        // height: 'auto',
         needFoot: true,
         url: '/mail/compose',
         actionOptions: opt_actionOptions || {}
@@ -41,7 +42,7 @@ exports.composeMail = function(view, opt_title, opt_actionOptions) {
             dialog.dispose();
         });
 
-        dispose.resize();
+        dialog.resize();
     });
 };
 

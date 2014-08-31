@@ -38,7 +38,7 @@ define(function(require) {
     };
 
     /**
-     * 控件类型，始终为`"TextBox"`
+     * 控件类型，始终为`"MailAddressInput"`
      *
      * @type {string}
      * @readonly
