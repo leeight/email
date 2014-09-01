@@ -6,11 +6,18 @@ import (
 	// "io/ioutil"
 	"log"
 	"mime/multipart"
-	// "net/textproto"
+	"net/textproto"
 	// "strings"
 )
 
 func main() {
+	a := textproto.MIMEHeader{}
+	a.Set("Content-Type", "HELLO")
+	for k, v := range a {
+		log.Printf("%s, %v", k, v)
+	}
+	return
+
 	raw := &bytes.Buffer{}
 	fileContents := []byte("my file contents")
 	w := multipart.NewWriter(raw)
@@ -42,6 +49,23 @@ func main() {
 	// writer.CreateFormField("CreateFormField名称")
 	// writer.WriteField("WriteField名称", "WriteField的内容")
 	// writer.Close()
+
+	// Content-Type: multipart/mixed; boundary="--HELLO-WORLD--"
+	//   Content-Type: multipart/related; boundary=""
+	//     Content-Type: multipart/alternative; boundary=""
+	//       Content-Type: text/plain; charset="gb2312"
+	//       Content-Transfer-Encoding: base64
+	//       Content-Type: text/html; charset="gb2312"
+	//       Content-Transfer-Encoding: quoted-printable
+	//     Content-Type: image/png; name="image001(05-30-18-14-05).png"
+	//     Content-Transfer-Encoding: base64
+	//     Content-ID: <_Foxmail.0@D318E215-3FA2-4333-84AA-68FAA8E02521>
+	// 		 Content-Type: image/png; name="image002(05-30-18-14-05).png"
+	// 		 Content-Transfer-Encoding: base64
+	// 		 Content-ID: <_Foxmail.1@B96DCB4B-39DA-4E1F-AACA-A31B014D7764>
+	//   Content-Type: application/octet-stream; name="=?gb2312?B?1K3J+srVyOu31rK8LnBwdHg=?="
+	// 	 Content-Transfer-Encoding: base64
+	//   Content-Disposition: attachment; filename="=?gb2312?B?1K3J+srVyOu31rK8LnBwdHg=?="
 
 	// fmt.Println(string(raw.Bytes()))
 }

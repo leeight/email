@@ -41,8 +41,9 @@ exports.composeMail = function(view, opt_title, opt_actionOptions) {
         btnCancel.on('click', function() {
             dialog.dispose();
         });
-
-        dialog.resize();
+        setTimeout(function() {
+            dialog.resize();
+        }, 0);
     });
 };
 

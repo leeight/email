@@ -2,32 +2,32 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net"
+	// "log"
+	// "net"
 
-	"code.google.com/p/go.net/publicsuffix"
+	// "code.google.com/p/go.net/publicsuffix"
 	"gopkg.in/yaml.v1"
 
 	"./base"
-	"./net/mail"
+	// "./net/mail"
 )
 
 func main() {
-	domain, _ := publicsuffix.EffectiveTLDPlusOne("email.baidu.com")
-	log.Printf("Domain = %s\n", domain)
+	// domain, _ := publicsuffix.EffectiveTLDPlusOne("email.baidu.com")
+	// log.Printf("Domain = %s\n", domain)
 
-	host, port, err := net.SplitHostPort("email.baidu.com:")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("host = [%s], port = [%s]\n", host, port)
+	// host, port, err := net.SplitHostPort("email.baidu.com:")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// log.Printf("host = [%s], port = [%s]\n", host, port)
 
-	from, err := mail.ParseAddress(`=?UTF-8?B?5p2O546J5YyX?=<liyubei@baidu.com>`)
-	if err != nil {
-		log.Panic(err)
-	}
-	log.Printf("%s, %s", from.Name, from.Address)
-	return
+	// from, err := mail.ParseAddress(`=?UTF-8?B?5p2O546J5YyX?=<liyubei@baidu.com>`)
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
+	// log.Printf("%s, %s", from.Name, from.Address)
+	// return
 
 	filters, err := base.GetFilters("filters.yml")
 	if err != nil {

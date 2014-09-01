@@ -33,6 +33,9 @@ define(function (require) {
                         address: '未知来源'
                     };
                 }
+                if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
+                    email.message = '<pre>' + email.message + '</pre>';
+                }
                 return email;
             })
         }

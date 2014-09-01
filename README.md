@@ -46,6 +46,7 @@ nodejs 还是 golang 呢？
 7. http://kb.mozillazine.org/How_do_I_check_for_new_messages_in_other_folders
 8. msgFilterRules.dat：<http://kb.mozillazine.org/Message_Filters>
 9. http://wiki.babel.baidu.com/twiki/bin/view/Com/Client/POP%E5%8D%8F%E8%AE%AE%E5%92%8CIMAP%E5%8D%8F%E8%AE%AE
+10. https://www.ietf.org/rfc/rfc2392.txt
 
 如果要通过POP3下载所有的邮件，需要一批一批的下载，STAT Command只会返回一部分的内容。
 下载完毕之后，执行QUIT，然后开启新的Session，继续下载。参考：<http://markmail.org/message/ezkomyyw6vjiznrt#query:+page:1+mid:ezkomyyw6vjiznrt+state:results>

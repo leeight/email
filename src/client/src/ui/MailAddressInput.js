@@ -74,6 +74,10 @@ define(function(require) {
         this.initChildren(this.main);
     };
 
+    MailAddressInput.prototype.getFocusTarget = function() {
+        return this.getChild('input').getFocusTarget();
+    };
+
     MailAddressInput.prototype.initEvents = function () {
         var mai = this;
 

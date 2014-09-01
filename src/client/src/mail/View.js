@@ -93,7 +93,6 @@ define(function (require) {
             subject = '回复: ' + subject;
         }
 
-        console.log(to);
         util.composeMail(this.view, '回复邮件', {
             to: to,
             cc: cc,
