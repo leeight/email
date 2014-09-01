@@ -49,3 +49,7 @@ nodejs 还是 golang 呢？
 
 如果要通过POP3下载所有的邮件，需要一批一批的下载，STAT Command只会返回一部分的内容。
 下载完毕之后，执行QUIT，然后开启新的Session，继续下载。参考：<http://markmail.org/message/ezkomyyw6vjiznrt#query:+page:1+mid:ezkomyyw6vjiznrt+state:results>
+
+以为直接跟POP3和SMTP打交道太麻烦了，因此有了Exchange Web Service的封装。
+后来发现EWS也是很麻烦，就有了EWS Managed API。
+不过EWS是基于HTTPs + SOAP协议的，所以可以跨平台，但是EWS Managed API不是，被限定到了Windows下面。

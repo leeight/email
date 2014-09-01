@@ -31,6 +31,8 @@ define(function (require) {
 
         this.view.get('create').on('click',
             u.partial(util.composeMail, this.view, '撰写邮件', null));
+
+        document.title = '伊妹儿';
     };
 
     require('er/util').inherits(MailInbox, ListAction);

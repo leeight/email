@@ -56,6 +56,8 @@ define(function (require) {
         this.view.get('replyAll').on('click', this._replyAllMail, this);
         this.view.get('forward').on('click', this._forwardMail, this);
         this.view.get('delete').on('click', this._deleteMail, this);
+
+        document.title = this.model.get('email').subject + ' - 伊妹儿';
     };
 
     MailView.prototype._deleteMail = function() {
