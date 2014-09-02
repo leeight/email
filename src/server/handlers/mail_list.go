@@ -9,11 +9,6 @@ import (
 	"../web"
 )
 
-var (
-	kDefaultPageSize = 15
-	kDefaultPageNo   = 1
-)
-
 type MailListHandler struct {
 	Context web.Context
 }
@@ -23,6 +18,11 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log := ctx.GetLogger()
 	db := ctx.GetDb()
 	defer db.Close()
+
+	var (
+		kDefaultPageSize = 15
+		kDefaultPageNo   = 1
+	)
 
 	// TODO(user) 如何更通用一些呢？ 解析url参数
 	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))

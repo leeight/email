@@ -41,6 +41,16 @@ define(function (require) {
     };
 
     /**
+     * 查询联系人的信息
+     * @param {string} keyword 联系人的关键字
+     */
+    MailComposeModel.prototype.getContacts = function(keyword) {
+        return api.contactsList({keyword: keyword}).then(function(page){
+            return page.result || [];
+        })
+    };
+
+    /**
      * @inheritDoc
      */
     MailComposeModel.prototype.getExtraData = function () {

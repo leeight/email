@@ -49,6 +49,14 @@ type EMailViewModel struct {
 	IsDelete    int             `json:"is_delete"`
 }
 
+// 联系人的信息
+type Contact struct {
+	Id    int64  `json:"id"`
+	Name  string `json:"name"`
+	EMail string `json:"email"`
+	Count int    `json:"count"`
+}
+
 type Response interface {
 	Ok() bool
 }

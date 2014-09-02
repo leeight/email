@@ -75,10 +75,24 @@ define(function (require) {
         return uiProperties;
     };
 
+    function displaySuggestions(view, control) {
+        var keyword = control.getChild('input').getValue();
+        view.model.getContacts(keyword).then(function(contacts) {
+            control.set('suggestions', contacts);
+        });
+    }
+
     /**
      * @inheritDoc
      */
-    MailComposeView.prototype.uiEvents = {};
+    MailComposeView.prototype.uiEvents = {
+        'to:input': function(e) {
+            displaySuggestions(this, e.target)
+        },
+        'cc:input': function(e) {
+            displaySuggestions(this, e.target)
+        },
+    };
 
     require('er/util').inherits(MailComposeView, FormView);
     return MailComposeView;

@@ -9,8 +9,58 @@ define(function(require) {
     var u = require('underscore');
     var lib = require('esui/lib');
     var InputControl = require('esui/InputControl');
+    var Layer = require('esui/Layer');
     var paint = require('esui/painters');
     var mail = require('encoding/mail');
+
+
+
+    /**
+     * MailAddressInput用浮层
+     *
+     * @extends Layer
+     * @ignore
+     * @constructor
+     */
+    function MailAddressInputLayer() {
+        Layer.apply(this, arguments);
+    }
+    lib.inherits(MailAddressInputLayer, Layer);
+
+    MailAddressInputLayer.prototype.nodeName = 'ul';
+
+    MailAddressInputLayer.prototype.dock = {
+        strictWidth: true
+    };
+
+    MailAddressInputLayer.prototype.render = function (element) {
+        var html = '';
+
+        var suggestions = this.control.suggestions || [];
+        for (var i = 0; i < suggestions.length; i++) {
+            var classes = this.control.helper.getPartClasses('node');
+            // if (i === this.control.activeIndex) {
+            //     classes.push.apply(
+            //         classes,
+            //         this.control.helper.getPartClasses('node-active')
+            //     );
+            // }
+
+            html += '<li data-index="' + i + '"'
+                + ' class="' + classes.join(' ') + '">';
+
+            html += this.control.getLayerItemHTML(suggestions[i]);
+        }
+
+        var offset = lib.getOffset(this.control.getFocusTarget());
+        element.style.top = (offset.top + offset.height) + 'px';
+        element.style.left = offset.left + 'px';
+        element.innerHTML = html;
+    };
+
+    MailAddressInputLayer.prototype.initBehavior = function (element) {
+        // this.control.helper.addDOMEvent(element, 'click', selectItem);
+    };
 
     /**
      * 邮箱地址输入控件
@@ -21,6 +71,7 @@ define(function(require) {
      */
     function MailAddressInput(options) {
         InputControl.apply(this, arguments);
+        this.layer = new MailAddressInputLayer(this);
     }
     lib.inherits(MailAddressInput, InputControl);
 
@@ -66,6 +117,20 @@ define(function(require) {
         return html;
     }
 
+
+    /**
+     * 获取浮层中每一项的HTML
+     *
+     * @param {meta.CommandMenuItem} item 当前项的数据项
+     * @return {string} 返回HTML片段
+     */
+    MailAddressInput.prototype.getLayerItemHTML = function (item) {
+        var data = {
+            text: u.escape(item.email)
+        };
+        return lib.format('<span>${text}</span>', data);
+    };
+
     /**
      * 初始化控件的结构
      */
@@ -88,6 +153,14 @@ define(function(require) {
         this.getChild('input').on('enter', function(e) {
             processKeyboardEvent(this, mai);
         });
+        this.getChild('input').on('input', function(e) {
+            mai.fire('input');
+        });
+        this.getChild('input').on('blur', function(e) {
+            mai.layer.hide();
+        });
+
+        this.layer.getElement(true);
     };
 
     /**
@@ -227,8 +300,38 @@ define(function(require) {
                         mai.addItem(item);
                     });
                 }
+            },
+            {
+                /**
+                 * @property {meta.MailAddressSuggestionItem[]} suggestions
+                 *
+                 * 数据源，其中每一项生成浮层中的一条
+                 */
+                name: 'suggestions',
+                paint: function (mai) {
+                    mai.layer.repaint();
+                }
             }
         );
+
+    /**
+     * 销毁控件
+     *
+     * @override
+     */
+    MailAddressInput.prototype.dispose = function () {
+        if (this.helper.isInStage('DISPOSED')) {
+            return;
+        }
+
+        if (this.layer) {
+            this.layer.dispose();
+            this.layer = null;
+        }
+
+        Control.prototype.dispose.apply(this, arguments);
+    };
+
     require('esui').register(MailAddressInput);
     return MailAddressInput;
 });

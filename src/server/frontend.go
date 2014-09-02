@@ -33,6 +33,7 @@ func main() {
 	http.Handle("/api/mail/delete", handlers.MailDeleteHandler{context})
 	http.Handle("/api/mail/post", handlers.MailPostHandler{context})
 	http.Handle("/api/labels", handlers.MailLabelsHandler{context})
+	http.Handle("/api/contacts", handlers.ContactsListHandler{context})
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(config.Dirs.Base)))
