@@ -1,0 +1,11 @@
+{
+    "LICENSE": "d466e2325ee60ace4f73f2fec651c171",
+    "README.md": "b8dfd6f3b63efb7040a7ae1c6f913451",
+    "demo/index.html": "b140751d3155d8718129435c0b86c000",
+    "package.json": "b69a07c9225be50dcd4be1373402b7b7",
+    "src/oo.js": "ace295775bd7e55a2743cfa3ccc0534f",
+    "test/config.js": "c8474fe67fa2e7006013fbdc44f3b900",
+    "test/ooSpec.js": "cda6f19b829620293279e4c2b2b0854f",
+    "tests/base.js": "f566576a62bb4fdb3670c4c71223815b",
+    "tests/inherit.js": "489f4cafc6a37b03e3c2bcc1b2e6e87a"
+}

@@ -1,0 +1,355 @@
+
+// variable: 表单项集合区域 相关
+@sys-fieldset-margin: 10px;
+@sys-fieldset-padding: 1px 1px 10px;
+@sys-fieldset-border-width: 0 0 1px;
+@sys-fieldset-border-color: #ddd;
+@sys-fieldset-border-style: solid;
+@sys-fieldset-background: false;
+
+// variable: 表单项集合 标题区域 相关
+@sys-fieldset-title-margin: 0 0 15px;
+@sys-fieldset-title-padding: 0;
+@sys-fieldset-title-border-width: 0;
+@sys-fieldset-title-border-color: #ddd;
+@sys-fieldset-title-border-style: solid;
+@sys-fieldset-title-background: false;
+@sys-fieldset-title-height: 30px;
+@sys-fieldset-title-font-size: 14px;
+@sys-fieldset-title-font-bold: true;
+@sys-fieldset-title-font-family: false;
+@sys-fieldset-title-color: #000;
+
+// variable: 表单项 行 相关
+@sys-field-row-margin: 0 10px 0 0;
+@sys-field-row-padding: 0 0 10px;
+@sys-field-row-border-width: 0;
+@sys-field-row-border-color: #ddd;
+@sys-field-row-border-style: solid;
+@sys-field-row-background: false;
+
+// variable: 表单项 预置3种label宽度尺寸
+@sys-field-row-large-label-width: 120px;
+@sys-field-row-medium-label-width: 80px;
+@sys-field-row-small-label-width: 60px;
+
+// variable: 表单项 label 相关
+@sys-field-label-margin: 0;
+@sys-field-label-padding: 0 5px;
+@sys-field-label-border-width: 0;
+@sys-field-label-border-color: #ddd;
+@sys-field-label-border-style: solid;
+@sys-field-label-background: false;
+@sys-field-label-text-align: left;
+@sys-field-label-line-height: 30px;
+@sys-field-label-color: false;
+@sys-field-label-width: false;
+
+// variable: 表单项 必选标识 相关
+@sys-field-required-margin: 0;
+@sys-field-required-padding: 0 0 0 5px;
+@sys-field-required-border-width: 0;
+@sys-field-required-border-color: #ddd;
+@sys-field-required-border-style: solid;
+@sys-field-required-background: false;
+@sys-field-required-color: red;
+@sys-field-required-width: false;
+
+// variable: 表单项 提示 相关
+@sys-field-hint-margin: 0;
+@sys-field-hint-padding: 0 0 0 5px;
+@sys-field-hint-border-width: 0;
+@sys-field-hint-border-color: #ddd;
+@sys-field-hint-border-style: solid;
+@sys-field-hint-background: false;
+@sys-field-hint-color: #999;
+@sys-field-hint-width: false;
+@sys-field-hint-block: false;
+
+// variable: 表单项 表单区域 相关
+@sys-field-line-height: 30px;
+@sys-field-margin: 0 0 10px;
+@sys-field-padding: 0 5px;
+@sys-field-border-width: 0;
+@sys-field-border-color: #ddd;
+@sys-field-border-style: solid;
+@sys-field-background: false;
+
+// variable: 表单项 操作区域 相关
+@sys-form-operator-margin: 0;
+@sys-form-operator-padding: 10px;
+@sys-form-operator-border-width: 0;
+@sys-form-operator-border-color: #ddd;
+@sys-form-operator-border-style: solid;
+@sys-form-operator-background: false;
+@sys-form-operator-gap: 3px;
+
+// variable: 表单项 主要按钮样式 相关
+@sys-major-button-margin: 0;
+@sys-major-button-padding: 0;
+@sys-major-button-border-width: 1px;
+@sys-major-button-border-color: #2f52b7;
+@sys-major-button-border-color-disabled: #cfcfcf;
+@sys-major-button-border-style: solid;
+@sys-major-button-bg-gradient: true;
+@sys-major-button-bg-top-color: #648bdc;
+@sys-major-button-bg-bottom-color: #5276c2;
+@sys-major-button-bg-top-color-hover: #5984dd;
+@sys-major-button-bg-bottom-color-hover: #476ebf;
+@sys-major-button-bg-top-color-active: #5276c2;
+@sys-major-button-bg-bottom-color-active: #648bdc;
+@sys-major-button-bg-top-color-disabled: #f6f6f6;
+@sys-major-button-bg-bottom-color-disabled: #f6f6f6;
+@sys-major-button-color: #fff;
+@sys-major-button-color-disabled: #999;
+
+// variable: 表单项 次要按钮样式 相关
+@sys-minor-button-margin: 0;
+@sys-minor-button-padding: 1px;
+@sys-minor-button-border-width: 0;
+@sys-minor-button-border-color: #2f52b7;
+@sys-minor-button-border-style: solid;
+@sys-minor-button-color: #555;
+@sys-minor-button-color-hover: #222;
+@sys-minor-button-color-active: #333;
+@sys-minor-button-color-disabled: #999;
+@sys-minor-button-color-underline: true;
+
+
+
+// --------- 下面是具体样式定义 --------
+
+
+.fieldset {
+    .sysm-background(@sys-fieldset-background);
+    .sysm-margin-padding-border(
+        @sys-fieldset-margin,
+        @sys-fieldset-padding,
+        @sys-fieldset-border-width,
+        @sys-fieldset-border-style,
+        @sys-fieldset-border-color
+    );
+}
+
+.fieldset-title {
+    .sysm-color(@sys-fieldset-title-color);
+    .sysm-background(@sys-fieldset-title-background);
+    .sysm-margin-padding-border(
+        @sys-fieldset-title-margin,
+        @sys-fieldset-title-padding,
+        @sys-fieldset-title-border-width,
+        @sys-fieldset-title-border-style,
+        @sys-fieldset-title-border-color
+    );
+    .sysm-fieldset-title-font-bold(@bold) when (@bold = true) {
+        font-weight: bold;
+    }
+    .sysm-fieldset-title-font-bold(@sys-fieldset-title-font-bold);
+    .sysm-font-size(@sys-fieldset-title-font-size);
+    .sysm-font-family(@sys-fieldset-title-font-family);
+    .sysm-height(@sys-fieldset-title-height);
+    .sysm-line-height(@sys-fieldset-title-height);
+}
+
+.field-row {
+    .clearfix();
+    .sysm-background(@sys-field-row-background);
+    .sysm-margin-padding-border(
+        @sys-field-row-margin,
+        @sys-field-row-padding,
+        @sys-field-row-border-width,
+        @sys-field-row-border-style,
+        @sys-field-row-border-color
+    );
+
+    .field-label,
+    .field {
+        float: left;
+    }
+}
+
+.field-row-large-label .field-label {
+    .sysm-width(@sys-field-row-large-label-width);
+}
+
+.field-row-medium-label .field-label {
+    .sysm-width(@sys-field-row-medium-label-width);
+}
+
+.field-row-small-label .field-label {
+    .sysm-width(@sys-field-row-small-label-width);
+}
+
+.field-label {
+    display: block;
+    .sysm-width(@sys-field-label-width);
+    .sysm-color(@sys-field-label-color);
+    .sysm-background(@sys-field-label-background);
+    .sysm-margin-padding-border(
+        @sys-field-label-margin,
+        @sys-field-label-padding,
+        @sys-field-label-border-width,
+        @sys-field-label-border-style,
+        @sys-field-label-border-color
+    );
+    .sysm-field-label-text-align(@align) when not (@align = left) {
+        text-align: @align;
+    }
+    .sysm-field-label-text-align(@sys-field-label-text-align);
+    .sysm-line-height(@sys-field-label-line-height);
+}
+
+.field-required {
+    .sysm-margin-padding-border(
+        @sys-field-required-margin,
+        @sys-field-required-padding,
+        @sys-field-required-border-width,
+        @sys-field-required-border-style,
+        @sys-field-required-border-color
+    );
+
+    .sysm-background(@sys-field-required-background);
+    .sysm-width(@sys-field-required-width);
+    .sysm-color(@sys-field-required-color);
+}
+
+.field-hint {
+    .sysm-margin-padding-border(
+        @sys-field-hint-margin,
+        @sys-field-hint-padding,
+        @sys-field-hint-border-width,
+        @sys-field-hint-border-style,
+        @sys-field-hint-border-color
+    );
+
+    .sysm-background(@sys-field-hint-background);
+    .sysm-width(@sys-field-hint-width);
+    .sysm-color(@sys-field-hint-color);
+
+    .sysm-field-hint-block(@block) when (@block = true) {
+        display: block;
+    }
+    .sysm-field-hint-block(@sys-field-hint-block);
+}
+
+.field {
+    .sysm-background(@sys-field-background);
+    .sysm-margin-padding-border(
+        @sys-field-margin,
+        @sys-field-padding,
+        @sys-field-border-width,
+        @sys-field-border-style,
+        @sys-field-border-color
+    );
+    .sysm-line-height(@sys-field-line-height);
+}
+
+
+.form-operator {
+    .sysm-background(@sys-form-operator-background);
+    .sysm-margin-padding-border(
+        @sys-form-operator-margin,
+        @sys-form-operator-padding,
+        @sys-form-operator-border-width,
+        @sys-form-operator-border-style,
+        @sys-form-operator-border-color
+    );
+
+    .ui-commandmenu,
+    .ui-button,
+    .ui-select {
+        margin-right: @sys-form-operator-gap;
+    }
+}
+
+
+.skin-major-button,
+.skin-major-button:hover,
+.skin-major-button:active {
+    .sysm-background-top-linear(
+        @sys-major-button-bg-gradient, 
+        @sys-major-button-bg-top-color, 
+        @sys-major-button-bg-bottom-color
+    );
+    .sysm-margin-padding-border(
+        @sys-major-button-margin,
+        @sys-major-button-padding,
+        @sys-major-button-border-width,
+        @sys-major-button-border-style,
+        @sys-major-button-border-color
+    );
+    .sysm-color(@sys-major-button-color);
+}
+
+.skin-major-button:hover {
+    .sysm-background-top-linear(
+        @sys-major-button-bg-gradient, 
+        @sys-major-button-bg-top-color-hover, 
+        @sys-major-button-bg-bottom-color-hover
+    );
+}
+
+
+.skin-major-button:active {
+    .sysm-background-top-linear(
+        @sys-major-button-bg-gradient, 
+        @sys-major-button-bg-top-color-active, 
+        @sys-major-button-bg-bottom-color-active
+    );
+}
+
+.skin-major-button-disabled,
+.skin-major-button-disabled:hover,
+.skin-major-button-disabled:active{
+    .sysm-background-top-linear(
+        @sys-major-button-bg-gradient, 
+        @sys-major-button-bg-top-color-disabled, 
+        @sys-major-button-bg-bottom-color-disabled
+    );
+    .sysm-margin-padding-border(
+        @sys-major-button-margin,
+        @sys-major-button-padding,
+        @sys-major-button-border-width,
+        @sys-major-button-border-style,
+        @sys-major-button-border-color-disabled
+    );
+
+    .sysm-color(@sys-major-button-color-disabled);
+    cursor: default;
+}
+
+
+.skin-minor-button,
+.skin-minor-button:hover,
+.skin-minor-button:active {
+    background: none;
+    .sysm-margin-padding-border(
+        @sys-minor-button-margin,
+        @sys-minor-button-padding,
+        @sys-minor-button-border-width,
+        @sys-minor-button-border-style,
+        @sys-minor-button-border-color
+    );
+    .sysm-color(@sys-minor-button-color);
+    .sysm-minor-button-underline(@has) when (@has = true) {
+        text-decoration: underline;
+    }
+    .sysm-minor-button-underline(@sys-minor-button-color-underline);
+}
+
+.skin-minor-button:hover {
+    .sysm-color(@sys-minor-button-color-hover);
+}
+
+
+.skin-minor-button:active {
+    .sysm-color(@sys-minor-button-color-active);
+}
+
+.skin-minor-button-disabled,
+.skin-minor-button-disabled:hover,
+.skin-minor-button-disabled:active{
+    .sysm-color(@sys-minor-button-color-disabled);
+    cursor: default;
+}
+

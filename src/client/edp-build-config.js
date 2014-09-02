@@ -7,9 +7,22 @@ exports.output = path.resolve( __dirname, 'output' );
 // var pageEntries = 'html,htm,phtml,tpl,vm';
 
 exports.getProcessors = function () {
-    var lessProcessor = new LessCompiler();
+    var lessProcessor = new LessCompiler({
+        files: [
+            'src/common/css/main.less'
+        ],
+        pageFiles: [
+            'index.html'
+        ]
+    });
     var cssProcessor = new CssCompressor();
-    var moduleProcessor = new ModuleCompiler();
+    var moduleProcessor = new ModuleCompiler({
+        files: [
+            '*.js',
+            '!customShim.js',
+            '!src/third_party/**'
+        ]
+    });
     var jsProcessor = new JsCompressor();
     var pathMapperProcessor = new PathMapper();
     var addCopyright = new AddCopyright();
@@ -35,6 +48,7 @@ exports.exclude = [
     'dep/*/*/tool',
     'dep/*/*/*.md',
     'dep/*/*/package.json',
+    'node_modules',
     'edp-*',
     '.edpproj',
     '.svn',

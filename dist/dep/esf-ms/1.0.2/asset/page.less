@@ -1,0 +1,117 @@
+
+// variable: 重置est配置
+
+@default-font-size: 12;
+
+
+// variable: 页面全局文本相关
+
+@sys-font-size: 12px;
+@sys-font-family: Arial,Helvetica,STHeiti,SimSun,sans-serif;
+@sys-text-color: #333;
+
+
+// variable: 页面最小宽度，不限制为`false`
+//
+// 如果限制页面最小宽度，在页面中需要如下html形式进行布局:
+// <body>
+// <!--[if IE 6]><div class="layout-ie6-out"><div class="layout-ie6-in"><![endif]-->
+// page html struct
+// <!--[if IE 6]></div></div><![endif]-->
+// </body>
+
+@sys-min-width: 1004px;
+
+
+// variable: 是否包含侧边栏，不包含为`false`
+//
+// 如果页面包含侧边栏，在页面中需要如下html形式，并且Sidebar控件需要用javascript初始化:
+// <div class="container">
+//     <div data-ui-type="Sidebar" data-ui-id="accountSidebar"></div>
+//     <div class="main-area" id="main-area"></div>
+// </div>
+// 
+// 如果不包含侧边栏，可以扔掉container元素，直接以main-area元素放在上层。
+
+@sys-has-sidebar: true;
+
+
+// variable: 侧边栏相关样式定义，当@sys-has-sidebar为true时生效
+
+@sys-sidebar-header-bg-gradient: true;
+@sys-sidebar-header-bg-top-color: #fff;
+@sys-sidebar-header-bg-bottom-color: #ebebeb;
+@sys-sidebar-header-font-size: false;
+@sys-sidebar-header-line-height: false;
+@sys-sidebar-header-color: false;
+@sys-sidebar-header-padding-left: 8px;
+
+
+// variable: 页面主区域与浏览器边缘的距离
+
+@sys-mainarea-margin: 10px 10px 0 0;
+
+
+// --------- 下面是具体样式定义 --------
+
+.global-reset();
+
+// 页面最小宽度相关样式
+.sysm-layout-min-width(@min-width) when not (@min-width = false) {
+    *html .layout-ie6-out{
+        margin-left: @sys-min-width;
+        zoom: 1;
+    }
+
+    *html .layout-ie6-in{
+        position: relative;
+        float: left;
+        margin-left: -@sys-min-width;
+    }
+
+    .html { 
+        min-width: @sys-min-width;
+    }
+}
+.sysm-layout-min-width(@sys-min-width);
+
+
+body {
+    font-size: @sys-font-size;
+    color: @sys-text-color;
+    font-family: @sys-font-family;
+}
+
+.main-area {
+    margin: @sys-mainarea-margin;
+}
+
+
+// 侧边栏邻居元素相关样式
+.sysm-sidebar-neighbor-init(@has-sidebar) when (@has-sidebar = true) {
+    .main-area-sidebar-neighbor {
+        margin-left: 220px;
+    }
+
+    .main-area-sidebar-neighbor-hide {
+        margin-left: 30px;
+    }
+}
+
+// 侧边栏相关样式
+.sysm-sidebar(@has-sidebar) when (@has-sidebar = true) {
+    .ui-sidebar-head {
+        .sysm-background-top-linear(
+            @sys-sidebar-header-bg-gradient, 
+            @sys-sidebar-header-bg-top-color, 
+            @sys-sidebar-header-bg-bottom-color
+        );
+        padding-left: @sys-sidebar-header-padding-left;
+        .sysm-color(@sys-sidebar-header-color);
+        .sysm-font-size(@sys-sidebar-header-font-size);
+        .sysm-line-height(@sys-sidebar-header-line-height);
+    }
+}
+
+.sysm-sidebar-neighbor-init(@sys-has-sidebar);
+.sysm-sidebar(@sys-has-sidebar);
