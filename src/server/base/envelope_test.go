@@ -41,7 +41,7 @@ func TestGuessMimetype(t *testing.T) {
 	for _, item := range tests {
 		mt := base.GuessMimetype(item.name + "@xxx")
 		if mt != item.expected {
-			t.Error(item.name+"@xxx", "expected", item.expected, "but get ", mt)
+			t.Error(item.name+"@xxx.1213", "expected", item.expected, "but get ", mt)
 		}
 	}
 }
@@ -73,14 +73,13 @@ func TestSimpleEnvelope(t *testing.T) {
 
 type SimpleResourceReader struct{}
 
-func (srr SimpleResourceReader) Read(uidl, name string) ([]byte, error) {
-	raw := fmt.Sprintf("uidl=%s,name=%s", uidl, name)
+func (srr SimpleResourceReader) Read(name string) ([]byte, error) {
+	raw := fmt.Sprintf("name=%s", name)
 	return []byte(raw), nil
 }
 
 func TestRelatedEnvelope(t *testing.T) {
 	re := base.RelatedEnvelope{
-		Uidl:       "8964",
 		Message:    "你好，世界",
 		ContentIds: []string{"a.png", "b.gif", "c.docx@123"},
 	}
@@ -133,7 +132,6 @@ func TestRelatedEnvelope(t *testing.T) {
 
 func TestMixedEnvelope(t *testing.T) {
 	me := base.MixedEnvelope{
-		Uidl:        "8964",
 		Message:     "你好，世界",
 		ContentIds:  []string{"a.png", "b.gif", "c.docx@123"},
 		Attachments: []string{"我的附件.txt", "请查收.png", "名单列表.xlsx"},

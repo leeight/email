@@ -38,7 +38,7 @@ func (h MailLabelsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 计算未读的数据量
 	// SELECT COUNT(*) FROM mails WHERE is_read = 0 AND id IN (SELECT mid FROM mail_tags WHERE tid = 5);
 	for _, label := range labels {
-		sql := "SELECT COUNT(*) FROM mails WHERE is_read = 0 " +
+		sql := "SELECT COUNT(*) FROM mails WHERE is_read = 0 AND is_delete != 1 " +
 			"AND id IN (SELECT mid FROM mail_tags WHERE tid = ?);"
 		err = db.QueryRow(sql, label.Id).Scan(&label.UnreadCount)
 		if err != nil {

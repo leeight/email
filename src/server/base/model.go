@@ -119,7 +119,7 @@ func NewListResponse(ok string, totalCount int, pageNo int, pageSize int, args .
 
 func setAttachments(downloadDir, uidl string) []string {
 	attachments := make([]string, 0)
-	fileInfos, err := ioutil.ReadDir(path.Join(downloadDir, uidl))
+	fileInfos, err := ioutil.ReadDir(path.Join(downloadDir, uidl, "att"))
 	if err != nil {
 		return attachments
 	}

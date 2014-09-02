@@ -9,6 +9,7 @@ import (
 	// "log"
 	"mime"
 	"mime/multipart"
+	"os"
 	"path"
 	"regexp"
 	"strings"
@@ -136,7 +137,7 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 
 		// XXX(user) src="cid:d3b11fe4b395a6995fcdb51988247200.png"
 		var r = regexp.MustCompile(`src="cid:([^"]+)"`)
-		body = r.ReplaceAll(body, []byte("src=\""+prefix+"/$1\""))
+		body = r.ReplaceAll(body, []byte("src=\""+prefix+"/cid/$1\""))
 
 		email.Message = string(body)
 	} else if strings.HasPrefix(contentType, "image/") {
@@ -156,7 +157,8 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 
 		if filename != "" {
 			// log.Println(path.Join(downloadDir, filename))
-			ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
+			os.MkdirAll(path.Join(downloadDir, "cid"), 0755)
+			ioutil.WriteFile(path.Join(downloadDir, "cid", filename), body, 0644)
 		}
 	} else if part.Header.Get(kContentDisposition) != "" {
 		// 附件
@@ -164,7 +166,8 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 
 		// TODO(user) 文件名的确定方案
 		filename := RFC2047.Decode(part.FileName())
-		ioutil.WriteFile(path.Join(downloadDir, filename), body, 0644)
+		os.MkdirAll(path.Join(downloadDir, "att"), 0755)
+		ioutil.WriteFile(path.Join(downloadDir, "att", filename), body, 0644)
 	} else if strings.HasPrefix(contentType, "multipart/") {
 		// TODO(user) 需要注意递归的处理流程，例如：
 		// multipart/mixed

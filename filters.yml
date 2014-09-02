@@ -26,6 +26,17 @@
     Label: HTTPs
 
 - filter:
+  name: Cooder
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [Subject, Contains, Cooder]
+      - [Subject, Contains, COODER]
+  action:
+    Label: Cooder
+
+- filter:
   name: Calendars
   condition:
     match: Any

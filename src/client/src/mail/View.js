@@ -158,7 +158,11 @@ define(function (require) {
 
 
         var attachments = u.map(email.attachments, function(item){
-            return { title: item, value: item, checked: true };
+            return {
+                title: item,
+                value: email.uidl + '/att/' + item,
+                checked: true
+            };
         });
         util.composeMail(this.view, '转发邮件', {
             to: '',

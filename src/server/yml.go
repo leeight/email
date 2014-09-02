@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	// "log"
+	"io/ioutil"
+	"log"
+	"regexp"
 	// "net"
 
 	// "code.google.com/p/go.net/publicsuffix"
@@ -13,6 +15,10 @@ import (
 )
 
 func main() {
+	pattern := regexp.MustCompile(`src="(downloads/([^/]+)/([^"]+))"`)
+	body, _ := ioutil.ReadFile("body.raw")
+	log.Printf("%v", pattern.FindAllSubmatch(body, 10))
+	return
 	// domain, _ := publicsuffix.EffectiveTLDPlusOne("email.baidu.com")
 	// log.Printf("Domain = %s\n", domain)
 

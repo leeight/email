@@ -8,7 +8,7 @@ import (
 	"mime"
 	"mime/multipart"
 	"net/textproto"
-	"net/url"
+	// "net/url"
 	"path"
 	"strings"
 
@@ -63,7 +63,7 @@ var (
 // 读取资源的接口
 // 例如 ioutil.ReadFile
 type ResourceReader interface {
-	Read(uidl, name string) ([]byte, error)
+	Read(name string) ([]byte, error)
 }
 
 type Envelope interface {
@@ -99,7 +99,6 @@ func (this *SimpleEnvelope) Headers() textproto.MIMEHeader {
 //{{{
 
 type RelatedEnvelope struct {
-	Uidl       string   // 回复邮件的时候，需要有这个东东，这样次就可以从这个目录里面去寻找资源了
 	Message    string   // HTML邮件的正文
 	ContentIds []string // HTML邮件正文中所引用的资源，例如<img src="cid:...">
 	boundary   string
@@ -118,11 +117,14 @@ func (this *RelatedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 	part.Write(body)
 
 	for _, resource := range this.ContentIds {
+		name := path.Base(resource)
 		header := textproto.MIMEHeader{}
 		// TODO(user) 如何识别文件的类型呢？后缀名貌似不太靠谱，都被隐藏到XXX里面去了
-		header.Set("Content-Type", fmt.Sprintf("%s; name=\"%s\"",
-			GuessMimetype(resource), RFC2047.Encode(resource)))
-		header.Set("Content-Id", fmt.Sprintf("<%s>", url.QueryEscape(resource)))
+		header.Set("Content-Type", fmt.Sprintf(`%s; name="%s"`,
+			GuessMimetype(name), RFC2047.Encode(name)))
+		header.Set("Content-Id", fmt.Sprintf("<%s>", name))
+		header.Set("Content-Disposition", fmt.Sprintf(`inline; filename="%s"`,
+			RFC2047.Encode(name)))
 		header.Set("Content-Transfer-Encoding", kDefaultContentTransferEncoding)
 
 		part, err := writer.CreatePart(header)
@@ -130,7 +132,7 @@ func (this *RelatedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 			continue
 		}
 
-		xyz, err := rr.Read(this.Uidl, resource)
+		xyz, err := rr.Read(resource)
 		if err != nil {
 			continue
 		}
@@ -156,7 +158,6 @@ func (this *RelatedEnvelope) Headers() textproto.MIMEHeader {
 //{{{
 
 type MixedEnvelope struct {
-	Uidl        string   // 回复邮件的时候，需要有这个东东，这样次就可以从这个目录里面去寻找资源了
 	Message     string   // HTML邮件的正文
 	ContentIds  []string // HTML邮件正文中所引用的资源，例如<img src="cid:...">
 	Attachments []string // 邮件中的附件
@@ -170,7 +171,6 @@ func (this *MixedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 	this.boundary = writer.Boundary()
 
 	re := RelatedEnvelope{
-		Uidl:       this.Uidl,
 		Message:    this.Message,
 		ContentIds: this.ContentIds,
 	}
@@ -179,12 +179,13 @@ func (this *MixedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 	part.Write(body)
 
 	for _, attach := range this.Attachments {
+		name := path.Base(attach)
 		header := textproto.MIMEHeader{}
 		// TODO(user) 如何识别文件的类型呢？后缀名貌似不太靠谱，都被隐藏到XXX里面去了
 		header.Set("Content-Type", fmt.Sprintf("%s; name=\"%s\"",
-			GuessMimetype(attach), RFC2047.Encode(attach)))
+			GuessMimetype(name), RFC2047.Encode(name)))
 		header.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"",
-			RFC2047.Encode(attach)))
+			RFC2047.Encode(name)))
 		header.Set("Content-Transfer-Encoding", kDefaultContentTransferEncoding)
 
 		part, err := writer.CreatePart(header)
@@ -192,7 +193,7 @@ func (this *MixedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 			continue
 		}
 
-		xyz, err := rr.Read(this.Uidl, attach)
+		xyz, err := rr.Read(attach)
 		if err != nil {
 			continue
 		}
@@ -218,13 +219,14 @@ func (this *MixedEnvelope) Headers() textproto.MIMEHeader {
 func GuessMimetype(name string) string {
 	var ext, mtype string
 
-	ext = path.Ext(name)
+	at := strings.Index(name, "@")
+	if at != -1 {
+		ext = path.Ext(name[:at])
+	} else {
+		ext = path.Ext(name)
+	}
 
 	if ext != "" {
-		at := strings.Index(ext, "@")
-		if at != -1 {
-			ext = ext[:at]
-		}
 		mtype = mime.TypeByExtension(ext)
 	}
 
