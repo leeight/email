@@ -302,7 +302,7 @@ func (email *EMail) Store(db *sql.DB) (int64, error) {
 		stmt, err = tx.Prepare(
 			"UPDATE mails SET " +
 				"`uidl` = ?, `from` = ?, `to` = ?, `cc` = ?, `bcc` = ?, " +
-				"`reply_to` = ?, `date` = ?, `subject` = ?, `message` = ? " +
+				"`reply_to` = ?, `date` = ?, `subject` = ?, `message` = ?, " +
 				"`is_read` = ?, `is_delete` = ? " +
 				"WHERE `id` = ?")
 	} else {

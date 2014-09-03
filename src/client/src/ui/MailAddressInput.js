@@ -237,7 +237,8 @@ define(function(require) {
         var suggestions = mai.suggestions;
         var activeIndex = mai.layer.activeIndex;
         if (suggestions && suggestions[activeIndex]) {
-            mai.addItem(suggestions[activeIndex]);
+            var item = suggestions[activeIndex];
+            mai.addItem({name: item.name, address: item.email});
             mai.layer.hide();
             return;
         }

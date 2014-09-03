@@ -68,11 +68,19 @@ type frontendType struct {
 	Name string `json:"name"`
 }
 
+type serviceType struct {
+	Doc docServiceType
+}
+
+type docServiceType struct {
+}
+
 type ServerConfig struct {
 	Http     httpType
 	Pop3     pop3Type
 	Smtp     smtpType
 	Frontend frontendType
+	Service  serviceType
 	Dirs     struct {
 		Base string
 	}
