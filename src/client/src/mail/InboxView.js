@@ -10,6 +10,7 @@ define(function (require) {
     var lib = require('esui/lib');
     var locator = require('er/locator');
     var u = require('underscore');
+    var notification = require('common/notification');
 
     var ListView = require('bat-ria/mvc/ListView');
 
@@ -116,35 +117,21 @@ define(function (require) {
     MailInboxView.prototype.uiEvents = {
         'refresh:click': function() {
             locator.reload();
-        },
-        'markAsRead:click': function() {
-            var ids = u.map(this.get('table').getSelectedItems(), function(item) {
-                return item.id;
-            });
-            this.model.markAsRead(ids).then(function(){
-                locator.reload();
-            })
-        },
-        'delete:click': function() {
-            var ids = u.map(this.get('table').getSelectedItems(), function(item) {
-                return item.id;
-            });
-            this.model.deleteMails(ids).then(function(){
-                locator.reload();
-            })
-        },
-        'table:select': function(evt) {
-            var selectedIndex = evt.selectedIndex;
-            if (selectedIndex && selectedIndex.length) {
-                // this.get('archive').enable();
-                this.get('markAsRead').enable();
-                this.get('delete').enable();
+        }
+    };
+
+    MailInboxView.prototype.enterDocument = function() {
+        ListView.prototype.enterDocument.apply(this, arguments);
+
+        // 提示新邮件
+        var subjects = [];
+        u.each(this.model.get('tableData'), function(email) {
+            if (email.is_read === 0) {
+                subjects.push(email.subject);
             }
-            else {
-                // this.get('archive').disable();
-                this.get('markAsRead').disable();
-                this.get('delete').disable();
-            }
+        });
+        if (subjects.length) {
+            notification.show('新邮件', subjects.join('\n'));
         }
     };
 

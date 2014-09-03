@@ -28,6 +28,8 @@ define(
          * @ignore
          */
         function init() {
+            var notification = require('common/notification');
+            notification.enable();
 
             var user = require('bat-ria/system/user');
             var visitor = user.visitor;
