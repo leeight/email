@@ -76,10 +76,21 @@ define(function (require) {
     };
 
     function displaySuggestions(view, control) {
-        var keyword = control.getChild('input').getValue();
-        view.model.getContacts(keyword).then(function(contacts) {
-            control.set('suggestions', contacts);
-        });
+        var timer = control.get('_delayTimer');
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function() {
+            var keyword = control.getChild('input').getValue();
+            if (u.trim(keyword).length) {
+                view.model.getContacts(u.trim(keyword)).then(function(contacts) {
+                    control.set('suggestions', contacts);
+                });
+            } else {
+                control.set('suggestions', [])
+            }
+        }, 300);
+        control.set('_delayTimer', timer);
     }
 
     /**

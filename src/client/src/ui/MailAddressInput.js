@@ -16,6 +16,31 @@ define(function(require) {
 
 
     /**
+     * 选中某一项
+     *
+     * @param {Event} e DOM事件对象
+     * @ignore
+     */
+    function selectLayerItem(e) {
+        this.layer.hide();
+
+        var target = e.target;
+        while (target !== e.currentTarget
+            && !lib.hasAttribute(target, 'data-index')
+        ) {
+            target = target.parentNode;
+        }
+
+        if (target === e.currentTarget) {
+            return;
+        }
+
+        var index = +target.getAttribute('data-index');
+        var item = this.suggestions[index];
+        this.addItem(item);
+    }
+
+    /**
      * MailAddressInput用浮层
      *
      * @extends Layer
@@ -24,13 +49,15 @@ define(function(require) {
      */
     function MailAddressInputLayer() {
         Layer.apply(this, arguments);
+
+        this.activeIndex = 0;
     }
     lib.inherits(MailAddressInputLayer, Layer);
 
     MailAddressInputLayer.prototype.nodeName = 'ul';
 
     MailAddressInputLayer.prototype.dock = {
-        strictWidth: true
+        // strictWidth: true
     };
 
     MailAddressInputLayer.prototype.render = function (element) {
@@ -39,27 +66,63 @@ define(function(require) {
         var suggestions = this.control.suggestions || [];
         for (var i = 0; i < suggestions.length; i++) {
             var classes = this.control.helper.getPartClasses('node');
-            // if (i === this.control.activeIndex) {
-            //     classes.push.apply(
-            //         classes,
-            //         this.control.helper.getPartClasses('node-active')
-            //     );
-            // }
 
             html += '<li data-index="' + i + '"'
                 + ' class="' + classes.join(' ') + '">';
-
             html += this.control.getLayerItemHTML(suggestions[i]);
         }
 
-        var offset = lib.getOffset(this.control.getFocusTarget());
-        element.style.top = (offset.top + offset.height) + 'px';
-        element.style.left = offset.left + 'px';
         element.innerHTML = html;
+        this.setActiveIndex(0);
+    };
+
+    MailAddressInputLayer.prototype.setActiveIndex = function(activeIndex) {
+        // 设置为激活的状态
+        var className = this.control.helper.getPartClasses('node-active');
+        var element = this.getElement(false);
+        if (element) {
+            // 删除当前选中的
+            var child = element.children[this.activeIndex];
+            if (child) {
+                lib.removeClass(child, className)
+            }
+
+            // 选中需要选中的
+            child = element.children[activeIndex];
+            if (child) {
+                lib.addClass(child, className);
+                this.activeIndex = activeIndex;
+            }
+        }
+    }
+
+    MailAddressInputLayer.prototype.activeNext = function() {
+        var totalCount = (this.control.suggestions || []).length;
+        if (totalCount <= 0) {
+            return;
+        }
+
+        var activeIndex = (this.activeIndex + 1) % totalCount;
+        this.setActiveIndex(activeIndex);
+    };
+
+    MailAddressInputLayer.prototype.activePrev = function() {
+        var totalCount = (this.control.suggestions || []).length;
+        if (totalCount <= 0) {
+            return;
+        }
+
+        var activeIndex = 0;
+        if (this.activeIndex === 0) {
+            activeIndex = Math.max(0, totalCount - 1);
+        } else {
+            activeIndex = this.activeIndex - 1;
+        }
+        this.setActiveIndex(activeIndex);
     };
 
     MailAddressInputLayer.prototype.initBehavior = function (element) {
-        // this.control.helper.addDOMEvent(element, 'click', selectItem);
+        this.control.helper.addDOMEvent(element, 'click', selectLayerItem);
     };
 
     /**
@@ -126,9 +189,15 @@ define(function(require) {
      */
     MailAddressInput.prototype.getLayerItemHTML = function (item) {
         var data = {
-            text: u.escape(item.email)
+            name: u.escape(item.name || item.email.replace(/@.*/, '')),
+            email: u.escape(item.email),
+            avatar: this.helper.getPartClasses('avatar'),
+            msginf: this.helper.getPartClasses('msginf')
         };
-        return lib.format('<span>${text}</span>', data);
+        return lib.format(
+            '<div class="${avatar}"></div>' +
+            '<div class="${msginf}">${name}<br /><span>${email}</span></div>',
+            data);
     };
 
     /**
@@ -149,24 +218,30 @@ define(function(require) {
         var preview = lib.g(this.helper.getId('preview'));
         var input = lib.g(this.getChild('input').inputId);
         this.helper.addDOMEvent(preview, 'click', removeItemIfPossible);
-        this.helper.addDOMEvent(input, 'keyup', removeLastItemIfPossible);
+        this.helper.addDOMEvent(input, 'keyup', dispatchKeyboradEvent);
         this.getChild('input').on('enter', function(e) {
-            processKeyboardEvent(this, mai);
+            tryingAddNewItem(this, mai);
         });
         this.getChild('input').on('input', function(e) {
             mai.fire('input');
         });
-        this.getChild('input').on('blur', function(e) {
-            mai.layer.hide();
-        });
-
-        this.layer.getElement(true);
     };
 
     /**
      * 处理回车和;的事件
+     * 1. 如果当前layer有选中的数据，优先使用layer选中的那条数据
+     * 2. 否则试着解析input的内容，如果能解析成功的话，就用input的内容
+     * 如果1和2都失败的话，那么什么也不做
      */
-    function processKeyboardEvent(input, mai) {
+    function tryingAddNewItem(input, mai) {
+        var suggestions = mai.suggestions;
+        var activeIndex = mai.layer.activeIndex;
+        if (suggestions && suggestions[activeIndex]) {
+            mai.addItem(suggestions[activeIndex]);
+            mai.layer.hide();
+            return;
+        }
+
         var value = input.getValue();
         if (!value) {
             return;
@@ -175,7 +250,6 @@ define(function(require) {
         var item = parseItem(value);
         if (item) {
             mai.addItem(item);
-            input.setValue('');
         }
     }
 
@@ -202,10 +276,19 @@ define(function(require) {
         }
     }
 
-    function removeLastItemIfPossible(e) {
+    function dispatchKeyboradEvent(e) {
         var keyCode = e.which || e.keyCode;
-        if (keyCode === 186) {
-            processKeyboardEvent(this.getChild('input'), this);
+        if (keyCode === 186 || keyCode === 59) {
+            // 处理输入;的情况 Opera和Firefox是59，其它的浏览器是186
+            tryingAddNewItem(this.getChild('input'), this);
+            return;
+        } else if (keyCode === 38) {
+            // Arrow up
+            this.layer.activePrev();
+            return;
+        } else if (keyCode === 40) {
+            // Arrow down
+            this.layer.activeNext();
             return;
         }
 
@@ -261,6 +344,10 @@ define(function(require) {
 
         var previewContainer = lib.g(this.helper.getId('preview'));
         lib.insertBefore(reference.firstChild, previewContainer.lastChild);
+
+
+        this.getChild('input').setValue('');
+        this.getFocusTarget().focus();
     };
 
 
@@ -309,7 +396,12 @@ define(function(require) {
                  */
                 name: 'suggestions',
                 paint: function (mai) {
-                    mai.layer.repaint();
+                    if (!mai.suggestions || !mai.suggestions.length) {
+                        mai.layer.hide();
+                    } else {
+                        mai.layer.repaint();
+                        mai.layer.show();
+                    }
                 }
             }
         );
@@ -329,7 +421,7 @@ define(function(require) {
             this.layer = null;
         }
 
-        Control.prototype.dispose.apply(this, arguments);
+        InputControl.prototype.dispose.apply(this, arguments);
     };
 
     require('esui').register(MailAddressInput);

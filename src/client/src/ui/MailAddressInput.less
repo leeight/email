@@ -18,11 +18,41 @@
     left: 0;
     top: 0;
     background: #fff;
-    width: 300px;
+    min-width: 300px;
+    border: 1px solid rgba(0,0,0,.2);
+    transition: opacity .218s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    // padding: 6px 0;
+
+    li {
+        // height: 20px;
+        overflow: hidden;
+        margin: 5px;
+        line-height: 20px;
+        &:hover {
+            background: #eee;
+        }
+    }
+}
+
+.ui-mailaddressinput-node-active {
+    background: #eee;
 }
 
 .ui-mailaddressinput-layer-hidden {
-    // display: none;
+    display: none;
+}
+
+.ui-mailaddressinput-avatar,
+.ui-mailaddressinput-msginfo {
+    float: left;
+}
+
+.ui-mailaddressinput-avatar {
+    width: 32px;
+    height: 32px;
+    background: url(../common/img/no_photo.png) no-repeat top left;
+    margin: 4px 5px 0 5px;
 }
 
 .ui-mailaddressinput-preview,

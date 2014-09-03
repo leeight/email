@@ -45,7 +45,7 @@ define(function (require) {
      * @param {string} keyword 联系人的关键字
      */
     MailComposeModel.prototype.getContacts = function(keyword) {
-        return api.contactsList({keyword: keyword}).then(function(page){
+        return api.contactsList({keyword: keyword, pageSize: 6}).then(function(page){
             return page.result || [];
         })
     };

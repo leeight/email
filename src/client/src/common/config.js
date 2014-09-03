@@ -26,7 +26,11 @@ define(function (require) {
         api: apiConfig,
 
         // ER默认路径
-        index: '/mail/inbox'
+        index: '/mail/inbox',
+
+        hooks: {
+            SHOW_LOADING: false
+        }
 
         // // 系统名称
         // systemName: '品牌广告',
