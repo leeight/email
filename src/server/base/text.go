@@ -53,6 +53,7 @@ func StripUnnecessaryTags(html []byte) []byte {
 		return true
 	})
 	sanitizer.AllowAttrs("alt", "border").OnElements("img")
+	sanitizer.AllowAttrs("style").OnElements("span")
 
 	return sanitizer.SanitizeBytes(html)
 	// p2 := regexp.MustCompile(`(?si)((<!--\[if.*?endif\]-->)|(<style[^>]*>.*?</style>))`)

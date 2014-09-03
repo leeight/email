@@ -126,25 +126,44 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	raw.WriteString("\r\n")
 	raw.Write(body)
 
-	ioutil.WriteFile("raw.txt", raw.Bytes(), 0644)
+	// ioutil.WriteFile("raw.txt", raw.Bytes(), 0644)
 	// return
 
 	// 开始发送邮件
+	go sendMail(ctx, from, to, cc, raw.Bytes())
+	// log.Info("Sending message....")
+	// smtpserver := config.Smtp.GetHostName()
+	// tls := config.Smtp.Tls
+	// auth := base.LoginAuth(config.Smtp.Username, config.Smtp.Password)
+
+	// err = base.SendMail(from, to, cc, raw.Bytes(), smtpserver, tls, auth)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+	// log.Info("Done")
+
+	s, _ := json.MarshalIndent(
+		base.NewSimpleResponse("true"), "", "    ")
+	w.Write(s)
+}
+
+func sendMail(ctx web.Context, from *mail.Address, to []*mail.Address, cc []*mail.Address, raw []byte) {
+	log := ctx.GetLogger()
+	config := ctx.GetConfig()
+
 	log.Info("Sending message....")
 	smtpserver := config.Smtp.GetHostName()
 	tls := config.Smtp.Tls
 	auth := base.LoginAuth(config.Smtp.Username, config.Smtp.Password)
 
-	err = base.SendMail(from, to, cc, raw.Bytes(), smtpserver, tls, auth)
+	err := base.SendMail(from, to, cc, raw, smtpserver, tls, auth)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Warning(err.Error())
+		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	log.Info("Done")
-
-	s, _ := json.MarshalIndent(
-		base.NewSimpleResponse("true"), "", "    ")
-	w.Write(s)
 }
 
 func getAddressList(value string) []*mail.Address {

@@ -7,6 +7,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	_ "github.com/mattn/go-sqlite3"
 
 	"../net/mail"
@@ -42,7 +43,7 @@ type EMailViewModel struct {
 	Subject     string          `json:"subject"`
 	Message     string          `json:"message"`
 	Importance  string          `json:"importance"`
-	Attachments []string        `json:"attachments"`
+	Attachments []*Attachment   `json:"attachments"`
 	Labels      []*LabelType    `json:"labels"`
 	Status      int             `json:"status"`
 	IsRead      int             `json:"is_read"`
@@ -55,6 +56,12 @@ type Contact struct {
 	Name  string `json:"name"`
 	EMail string `json:"email"`
 	Count int    `json:"count"`
+}
+
+// 附件的信息
+type Attachment struct {
+	Size string `json:"size"`
+	Name string `json:"name"`
 }
 
 type Response interface {
@@ -125,8 +132,8 @@ func NewListResponse(ok string, totalCount int, pageNo int, pageSize int, args .
 	}
 }
 
-func setAttachments(downloadDir, uidl string) []string {
-	attachments := make([]string, 0)
+func setAttachments(downloadDir, uidl string) []*Attachment {
+	attachments := make([]*Attachment, 0)
 	fileInfos, err := ioutil.ReadDir(path.Join(downloadDir, uidl, "att"))
 	if err != nil {
 		return attachments
@@ -136,7 +143,11 @@ func setAttachments(downloadDir, uidl string) []string {
 		if item.IsDir() {
 			continue
 		}
-		attachments = append(attachments, item.Name())
+		att := Attachment{
+			humanize.Bytes(uint64(item.Size())),
+			item.Name(),
+		}
+		attachments = append(attachments, &att)
 	}
 	return attachments
 }

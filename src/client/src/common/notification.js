@@ -20,6 +20,12 @@ exports.show = function(title, body) {
     }
     instance = new Notification(title, { body: body });
 
+    setTimeout(function() {
+        if (instance.close) {
+            instance.close();
+        }
+    }, 5000);
+
     // instance.onclick = function() {
     //     // TODO
     // };

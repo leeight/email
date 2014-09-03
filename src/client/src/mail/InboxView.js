@@ -68,7 +68,9 @@ define(function (require) {
                 var extra = '';
                 if (item.attachments && item.attachments.length) {
                     extra = '<span class="x-icon-attchments" title="' +
-                    item.attachments.join(' ') + '"></span>';
+                    u.map(item.attachments, function(x){
+                        return x.name + ' (' + x.size + ')';
+                    }).join(' ') + '"></span>';
                 }
 
                 var prefix = '';

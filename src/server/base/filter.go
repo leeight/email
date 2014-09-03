@@ -32,6 +32,7 @@ const (
 	kHTo            = "To"
 	kHCc            = "Cc"
 	kHSubject       = "Subject"
+	kHSentTo        = "SentTo"
 	kHBody          = "Body"
 	kHSubjectOrBody = "SubjectOrBody"
 	kHDate          = "Date"
@@ -81,6 +82,21 @@ func CheckRule(email *EMail, msg *mail.Message, rule []string) bool {
 		}
 
 		return operator.Exec(cc, rule[2])
+	case kHSentTo:
+		to, err := mail.ParseAddressList(email.To)
+		if err == nil {
+			if operator.Exec(to, rule[2]) {
+				return true
+			}
+			cc, err := mail.ParseAddressList(email.Cc)
+			if err == nil {
+				if operator.Exec(cc, rule[2]) {
+					return true
+				}
+			}
+		}
+
+		return false
 	case kHSubject:
 		return operator.Exec(email.Subject, rule[2])
 	case kHBody:

@@ -20,10 +20,59 @@
     match: Any
     rules:
       - [From, Contains, https@baidu.com]
-      - [To, Contains, https@baidu.com]
+      - [SentTo, Contains, https@baidu.com]
       - [Subject, Contains, https]
   action:
     Label: HTTPs
+
+- filter:
+  name: Weigou
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [Subject, Contains, 微购]
+      - [SentTo, Contains, 'weigou-bugs@baidu.com']
+      - [SentTo, Contains, 'baidu-ec-qa@baidu.com']
+      - [SentTo, Contains, 'baidu-ec@baidu.com']
+      - [SentTo, Contains, 'eckg-rd@baidu.com']
+      - [SentTo, Contains, 'ecpm@baidu.com']
+      - [SentTo, Contains, 'baidu-ec-rd@baidu.com']
+      - [SentTo, Contains, 'ecrd-mp@baidu.com']
+      - [SentTo, Contains, 'ecrd-fe@baidu.com']
+      - [SentTo, Contains, 'ecqa-mp@baidu.com']
+  action:
+    Label: 微购
+
+- filter:
+  name: Huacai
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, huacai]
+  action:
+    Label: 华彩专区
+
+- filter:
+  name: 邮件列表/w3.org
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, '@w3.org']
+  action:
+    Label: 邮件列表/w3.org
+
+- filter:
+  name: 邮件列表
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, '@lists.webkit.org']
+  action:
+    Label: 邮件列表/webkit.org
 
 - filter:
   name: Cooder
@@ -50,8 +99,7 @@
   condition:
     match: Any
     rules:
-      - [To, Contains, liyubei@baidu.com]
-      - [Cc, Contains, liyubei@baidu.com]
+      - [SentTo, Contains, liyubei@baidu.com]
   action:
     Label: SentToMe
 
@@ -69,8 +117,7 @@
   condition:
     match: Any
     rules:
-      - [Cc, Contains, bdd-core@baidu.com]
-      - [To, Contains, bdd-core@baidu.com]
+      - [SentTo, Contains, bdd-core@baidu.com]
   action:
     Label: bdd-core
 
@@ -89,8 +136,7 @@
   condition:
     match: Any
     rules:
-      - [Cc, Contains, imageplus]
-      - [To, Contains, imageplus]
+      - [SentTo, Contains, imageplus]
       - [Subject, Contains, 图+]
   action:
     Label: 图+
