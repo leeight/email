@@ -166,7 +166,7 @@ func (this *EMail) ToViewModel(downloadDir string, db *sql.DB) *EMailViewModel {
 	evm.Date = this.Date
 	evm.Subject = this.Subject
 	evm.Status = this.Status
-	evm.Message = this.Message
+	evm.Message = string(StripUnnecessaryTags([]byte(this.Message)))
 	evm.IsRead = this.IsRead
 	evm.IsDelete = this.IsDelete
 	evm.From, _ = mail.ParseAddress(this.From)

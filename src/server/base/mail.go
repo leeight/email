@@ -237,7 +237,7 @@ func decodeMesssageBody(r io.Reader, c string) ([]byte, error) {
 		cd, _ := iconv.Open("utf-8", charset)
 		defer cd.Close()
 
-		body = StripUnnecessaryTags(body)
+		// body = StripUnnecessaryTags(body)
 
 		var outbuf [512]byte
 		html, _, err := cd.Conv(body, outbuf[:])

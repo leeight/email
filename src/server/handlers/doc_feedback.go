@@ -60,10 +60,13 @@ func (h DocFeedbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	dpath := path.Join(
 		config.DownloadDir(),
 		parts[0],
-		parts[1],
+		"doc",
 		strings.Replace(parts[2], path.Ext(parts[2]), ".pdf", 1),
 	)
-	log.Info(dpath)
+	log.Info("%s, %s, %s, %s", dpath,
+		r.FormValue("pages"),
+		r.FormValue("page"),
+		r.FormValue("type"))
 
 	// 保存文件的内容，下次预览就可以用了
 	os.MkdirAll(path.Dir(dpath), 0755)

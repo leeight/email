@@ -20,6 +20,16 @@
     Label: 邮件列表/webkit.org
 
 - filter:
+  name: 监控邮件
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [Fron, Contains, 'galaxy-mon@baidu.com']
+  action:
+    Label: 监控邮件
+
+- filter:
   name: Spam Filter
   stop: true
   condition:

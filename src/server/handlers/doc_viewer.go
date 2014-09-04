@@ -25,17 +25,19 @@ func (h DocViewerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	name := strings.Replace(r.URL.Path, "/doc/viewer/", "", 1)
 	abs := path.Join(config.DownloadDir(), name)
-	log.Info("%s", abs)
+	log.Info("name = [%s]", abs)
 
 	if _, err := os.Stat(abs); os.IsNotExist(err) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	pdfname := strings.Replace(name, path.Ext(name), ".pdf", 1)
+	parts := strings.Split(name, "/")
+	pdfname := parts[0] + "/doc/" + strings.Replace(parts[2], path.Ext(parts[2]), ".pdf", 1)
 	pdfabs := path.Join(config.DownloadDir(), pdfname)
+	log.Info("pdfabs = [%s]", pdfabs)
 	if _, err := os.Stat(pdfabs); err == nil {
-		http.Redirect(w, r, path.Base(pdfname), http.StatusMovedPermanently)
+		http.Redirect(w, r, "/downloads/"+pdfname, http.StatusMovedPermanently)
 		return
 	}
 

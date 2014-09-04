@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"time"
 	// "io/ioutil"
 	// "log"
 	// "regexp"
@@ -13,8 +14,8 @@ import (
 	"gopkg.in/yaml.v1"
 
 	"./base"
-	"./task"
-	"./web"
+	// "./task"
+	// "./web"
 	// "./net/mail"
 )
 
@@ -79,15 +80,16 @@ func main() {
 	// log.Printf("%s, %s", from.Name, from.Address)
 	// return
 
-	config, err := base.GetConfig("config.yml")
-	context := web.NewContext(config)
-	task.NewDocTransferTask("720788/att/2014年第二期加速度面授课表-20120901.xlsx", context)
-	return
+	// config, err := base.GetConfig("config.yml")
+	// context := web.NewContext(config)
+	// task.NewDocTransferTask("720788/att/2014年第二期加速度面授课表-20120901.xlsx", context)
+	// return
 
-	d, err := yaml.Marshal(&config.Service.Doc)
-	fmt.Println(string(d))
+	// d, err := yaml.Marshal(&config.Service.Doc)
+	// fmt.Println(string(d))
+	// return
+	fmt.Printf("%d\n", time.Now().UnixNano())
 	return
-
 	filters, err := base.GetFilters("filters.yml")
 	if err != nil {
 		panic(err)
@@ -101,7 +103,7 @@ func main() {
 	)
 	fmt.Printf("Action[\"label\"] = %s\n", filters[0].Action["label"])
 	fmt.Printf("Action[\"label\"] = %s\n", filters[1].Action["label"])
-	d, err = yaml.Marshal(&filters)
+	d, err := yaml.Marshal(&filters)
 	if err != nil {
 		panic(err)
 	}

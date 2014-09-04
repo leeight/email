@@ -10,6 +10,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"time"
 
 	"../RFC2047"
 	"../base"
@@ -65,8 +66,8 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var body []byte
 
 	if r.FormValue("attachments") != "" {
-		attachments = strings.Split(r.FormValue("attachments"), "; ")
 		// TODO(user) 校验合法性
+		attachments = strings.Split(r.FormValue("attachments"), "; ")
 	}
 
 	// 查找HTML邮件内容中是否存在Content-Id的引用
@@ -131,17 +132,6 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// 开始发送邮件
 	go sendMail(ctx, from, to, cc, raw.Bytes())
-	// log.Info("Sending message....")
-	// smtpserver := config.Smtp.GetHostName()
-	// tls := config.Smtp.Tls
-	// auth := base.LoginAuth(config.Smtp.Username, config.Smtp.Password)
-
-	// err = base.SendMail(from, to, cc, raw.Bytes(), smtpserver, tls, auth)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-	// log.Info("Done")
 
 	s, _ := json.MarshalIndent(
 		base.NewSimpleResponse("true"), "", "    ")
@@ -152,7 +142,6 @@ func sendMail(ctx web.Context, from *mail.Address, to []*mail.Address, cc []*mai
 	log := ctx.GetLogger()
 	config := ctx.GetConfig()
 
-	log.Info("Sending message....")
 	smtpserver := config.Smtp.GetHostName()
 	tls := config.Smtp.Tls
 	auth := base.LoginAuth(config.Smtp.Username, config.Smtp.Password)
@@ -160,10 +149,18 @@ func sendMail(ctx web.Context, from *mail.Address, to []*mail.Address, cc []*mai
 	err := base.SendMail(from, to, cc, raw, smtpserver, tls, auth)
 	if err != nil {
 		log.Warning(err.Error())
-		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Info("Done")
+
+	// 保存发送之后的邮件到本地
+	name := fmt.Sprintf("%d.txt", time.Now().UnixNano())
+	os.MkdirAll(path.Join(config.RawDir(), "sent"), 0755)
+	err = ioutil.WriteFile(path.Join(config.RawDir(), "sent", name), raw, 0644)
+	if err != nil {
+		log.Warning(err.Error())
+		return
+	}
+	log.Info("Saved Sent mail = %s", name)
 }
 
 func getAddressList(value string) []*mail.Address {
