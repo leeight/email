@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	// "log"
+	// "fmt"
 	"mime"
 	"mime/multipart"
 	"os"
@@ -194,6 +195,22 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 			if err != nil {
 				return err
 			}
+		}
+	} else {
+		_, params, err := mime.ParseMediaType(contentType)
+		if err != nil {
+			return err
+		}
+
+		// ----boundary_139482_2f47a231-302f-4eff-abfc-3775c844d98d
+		// Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;
+		// 	name="=?utf-8?B?5ZGI546w56qB5Ye65bel5L2c5Lia57upLnhsc3g=?="
+		// Content-Transfer-Encoding: base64
+		filename := RFC2047.Decode(params["name"])
+		if filename != "" {
+			body, _ := ioutil.ReadAll(reader)
+			os.MkdirAll(path.Join(downloadDir, "att"), 0755)
+			ioutil.WriteFile(path.Join(downloadDir, "att", filename), body, 0644)
 		}
 	}
 
