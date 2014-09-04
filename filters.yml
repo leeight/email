@@ -6,6 +6,7 @@
     match: Any
     rules:
       - [SentTo, Contains, '@w3.org']
+      - [SentTo, Contains, '@lists.css-discuss.org']
   action:
     Label: 邮件列表/w3.org
 
@@ -18,6 +19,17 @@
       - [SentTo, Contains, '@lists.webkit.org']
   action:
     Label: 邮件列表/webkit.org
+
+- filter:
+  name: 邮件列表
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, 'jpaas@baidu.com']
+      - [SentTo, Contains, 'jpaas-users@baidu.com']
+  action:
+    Label: 邮件列表/jpaas
 
 - filter:
   name: 监控邮件

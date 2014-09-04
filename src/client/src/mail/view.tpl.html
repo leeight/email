@@ -1,7 +1,11 @@
 <!-- target: TPL_mail_view -->
 <div class="mail-view">
     <div class="mail-subject">
+        <!-- if: ${email.subject} -->
         <h2>${email.subject}</h2>
+        <!-- else -->
+        <h2>(no subject)</h2>
+        <!-- /if -->
         <a href="#/mail/inbox">Inbox</a>
         <!-- if: ${email.labels} -->
             <!-- for: ${email.labels} as ${item} -->

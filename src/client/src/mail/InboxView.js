@@ -79,7 +79,7 @@ define(function (require) {
                 }
 
                 return prefix + '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
-                    lib.encodeHTML(item.subject) + '</a>' + extra;
+                    lib.encodeHTML(item.subject || '(no subject)') + '</a>' + extra;
             }
         },
         {

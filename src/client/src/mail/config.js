@@ -19,6 +19,14 @@ define(function (require) {
         {
             type: 'mail/Inbox',
             path: '/mail/inbox'
+        },
+        {
+            type: 'mail/Inbox',
+            path: '/mail/sent'
+        },
+        {
+            type: 'mail/Inbox',
+            path: '/mail/deleted'
         }
     ];
 

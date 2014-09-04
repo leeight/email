@@ -45,15 +45,21 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		skipCount = 0
 	}
 
+	isDeleted := r.PostFormValue("is_delete")
+
 	// 准备sql
 	sql := "SELECT " +
 		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
 		"`reply_to`, `subject`, `date`, `is_read` " +
 		"FROM mails "
-	if labelId > 0 {
-		sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ") "
+	if isDeleted == "1" {
+		sql += "WHERE `is_delete` = 1 "
 	} else {
-		sql += "WHERE `is_delete` != 1 "
+		if labelId > 0 {
+			sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ") "
+		} else {
+			sql += "WHERE `is_delete` != 1 "
+		}
 	}
 	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
 	log.Info(sql)
@@ -87,10 +93,14 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 查询总的数据量
 	var totalCount int
 	sql = "SELECT COUNT(*) FROM mails "
-	if labelId > 0 {
-		sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ")"
+	if isDeleted == "1" {
+		sql += "WHERE `is_delete` = 1 "
 	} else {
-		sql += "WHERE `is_delete` != 1 "
+		if labelId > 0 {
+			sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ")"
+		} else {
+			sql += "WHERE `is_delete` != 1 "
+		}
 	}
 	err = db.QueryRow(sql).Scan(&totalCount)
 	if err != nil {

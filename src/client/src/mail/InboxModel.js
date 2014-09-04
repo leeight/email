@@ -8,6 +8,8 @@ define(function (require) {
     var datasource = require('er/datasource');
     var api = require('common/config').api;
     var batUtil = require('bat-ria/util');
+    var locator = require('er/locator');
+    var u = require('underscore');
 
     /**
      * [Please Input Model Description]
@@ -28,6 +30,37 @@ define(function (require) {
     MailInboxModel.prototype.datasource = {
         labels: function(model) {
             return api.labelList({});
+        },
+        navigators: function(model) {
+            var index = location.href.indexOf('#');
+            var url = index === -1 ? '' : location.href.slice(index);
+
+            var navigators = [
+                {
+                    path: '#/mail/inbox',
+                    name: 'All Mail',
+                    active: false
+                },
+                {
+                    path: '#/mail/sent',
+                    name: 'Sent Mail',
+                    active: false
+                },
+                {
+                    path: '#/mail/deleted',
+                    name: 'Deleted Mail',
+                    active: false
+                }
+            ];
+
+            var label = model.get('label');
+            if (!label) {
+                u.each(navigators, function(item) {
+                    item.active = url.indexOf(item.path) === 0;
+                });
+            }
+
+            return navigators;
         }
     };
 
@@ -58,6 +91,16 @@ define(function (require) {
         pageSize: 15
     };
 
+
+    MailInboxModel.prototype.getExtraQuery = function () {
+        var index = location.href.indexOf('#');
+        var url = index === -1 ? '' : location.href.slice(index);
+        if (url.indexOf('#/mail/deleted') === 0) {
+            return { 'is_delete': 1 };
+        }
+
+        return {};
+    };
 
     // return模块
     require('er/util').inherits(MailInboxModel, ListModel);
