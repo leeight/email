@@ -169,7 +169,6 @@ func main() {
 		db.Exec(string(sqlContent))
 		db.Close()
 	}
-	return
 
 	// 先执行一次
 	receiveMail(config)(time.Now())
