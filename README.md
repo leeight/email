@@ -1,5 +1,7 @@
 Mac下面的Outlook总是弹登录框，无法忍受了。
 
+最新版本：0.0.3-alpha.1，查看[变更记录](Changelog)
+
 ## 支持的功能
 
 1. 通过POP3协议收取邮件，**不会删除服务器上的邮件**    
@@ -9,7 +11,6 @@ Mac下面的Outlook总是弹登录框，无法忍受了。
    2.  支持『回复』,『转发』邮件，回复和转发的时候，邮件中的图片内容和附件是可以正常被发送的，Outlook也可以正常处理（只测试了Mac下面的Outlook）
    
 3. 可以通过配置`filters.yml`来自定义过滤器
-
 
 ## 环境准备
 
@@ -40,23 +41,22 @@ cd email && make -C src/server
 
 ## 启动服务
 
-### 升级方式
-
-1. 从`0.0.1-alpha.1`升级到`0.0.2-alpha.1`的时候，建议把`data`目录删除掉，重新收取一次邮件，因为数据库的结构有变化，文件夹的结构也有调整。
-2. 新增了一个配置字段，`frontend.from`和`frontend.name`，这个是用来配置发件人信息的，`0.0.1-alpha.1`里面在代码里面写死是`liyubei@baidu.com`和`李玉北`，这次可以调整了
-
 ### 邮件收取
 
 将`email/config.example.yml`复制为`config.yml`，然后把用户名和密码替换为你的账户即可。
 
-`smtp`部分的用户名是`internal\username`，不是`username`
+`smtp`部分的用户名是`internal\username`，不是`username`。
 
 配置更新之后，执行 `bin/main` 即可，此时会自动创建 `data/baidu.com/username` 目录来存放收取的邮件或者解析出来的附件
 
-第一次收取邮件花费的时间比较久，请耐心等待
+第一次收取邮件花费的时间比较久，请耐心等待。
+
+### 联系人信息
+
+邮件收取完毕之后，`cd src/server && go run tools/fix_contacts.go`来修复一下联系人列表，之后就可以撰写邮件的时候，看到联系人自动提示的功能了。
 
 ### 邮件浏览
 
 邮件收取完毕之后，把`dist`目录的内容全部拷贝到`data/baidu.com/username`下面，然后执行 `bin/frontend` 就可以启动webserver来查看数据了。
 
-正常启动之后，可以通过 <http://localhost:8765/index.html#/mail/inbox> 来查看邮件
+正常启动之后，可以通过 <http://localhost:8765/index.html#/mail/inbox> 来查看邮件。
