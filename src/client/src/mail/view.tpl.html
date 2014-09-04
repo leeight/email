@@ -86,6 +86,38 @@
         </div>
     </div>
     <div class="mail-body" id="mail-body">
+      <!-- if: ${email.is_calendar} -->
+          <!-- if: ${email.message.METHOD} == "REQUEST" -->
+          <table class="mail-calendar">
+              <tr>
+                  <th>时间：</th>
+                  <td>${email.message.VEVENT.DTSTART} - ${email.message.VEVENT.DTEND}</td>
+              </tr>
+              <tr>
+                  <th>地点：</th>
+                  <td>${email.message.VEVENT.LOCATION|raw}</td>
+              </tr>
+              <tr>
+                  <th>组织者：</th>
+                  <td>${email.message.VEVENT.ORGANIZER|raw}</td>
+              </tr>
+              <tr>
+                  <th>参与人员：</th>
+                  <td>
+                      <!-- for: ${email.message.VEVENT.ATTENDEE} as ${attendee} -->
+                      ${attendee|raw}<br />
+                      <!-- /for -->
+                  </td>
+              </tr>
+              <tr>
+                  <td colspan="2"><pre>${email.message.VEVENT.DESCRIPTION|raw}</pre></td>
+              </tr>
+          </table>
+          <!-- else -->
+          暂不支持显示 ${email.message.METHOD} 类型的日历。
+          <!-- /if -->
+      <!-- else -->
       ${email.message|raw}
+      <!-- /if -->
     </div>
 </div>

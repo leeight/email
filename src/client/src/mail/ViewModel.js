@@ -10,6 +10,7 @@ define(function (require) {
     var batUtil = require('bat-ria/util');
     var moment = require('moment');
     var u = require('underscore');
+    var ical = require('common/ical');
 
     /**
      * [Please Input Model Description]
@@ -34,12 +35,19 @@ define(function (require) {
                         address: '未知来源'
                     };
                 }
-                if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
-                    email.message = '<pre>' + email.message + '</pre>';
-                }
 
-                // FIXME(user) 修复了 http://gitlab.baidu.com/baidu/email/issues/20 之后应该就不需要了
-                email.message = email.message.replace(/聽/g, '');
+                if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
+                    try {
+                        email.message = ical.parse(email.message);
+                        email.is_calendar = true;
+                    }
+                    catch(ex) {
+                        email.message = '<pre><b>' + ex.toString() + '</b>\n' + email.message + '</pre>';
+                    }
+                } else {
+                    // FIXME(user) 修复了 http://gitlab.baidu.com/baidu/email/issues/20 之后应该就不需要了
+                    email.message = email.message.replace(/聽/g, '');
+                }
 
                 // FIXME(user) 修复查看附件url的地址
                 u.each(email.attachments, function(item) {
