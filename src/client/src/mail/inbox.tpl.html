@@ -2,7 +2,14 @@
 <div class="mail-inbox">
     <div class="est-sidebar">
         <ul>
-        <!-- for: ${labels} as ${item} -->
+            <!-- if: !${label} -->
+            <li class="active"><a href="#/mail/inbox">All Mail</a></li>
+            <!-- else -->
+            <li><a href="#/mail/inbox">All Mail</a></li>
+            <!-- /if-->
+            <!-- <li><a href="#/mail/inbox">Sent Mail</a></li> -->
+            <br/>
+            <!-- for: ${labels} as ${item} -->
             <!-- if: ${item.id} == ${label} -->
             <li class="active">
             <!-- else -->
@@ -14,14 +21,7 @@
                 <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
                 <!-- /if-->
             </li>
-        <!-- /for -->
-            <br/>
-            <!-- <li><a href="#/mail/inbox">Sent Mail</a></li> -->
-            <!-- if: !${label} -->
-            <li class="active"><a href="#/mail/inbox">All Mail</a></li>
-            <!-- else -->
-            <li><a href="#/mail/inbox">All Mail</a></li>
-            <!-- /if-->
+            <!-- /for -->
         </ul>
     </div>
     <div class="est-main">
