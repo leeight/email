@@ -1,6 +1,6 @@
 Mac下面的Outlook总是弹登录框，无法忍受了。
 
-最新版本：0.0.3-alpha.1，查看[变更记录](ChangeLog.md)
+最新版本：0.0.3-alpha.3，查看[变更记录](ChangeLog.md)
 
 ## 支持的功能
 
