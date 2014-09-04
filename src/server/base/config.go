@@ -73,6 +73,11 @@ type serviceType struct {
 }
 
 type docServiceType struct {
+	Url      string
+	Pid      int
+	Token    string
+	Sformats []string
+	Tformat  string
 }
 
 type ServerConfig struct {

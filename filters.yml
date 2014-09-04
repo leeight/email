@@ -1,5 +1,25 @@
 # 邮件的过滤器配置信息
 - filter:
+  name: 邮件列表/w3.org
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, '@w3.org']
+  action:
+    Label: 邮件列表/w3.org
+
+- filter:
+  name: 邮件列表
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, '@lists.webkit.org']
+  action:
+    Label: 邮件列表/webkit.org
+
+- filter:
   name: Spam Filter
   stop: true
   condition:
@@ -53,26 +73,6 @@
       - [SentTo, Contains, huacai]
   action:
     Label: 华彩专区
-
-- filter:
-  name: 邮件列表/w3.org
-  stop: true
-  condition:
-    match: Any
-    rules:
-      - [SentTo, Contains, '@w3.org']
-  action:
-    Label: 邮件列表/w3.org
-
-- filter:
-  name: 邮件列表
-  stop: true
-  condition:
-    match: Any
-    rules:
-      - [SentTo, Contains, '@lists.webkit.org']
-  action:
-    Label: 邮件列表/webkit.org
 
 - filter:
   name: Cooder

@@ -36,6 +36,10 @@ define(function (require) {
                 if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
                     email.message = '<pre>' + email.message + '</pre>';
                 }
+
+                // FIXME(user) 修复了 http://gitlab.baidu.com/baidu/email/issues/20 之后应该就不需要了
+                email.message = email.message.replace(/聽/g, '');
+
                 return email;
             })
         }
