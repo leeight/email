@@ -9,6 +9,7 @@ define(function (require) {
     var api = require('common/config').api;
     var batUtil = require('bat-ria/util');
     var moment = require('moment');
+    var u = require('underscore');
 
     /**
      * [Please Input Model Description]
@@ -39,6 +40,18 @@ define(function (require) {
 
                 // FIXME(user) 修复了 http://gitlab.baidu.com/baidu/email/issues/20 之后应该就不需要了
                 email.message = email.message.replace(/聽/g, '');
+
+                // FIXME(user) 修复查看附件url的地址
+                u.each(email.attachments, function(item) {
+                    if (/\.(doc|xls|ppt)x?$/i.test(item.name)) {
+                        item.preview_url = 'http://127.0.0.1:8765/doc/viewer/' +
+                            email.uidl + '/att/' + encodeURIComponent(item.name);
+                    }
+                    else {
+                        item.preview_url = 'http://127.0.0.1:8765/downloads/' +
+                            email.uidl + '/att/' + encodeURIComponent(item.name);
+                    }
+                });
 
                 return email;
             })

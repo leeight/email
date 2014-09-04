@@ -38,6 +38,10 @@ func main() {
 	// 文档转化成功之后的wurl调用
 	http.Handle("/api/doc/feedback", handlers.DocFeedbackHandler{context})
 	http.Handle("/api/doc/notify", handlers.DocNotifyHandler{context})
+	http.Handle("/api/doc/transfer", handlers.DocTransferHandler{context})
+
+	// 默认情况下的文档预览页面，提示：可以提交文档转码请求或者直接下载
+	http.Handle("/doc/viewer/", handlers.DocViewerHandler{context})
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(config.Dirs.Base)))
