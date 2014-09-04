@@ -1,7 +1,11 @@
 define('common/config', ['require'], function (require) {
     var apiConfig = {
-            user: '/data/system/user',
-            constants: '/data/system/constants',
+            user: function () {
+                return {};
+            },
+            constants: function () {
+                return {};
+            },
             inboxList: '/api/inbox',
             readMail: '/api/mail/read',
             mailPost: '/api/mail/post',

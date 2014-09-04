@@ -1,6 +1,6 @@
 Mac下面的Outlook总是弹登录框，无法忍受了。
 
-最新版本：0.0.3-alpha.4，查看[变更记录](ChangeLog.md)
+最新版本：0.0.3-alpha.5，查看[变更记录](ChangeLog.md)
 
 ## 支持的功能
 
@@ -17,7 +17,7 @@ Mac下面的Outlook总是弹登录框，无法忍受了。
 1. 安装 [golang](http://golang.org)
 2. 检出依赖代码 `git clone http://gitlab.baidu.com/liyubei/gopath.git`
 3. 设置环境变量 `export GOPATH=$(pwd)/gopath`
-4. 检出项目代码 `git clone http://gitlab.baidu.com/baidu/email.git && cd email && git checkout 0.0.3-alpha.4`
+4. 检出项目代码 `git clone http://gitlab.baidu.com/baidu/email.git && cd email && git checkout 0.0.3-alpha.5`
 
 ## 项目BUILD
 

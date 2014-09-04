@@ -8,8 +8,8 @@ define(function (require) {
     // 接口配置
     // 如果期望添加API时工具自动配置，请保持apiConfig名称不变
     var apiConfig = {
-        user: '/data/system/user',
-        constants: '/data/system/constants',
+        user: function(){ return {} },
+        constants: function(){ return {} },
 
         inboxList: '/api/inbox',
         readMail: '/api/mail/read',

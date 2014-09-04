@@ -25,7 +25,8 @@
   condition:
     match: Any
     rules:
-      - [Fron, Contains, 'galaxy-mon@baidu.com']
+      - [From, Contains, 'galaxy-mon@baidu.com']
+      - [From, Contains, 'classified.ci@baidu.com']
   action:
     Label: 监控邮件
 

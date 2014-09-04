@@ -8,11 +8,11 @@
             <!-- else -->
             <li>
             <!-- /if -->
-                <a href="#/mail/inbox~label=${item.id}">${item.name}
                 <!-- if: ${item.unread_count} > 0 -->
-                (${item.unread_count})
+                <a href="#/mail/inbox~label=${item.id}"><b>${item.name} (${item.unread_count})</b></a>
+                <!-- else -->
+                <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
                 <!-- /if-->
-                </a>
             </li>
         <!-- /for -->
             <br/>
