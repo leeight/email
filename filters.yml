@@ -42,6 +42,7 @@
       - [From, Contains, 'noah-autopost@baidu.com']
   action:
     Label: 监控邮件
+    MarkAsRead: true
 
 - filter:
   name: Spam Filter

@@ -9,6 +9,7 @@ type Action interface {
 }
 
 type LabelAction struct{}
+type MarkAsReadAction struct{}
 type ForwardAction struct{}
 type ReplyAction struct{}
 type MoveMessaeAction struct{}
@@ -22,6 +23,7 @@ const (
 	kActionCopyMessage     = "CopyMessage"
 	kActionDeleteMessage   = "DeleteMessage"
 	kActionLabel           = "Label"
+	kActionMarkAsRead      = "MarkAsRead"
 	kActionChangeStatus    = "ChangeStatus"
 	kActionToDo            = "ToDo"
 	kActionReply           = "Reply"
@@ -62,11 +64,21 @@ func (this ChangeStatusAction) Exec(email *EMail, args ...interface{}) error {
 	return nil
 }
 
+func (this MarkAsReadAction) Exec(email *EMail, args ...interface{}) error {
+	db := args[1].(*sql.DB)
+	email.IsRead = 1
+	email.Store(db)
+	_, err := email.Store(db)
+	return err
+}
+
 // 过滤器要执行的动作
 func NewAction(t string) Action {
 	switch t {
 	case kActionLabel:
 		return LabelAction{}
+	case kActionMarkAsRead:
+		return MarkAsReadAction{}
 	}
 	return nil
 }
