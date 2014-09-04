@@ -17,7 +17,7 @@ Mac下面的Outlook总是弹登录框，无法忍受了。
 1. 安装 [golang](http://golang.org)
 2. 检出依赖代码 `git clone http://gitlab.baidu.com/liyubei/gopath.git`
 3. 设置环境变量 `export GOPATH=$(pwd)/gopath`
-4. 检出项目代码 `git clone http://gitlab.baidu.com/baidu/email.git && cd email && git checkout 0.0.2-alpha.1`
+4. 检出项目代码 `git clone http://gitlab.baidu.com/baidu/email.git && cd email && git checkout 0.0.3-alpha.3`
 
 ## 项目BUILD
 
