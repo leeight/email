@@ -1,4 +1,4 @@
-define('bat-ria/ui/loading', [
+define([
     'require',
     'underscore',
     'esui',

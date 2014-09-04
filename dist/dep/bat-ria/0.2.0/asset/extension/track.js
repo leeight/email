@@ -1,4 +1,4 @@
-define('bat-ria/extension/track', [
+define([
     'require',
     'underscore',
     'er-track'

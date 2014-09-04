@@ -1,4 +1,4 @@
-define('bat-ria/tpl', [
+define([
     'require',
     'er/ajax',
     'etpl'

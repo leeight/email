@@ -1,4 +1,4 @@
-define('bat-ria/system/user', [
+define([
     'require',
     'underscore',
     'er/permission'

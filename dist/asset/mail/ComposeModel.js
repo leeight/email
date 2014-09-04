@@ -18,6 +18,14 @@ define('mail/ComposeModel', [
     MailComposeModel.prototype.getDefaultArgs = function () {
         return { id: this.get('id') };
     };
+    MailComposeModel.prototype.getContacts = function (keyword) {
+        return api.contactsList({
+            keyword: keyword,
+            pageSize: 6
+        }).then(function (page) {
+            return page.result || [];
+        });
+    };
     MailComposeModel.prototype.getExtraData = function () {
         return {};
     };

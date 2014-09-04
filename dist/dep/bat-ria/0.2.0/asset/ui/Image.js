@@ -1,4 +1,4 @@
-define('bat-ria/ui/Image', [
+define([
     'require',
     'esui/lib',
     'esui/controlHelper',

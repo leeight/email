@@ -1,4 +1,4 @@
-define('bat-ria/mvc/FormView', [
+define([
     'require',
     'er/util',
     './BaseView',

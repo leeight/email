@@ -108,8 +108,8 @@ define('mail/View', [
         }
         var attachments = u.map(email.attachments, function (item) {
                 return {
-                    title: item,
-                    value: email.uidl + '/att/' + item,
+                    title: item.name,
+                    value: email.uidl + '/att/' + item.name,
                     checked: true
                 };
             });

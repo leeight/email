@@ -1,4 +1,4 @@
-define('bat-ria/mvc/ListModel', [
+define([
     'require',
     'underscore',
     'er/util',

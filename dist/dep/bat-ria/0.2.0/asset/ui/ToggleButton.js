@@ -1,4 +1,4 @@
-define('bat-ria/ui/ToggleButton', [
+define([
     'require',
     'esui/lib',
     'esui/InputControl',

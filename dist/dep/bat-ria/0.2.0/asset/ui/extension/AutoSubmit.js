@@ -1,4 +1,4 @@
-define('bat-ria/ui/extension/AutoSubmit', [
+define([
     'require',
     'underscore',
     'esui/lib',

@@ -1,4 +1,4 @@
-define('bat-ria/ui/Uploader', [
+define([
     'require',
     'esui/lib',
     'esui/controlHelper',

@@ -1,4 +1,4 @@
-define('bat-ria/mvc/rule', ['require'], function (require) {
+define(['require'], function (require) {
     return {
         maxLength: 20,
         mail: {

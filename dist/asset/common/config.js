@@ -7,11 +7,13 @@ define('common/config', ['require'], function (require) {
             mailPost: '/api/mail/post',
             markAsRead: '/api/mail/mark_as_read',
             deleteMails: '/api/mail/delete',
-            labelList: '/api/labels'
+            labelList: '/api/labels',
+            contactsList: '/api/contacts'
         };
     var config = {
             api: apiConfig,
-            index: '/mail/inbox'
+            index: '/mail/inbox',
+            hooks: { SHOW_LOADING: false }
         };
     return config;
 });

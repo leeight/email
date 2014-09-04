@@ -1,4 +1,4 @@
-define('bat-ria/mvc/FormAction', [
+define([
     'require',
     'er/util',
     'underscore',

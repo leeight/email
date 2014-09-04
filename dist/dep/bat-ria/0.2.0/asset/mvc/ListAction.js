@@ -1,4 +1,4 @@
-define('bat-ria/mvc/ListAction', [
+define([
     'require',
     './BaseAction',
     'er/util',

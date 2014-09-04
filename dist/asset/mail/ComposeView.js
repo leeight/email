@@ -50,7 +50,31 @@ define('mail/ComposeView', [
             };
         return uiProperties;
     };
-    MailComposeView.prototype.uiEvents = {};
+    function displaySuggestions(view, control) {
+        var timer = control.get('_delayTimer');
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function () {
+            var keyword = control.getChild('input').getValue();
+            if (u.trim(keyword).length) {
+                view.model.getContacts(u.trim(keyword)).then(function (contacts) {
+                    control.set('suggestions', contacts);
+                });
+            } else {
+                control.set('suggestions', []);
+            }
+        }, 300);
+        control.set('_delayTimer', timer);
+    }
+    MailComposeView.prototype.uiEvents = {
+        'to:input': function (e) {
+            displaySuggestions(this, e.target);
+        },
+        'cc:input': function (e) {
+            displaySuggestions(this, e.target);
+        }
+    };
     require('er/util').inherits(MailComposeView, FormView);
     return MailComposeView;
 });

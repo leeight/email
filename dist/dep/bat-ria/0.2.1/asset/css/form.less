@@ -1,0 +1,77 @@
+.form-block,
+.form-segment {
+    border: 1px solid @bat-border-blue;
+
+    h3,
+    .form-header {
+        background-color: @bat-bg-light-blue;
+        padding: 8px 10px;
+        line-height: 26px;
+        font-weight: 700;
+
+        & + .form-body {
+            border-top: 1px solid @bat-border-blue;
+        }
+    }
+
+    .form-body {
+        padding: 10px;
+    }
+}
+
+.form-block {
+    margin-bottom: 10px;
+}
+
+.form-segment {
+    border-bottom: none;
+
+    &:last-child {
+        border-bottom: 1px solid @bat-border-blue;
+    }
+    // 必须分开写，IE8不识别
+    &-last {
+        border-bottom: 1px solid @bat-border-blue;
+    }
+}
+
+.form-row {
+    .clearfix();
+    padding: 8px 10px;
+    line-height: 25px;
+
+    &.ui-panel {
+        margin-left: 0;
+    }
+}
+
+.form-value {
+    &:extend(.ui-row all);
+    overflow: hidden;
+    padding: 0;
+
+    .form-row {
+        padding: 0;
+        margin-top: 8px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+}
+
+.form-key {
+    float: left;
+    width: 100px;
+    text-align: right;
+    color: @bat-aux-color;
+}
+
+.form-operation {
+    &:extend(.ui-row all);
+
+    .form-block + &,
+    .form-segment + & {
+        padding-left: 0;
+    }
+}

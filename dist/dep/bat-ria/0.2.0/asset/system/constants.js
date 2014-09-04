@@ -1,4 +1,4 @@
-define('bat-ria/system/constants', [
+define([
     'require',
     'underscore'
 ], function (require) {

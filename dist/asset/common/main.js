@@ -4,6 +4,7 @@ define('common/main', [
     '../mail/config',
     '../dev/config',
     'ui/MailAddressInput',
+    'common/notification',
     'bat-ria/system/user',
     'bat-ria/main'
 ], function (require) {
@@ -15,6 +16,8 @@ define('common/main', [
     }
     requireConfigs();
     function init() {
+        var notification = require('common/notification');
+        notification.enable();
         var user = require('bat-ria/system/user');
         var visitor = user.visitor;
     }

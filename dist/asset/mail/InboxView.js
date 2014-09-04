@@ -5,6 +5,7 @@ define('mail/InboxView', [
     'esui/lib',
     'er/locator',
     'underscore',
+    'common/notification',
     'bat-ria/mvc/ListView',
     'er/util'
 ], function (require) {
@@ -13,6 +14,7 @@ define('mail/InboxView', [
     var lib = require('esui/lib');
     var locator = require('er/locator');
     var u = require('underscore');
+    var notification = require('common/notification');
     var ListView = require('bat-ria/mvc/ListView');
     function MailInboxView() {
         ListView.apply(this, arguments);
@@ -46,7 +48,9 @@ define('mail/InboxView', [
                 content: function (item) {
                     var extra = '';
                     if (item.attachments && item.attachments.length) {
-                        extra = '<span class="x-icon-attchments" title="' + item.attachments.join(' ') + '"></span>';
+                        extra = '<span class="x-icon-attchments" title="' + u.map(item.attachments, function (x) {
+                            return x.name + ' (' + x.size + ')';
+                        }).join(' ') + '"></span>';
                     }
                     var prefix = '';
                     if (item.importance) {
@@ -83,32 +87,18 @@ define('mail/InboxView', [
     MailInboxView.prototype.uiEvents = {
         'refresh:click': function () {
             locator.reload();
-        },
-        'markAsRead:click': function () {
-            var ids = u.map(this.get('table').getSelectedItems(), function (item) {
-                    return item.id;
-                });
-            this.model.markAsRead(ids).then(function () {
-                locator.reload();
-            });
-        },
-        'delete:click': function () {
-            var ids = u.map(this.get('table').getSelectedItems(), function (item) {
-                    return item.id;
-                });
-            this.model.deleteMails(ids).then(function () {
-                locator.reload();
-            });
-        },
-        'table:select': function (evt) {
-            var selectedIndex = evt.selectedIndex;
-            if (selectedIndex && selectedIndex.length) {
-                this.get('markAsRead').enable();
-                this.get('delete').enable();
-            } else {
-                this.get('markAsRead').disable();
-                this.get('delete').disable();
+        }
+    };
+    MailInboxView.prototype.enterDocument = function () {
+        ListView.prototype.enterDocument.apply(this, arguments);
+        var subjects = [];
+        u.each(this.model.get('tableData'), function (email) {
+            if (email.is_read === 0) {
+                subjects.push(email.subject);
             }
+        });
+        if (subjects.length) {
+            notification.show('\u65B0\u90AE\u4EF6', subjects.join('\n'));
         }
     };
     require('er/util').inherits(MailInboxView, ListView);

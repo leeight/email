@@ -1,4 +1,4 @@
-define('bat-ria/ui/SelectorTreeStrategy', [
+define([
     'require',
     'esui/lib',
     'esui/TreeStrategy'

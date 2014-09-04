@@ -1,4 +1,4 @@
-define('bat-ria/util', [
+define([
     'require',
     'underscore',
     'moment',

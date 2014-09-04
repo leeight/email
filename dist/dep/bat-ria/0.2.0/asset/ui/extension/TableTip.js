@@ -1,4 +1,4 @@
-define('bat-ria/ui/extension/TableTip', [
+define([
     'require',
     'esui/lib',
     'esui',

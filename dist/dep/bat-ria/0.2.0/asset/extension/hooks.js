@@ -1,4 +1,4 @@
-define('bat-ria/extension/hooks', [
+define([
     'require',
     'underscore',
     'urijs',

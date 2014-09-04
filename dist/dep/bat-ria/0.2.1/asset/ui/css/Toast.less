@@ -1,0 +1,76 @@
+@keyframes ui-toast-show {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@-webkit-keyframes ui-toast-show {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.ui-toast {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    // 这是个很神奇的事情，一般来说放一个占满宽度的元素会导致下面的东西不能点击，
+    // 因此有`pointer-events`来处理，但是IE不支持这个所以有兼容性问题。
+    // 但是IE6-9（10未测）统一透明的地方是默认穿透的，所以完全没问题- -
+    pointer-events: none;
+    z-index: 99999;
+    color: #555;
+    -webkit-animation: ui-toast-show .3s;
+    animation: ui-toast-show .3s;
+}
+
+.ui-toast-content {
+    padding: 0 10px;
+    display: inline-block;
+    line-height: 23px;
+    background-color: #fff4da;
+    box-shadow: 0px 2px 14px 0px #9b9b9b;
+    border: 1px solid #d9cbaa;
+    pointer-events: auto;
+
+    strong {
+        display: inline-block;
+        max-width: 40em;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: top;
+        font-weight: bold;
+    }
+}
+
+.ui-toast-error {
+    .ui-toast-content {
+        background-color: #fbe8e8;
+        color: #d66;
+        border-color: #f0cccc;
+    }
+}
+
+.ui-toast-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    // 兼容IE6
+    _position: absolute;
+    _width: 100%;
+    _height: 100%;
+    background: #333;
+    opacity: .2;
+    filter: alpha(opacity=20);
+    z-index: @mask-z-index;
+}

@@ -1,4 +1,4 @@
-define('bat-ria/ui/TableRichSelector', [
+define([
     'require',
     'esui/lib',
     'esui/painters',

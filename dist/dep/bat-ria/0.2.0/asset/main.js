@@ -1,4 +1,4 @@
-define('bat-ria/main', [
+define([
     'require',
     'underscore',
     './util',
@@ -52,5 +52,3 @@ define('bat-ria/main', [
     }
     return { start: start };
 });
-
-define('bat-ria', ['bat-ria/main'], function ( main ) { return main; });

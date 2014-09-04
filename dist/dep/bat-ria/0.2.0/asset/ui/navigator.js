@@ -1,4 +1,4 @@
-define('bat-ria/ui/navigator', [
+define([
     'require',
     'underscore',
     'er/locator',

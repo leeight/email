@@ -1,4 +1,4 @@
-define('bat-ria/ui/TreeRichSelector', [
+define([
     'require',
     'esui/Tree',
     'esui/painters',

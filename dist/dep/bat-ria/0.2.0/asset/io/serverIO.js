@@ -1,4 +1,4 @@
-define('bat-ria/io/serverIO', [
+define([
     'require',
     'er/ajax',
     'er/Deferred',

@@ -1,4 +1,4 @@
-define('bat-ria/ui/RichSelector', [
+define([
     'require',
     'esui/Label',
     'esui/Panel',

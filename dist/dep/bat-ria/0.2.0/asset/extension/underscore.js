@@ -1,4 +1,4 @@
-define('bat-ria/extension/underscore', [
+define([
     'require',
     'underscore'
 ], function (require) {

@@ -1,4 +1,4 @@
-define('bat-ria/mvc/ListView', [
+define([
     'require',
     '../tpl!../tpl/list.tpl.html',
     './BaseView',

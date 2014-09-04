@@ -1,4 +1,4 @@
-define('bat-ria/ui/extension/WordCount', [
+define([
     'require',
     'esui/lib',
     'esui/validator/Validity',

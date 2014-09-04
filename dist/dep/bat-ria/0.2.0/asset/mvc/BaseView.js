@@ -1,4 +1,4 @@
-define('bat-ria/mvc/BaseView', [
+define([
     'require',
     'er/util',
     'underscore',

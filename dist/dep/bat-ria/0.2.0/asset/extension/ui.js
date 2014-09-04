@@ -1,4 +1,4 @@
-define('bat-ria/extension/ui', [
+define([
     'require',
     'underscore',
     'esui/lib',

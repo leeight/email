@@ -4,6 +4,7 @@ define('ui/MailAddressInput', [
     'underscore',
     'esui/lib',
     'esui/InputControl',
+    'esui/Layer',
     'esui/painters',
     'encoding/mail',
     'esui'
@@ -12,10 +13,82 @@ define('ui/MailAddressInput', [
     var u = require('underscore');
     var lib = require('esui/lib');
     var InputControl = require('esui/InputControl');
+    var Layer = require('esui/Layer');
     var paint = require('esui/painters');
     var mail = require('encoding/mail');
+    function selectLayerItem(e) {
+        this.layer.hide();
+        var target = e.target;
+        while (target !== e.currentTarget && !lib.hasAttribute(target, 'data-index')) {
+            target = target.parentNode;
+        }
+        if (target === e.currentTarget) {
+            return;
+        }
+        var index = +target.getAttribute('data-index');
+        var item = this.suggestions[index];
+        this.addItem(item);
+    }
+    function MailAddressInputLayer() {
+        Layer.apply(this, arguments);
+        this.activeIndex = 0;
+    }
+    lib.inherits(MailAddressInputLayer, Layer);
+    MailAddressInputLayer.prototype.nodeName = 'ul';
+    MailAddressInputLayer.prototype.dock = {};
+    MailAddressInputLayer.prototype.render = function (element) {
+        var html = '';
+        var suggestions = this.control.suggestions || [];
+        for (var i = 0; i < suggestions.length; i++) {
+            var classes = this.control.helper.getPartClasses('node');
+            html += '<li data-index="' + i + '"' + ' class="' + classes.join(' ') + '">';
+            html += this.control.getLayerItemHTML(suggestions[i]);
+        }
+        element.innerHTML = html;
+        this.setActiveIndex(0);
+    };
+    MailAddressInputLayer.prototype.setActiveIndex = function (activeIndex) {
+        var className = this.control.helper.getPartClasses('node-active');
+        var element = this.getElement(false);
+        if (element) {
+            var child = element.children[this.activeIndex];
+            if (child) {
+                lib.removeClass(child, className);
+            }
+            child = element.children[activeIndex];
+            if (child) {
+                lib.addClass(child, className);
+                this.activeIndex = activeIndex;
+            }
+        }
+    };
+    MailAddressInputLayer.prototype.activeNext = function () {
+        var totalCount = (this.control.suggestions || []).length;
+        if (totalCount <= 0) {
+            return;
+        }
+        var activeIndex = (this.activeIndex + 1) % totalCount;
+        this.setActiveIndex(activeIndex);
+    };
+    MailAddressInputLayer.prototype.activePrev = function () {
+        var totalCount = (this.control.suggestions || []).length;
+        if (totalCount <= 0) {
+            return;
+        }
+        var activeIndex = 0;
+        if (this.activeIndex === 0) {
+            activeIndex = Math.max(0, totalCount - 1);
+        } else {
+            activeIndex = this.activeIndex - 1;
+        }
+        this.setActiveIndex(activeIndex);
+    };
+    MailAddressInputLayer.prototype.initBehavior = function (element) {
+        this.control.helper.addDOMEvent(element, 'click', selectLayerItem);
+    };
     function MailAddressInput(options) {
         InputControl.apply(this, arguments);
+        this.layer = new MailAddressInputLayer(this);
     }
     lib.inherits(MailAddressInput, InputControl);
     MailAddressInput.defaultProperties = { width: 200 };
@@ -29,6 +102,15 @@ define('ui/MailAddressInput', [
             });
         return html;
     }
+    MailAddressInput.prototype.getLayerItemHTML = function (item) {
+        var data = {
+                name: u.escape(item.name || item.email.replace(/@.*/, '')),
+                email: u.escape(item.email),
+                avatar: this.helper.getPartClasses('avatar'),
+                msginf: this.helper.getPartClasses('msginf')
+            };
+        return lib.format('<div class="${avatar}"></div>' + '<div class="${msginf}">${name}<br /><span>${email}</span></div>', data);
+    };
     MailAddressInput.prototype.initStructure = function () {
         this.main.innerHTML = getMainHTML(this);
         this.initChildren(this.main);
@@ -41,12 +123,26 @@ define('ui/MailAddressInput', [
         var preview = lib.g(this.helper.getId('preview'));
         var input = lib.g(this.getChild('input').inputId);
         this.helper.addDOMEvent(preview, 'click', removeItemIfPossible);
-        this.helper.addDOMEvent(input, 'keyup', removeLastItemIfPossible);
+        this.helper.addDOMEvent(input, 'keyup', dispatchKeyboradEvent);
         this.getChild('input').on('enter', function (e) {
-            processKeyboardEvent(this, mai);
+            tryingAddNewItem(this, mai);
+        });
+        this.getChild('input').on('input', function (e) {
+            mai.fire('input');
         });
     };
-    function processKeyboardEvent(input, mai) {
+    function tryingAddNewItem(input, mai) {
+        var suggestions = mai.suggestions;
+        var activeIndex = mai.layer.activeIndex;
+        if (suggestions && suggestions[activeIndex]) {
+            var item = suggestions[activeIndex];
+            mai.addItem({
+                name: item.name,
+                address: item.email
+            });
+            mai.layer.hide();
+            return;
+        }
         var value = input.getValue();
         if (!value) {
             return;
@@ -54,7 +150,6 @@ define('ui/MailAddressInput', [
         var item = parseItem(value);
         if (item) {
             mai.addItem(item);
-            input.setValue('');
         }
     }
     function parseItem(value) {
@@ -73,10 +168,16 @@ define('ui/MailAddressInput', [
             address: address
         };
     }
-    function removeLastItemIfPossible(e) {
+    function dispatchKeyboradEvent(e) {
         var keyCode = e.which || e.keyCode;
-        if (keyCode === 186) {
-            processKeyboardEvent(this.getChild('input'), this);
+        if (keyCode === 186 || keyCode === 59) {
+            tryingAddNewItem(this.getChild('input'), this);
+            return;
+        } else if (keyCode === 38) {
+            this.layer.activePrev();
+            return;
+        } else if (keyCode === 40) {
+            this.layer.activeNext();
             return;
         }
         var target = e.target;
@@ -114,6 +215,8 @@ define('ui/MailAddressInput', [
         reference.innerHTML = html;
         var previewContainer = lib.g(this.helper.getId('preview'));
         lib.insertBefore(reference.firstChild, previewContainer.lastChild);
+        this.getChild('input').setValue('');
+        this.getFocusTarget().focus();
     };
     MailAddressInput.prototype.getRawValue = function () {
         var value = [];
@@ -139,7 +242,27 @@ define('ui/MailAddressInput', [
                 mai.addItem(item);
             });
         }
+    }, {
+        name: 'suggestions',
+        paint: function (mai) {
+            if (!mai.suggestions || !mai.suggestions.length) {
+                mai.layer.hide();
+            } else {
+                mai.layer.repaint();
+                mai.layer.show();
+            }
+        }
     });
+    MailAddressInput.prototype.dispose = function () {
+        if (this.helper.isInStage('DISPOSED')) {
+            return;
+        }
+        if (this.layer) {
+            this.layer.dispose();
+            this.layer = null;
+        }
+        InputControl.prototype.dispose.apply(this, arguments);
+    };
     require('esui').register(MailAddressInput);
     return MailAddressInput;
 });
