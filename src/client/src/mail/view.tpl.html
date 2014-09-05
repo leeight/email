@@ -94,29 +94,30 @@
     <div class="mail-body" id="mail-body">
       <!-- if: ${email.is_calendar} -->
           <!-- if: ${email.message.METHOD} == "REQUEST" -->
+          <!-- var: vevent = ${email.message.VEVENT} -->
           <table class="mail-calendar">
               <tr>
                   <th>时间：</th>
-                  <td>${email.message.VEVENT.DTSTART} - ${email.message.VEVENT.DTEND}</td>
+                  <td>${vevent.DTSTART} - ${vevent.DTEND}</td>
               </tr>
               <tr>
                   <th>地点：</th>
-                  <td>${email.message.VEVENT.LOCATION|raw}</td>
+                  <td>${vevent.LOCATION|raw}</td>
               </tr>
               <tr>
                   <th>组织者：</th>
-                  <td>${email.message.VEVENT.ORGANIZER|raw}</td>
+                  <td><a href="mailto:${vevent.ORGANIZER.email}">${vevent.ORGANIZER.name}</a></td>
               </tr>
               <tr>
                   <th>参与人员：</th>
                   <td>
-                      <!-- for: ${email.message.VEVENT.ATTENDEE} as ${attendee} -->
-                      ${attendee|raw}<br />
+                      <!-- for: ${vevent.ATTENDEE} as ${attendee} -->
+                      <a href="mailto:${attendee.email}" title="${attendee.email}">${attendee.name}</a>&nbsp;
                       <!-- /for -->
                   </td>
               </tr>
               <tr>
-                  <td colspan="2"><pre>${email.message.VEVENT.DESCRIPTION|raw}</pre></td>
+                  <td colspan="2"><pre>${vevent.DESCRIPTION|raw}</pre></td>
               </tr>
           </table>
           <!-- else -->

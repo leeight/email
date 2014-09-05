@@ -4,6 +4,7 @@
  **/
 define(function(require) {
 var u = require('underscore');
+var moment = require('moment');
 
 function VCalendar(contents) {
   this.index = 0;
@@ -83,6 +84,51 @@ VCalendar.prototype._parseBlock = function(key, end) {
 var exports = {};
 exports.parse = function(contents) {
   return new VCalendar(contents).parse();
+};
+
+exports.format = function(calendar) {
+  if (calendar.METHOD === 'CANCEL') {
+    return calendar;
+  }
+
+  // 格式化开始时间和结束时间
+  var start = calendar.VEVENT.DTSTART.replace(/\D/g, '');
+  var end = calendar.VEVENT.DTEND.replace(/\D/g, '');
+  var format = 'YYYYMMDDHHmmss';
+  calendar.VEVENT.DTSTART = moment(start, format).format('YYYY-MM-DD HH:mm:ss');
+  calendar.VEVENT.DTEND = moment(end, format).format('YYYY-MM-DD HH:mm:ss');
+
+  function _(x) {
+    return x.replace(/&#34;?/g, '"');
+  }
+
+  // 格式化 组织者 和 参与人员
+  // CN=":Kong,Liying(BIT)"::MAILTO:kongliying@baidu.com
+  var pattern = /CN=(")?:?([^":]+)\1:+MAILTO:(.*)$/;
+  var match = pattern.exec(_(calendar.VEVENT.ORGANIZER));
+  if (match) {
+    calendar.VEVENT.ORGANIZER = {
+      name: match[2],
+      email: match[3]
+    };
+  }
+  var attendees = [];
+  u.each(calendar.VEVENT.ATTENDEE, function(item) {
+    var match = pattern.exec(_(item));
+    if (match) {
+      attendees.push({
+        name: match[2],
+        email: match[3]
+      });
+    }
+  });
+  calendar.VEVENT.ATTENDEE = attendees;
+
+  // 处理位置信息
+  var location = calendar.VEVENT.LOCATION;
+  calendar.VEVENT.LOCATION = location.split(':')[1] || location;
+
+  return calendar;
 };
 
 return exports;

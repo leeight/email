@@ -14,6 +14,8 @@ import (
 	"github.com/qiniu/iconv"
 )
 
+var NotInvalidEncoding = errors.New("string not RFC 2047 encoded")
+
 type qDecoder struct {
 	r       io.Reader
 	scratch [2]byte
@@ -48,7 +50,7 @@ func (qd qDecoder) Read(p []byte) (n int, err error) {
 func decodeBuffer(s string) (string, []byte, error) {
 	fields := strings.Split(s, "?")
 	if len(fields) != 5 || fields[0] != "=" || fields[4] != "=" {
-		return "", nil, errors.New("string not RFC 2047 encoded")
+		return "", nil, NotInvalidEncoding
 	}
 	charset, enc := strings.ToLower(fields[1]), strings.ToLower(fields[2])
 	if charset != "iso-8859-1" &&
@@ -132,7 +134,11 @@ func Decode(s string) string {
 	for _, p := range regexp.MustCompile(`\s+`).Split(s, -1) {
 		charset, tb, err = decodeBuffer(p)
 		if err != nil {
-			return s
+			if err == NotInvalidEncoding {
+				buffer = append(buffer, []byte(p)...)
+			} else {
+				return s
+			}
 		} else {
 			buffer = append(buffer, tb...)
 		}

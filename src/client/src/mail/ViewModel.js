@@ -41,12 +41,8 @@ define(function (require) {
 
                 if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
                     try {
-                        email.message = ical.parse(email.message);
-                        var start = email.message.VEVENT.DTSTART.replace(/\D/g, '');
-                        var end = email.message.VEVENT.DTEND.replace(/\D/g, '');
-                        var format = 'YYYYMMDDHHmmss';
-                        email.message.VEVENT.DTSTART = moment(start, format).format('YYYY-MM-DD HH:mm:ss');
-                        email.message.VEVENT.DTEND = moment(end, format).format('YYYY-MM-DD HH:mm:ss');
+                        var calendar = ical.parse(email.message);
+                        email.message = ical.format(calendar);
                         email.is_calendar = true;
                     }
                     catch(ex) {

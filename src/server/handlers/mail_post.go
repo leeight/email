@@ -71,6 +71,7 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// TODO(user) 如何生成 Thread-Topic 和 Thread-Index 呢？
 		// https://searchcode.com/codesearch/view/34697166/#l-495
 		// http://managing.blue/2007/12/11/trying-to-make-use-of-outlooks-thread-index-header/
+		// https://developer.gnome.org/evolution-exchange/stable/ximian-connector-mail-threading.html
 	}
 
 	var attachments []string
