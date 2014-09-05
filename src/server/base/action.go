@@ -67,7 +67,6 @@ func (this ChangeStatusAction) Exec(email *EMail, args ...interface{}) error {
 func (this MarkAsReadAction) Exec(email *EMail, args ...interface{}) error {
 	db := args[1].(*sql.DB)
 	email.IsRead = 1
-	email.Store(db)
 	_, err := email.Store(db)
 	return err
 }

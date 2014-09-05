@@ -40,6 +40,11 @@
       - [From, Contains, 'galaxy-mon@baidu.com']
       - [From, Contains, 'classified.ci@baidu.com']
       - [From, Contains, 'noah-autopost@baidu.com']
+      - [From, Contains, 'autopost@baidu.com']
+      - [From, Contains, 'Spammail@baidu.com']
+      - [From, Contains, 'icafeauto@baidu.com']
+      - [From, Contains, 'dr-api@baidu.com']
+      - [SentTo, Contains, 'jp-video-rd@baidu.com']
   action:
     Label: 监控邮件
     MarkAsRead: true

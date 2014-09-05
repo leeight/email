@@ -129,7 +129,7 @@ func Decode(s string) string {
 	var err error
 
 	buffer = make([]byte, 0)
-	for _, p := range strings.Split(s, " ") {
+	for _, p := range regexp.MustCompile(`\s+`).Split(s, -1) {
 		charset, tb, err = decodeBuffer(p)
 		if err != nil {
 			return s
