@@ -96,6 +96,7 @@ define(function (require) {
         util.composeMail(this.view, '回复邮件', {
             to: to,
             cc: cc,
+            uidl: email.uidl,
             subject: subject,
             message: message
         });
@@ -127,6 +128,7 @@ define(function (require) {
         util.composeMail(this.view, '回复邮件', {
             to: to,
             cc: cc,
+            uidl: email.uidl,
             subject: subject,
             message: message
         });
@@ -167,6 +169,7 @@ define(function (require) {
         util.composeMail(this.view, '转发邮件', {
             to: '',
             cc: '',
+            uidl: email.uidl,
             subject: subject,
             message: message,
             attachments: attachments

@@ -26,9 +26,12 @@ define(function (require) {
      * @inheritDoc
      */
     MailViewModel.prototype.datasource = {
+        hostname: function(model) {
+            return location.hostname;
+        },
         email: function(model) {
             return api.readMail({id: model.get('id')}).then(function(email){
-                email.date = moment(new Date(email.date)).format('YYYY-MM-DD HH:mm:ss');
+                email.date = moment(email.date).format('YYYY-MM-DD HH:mm:ss');
                 if (!email.from) {
                     email.from = {
                         name: '未知来源',
@@ -39,6 +42,11 @@ define(function (require) {
                 if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
                     try {
                         email.message = ical.parse(email.message);
+                        var start = email.message.VEVENT.DTSTART.replace(/\D/g, '');
+                        var end = email.message.VEVENT.DTEND.replace(/\D/g, '');
+                        var format = 'YYYYMMDDHHmmss';
+                        email.message.VEVENT.DTSTART = moment(start, format).format('YYYY-MM-DD HH:mm:ss');
+                        email.message.VEVENT.DTEND = moment(end, format).format('YYYY-MM-DD HH:mm:ss');
                         email.is_calendar = true;
                     }
                     catch(ex) {
@@ -52,11 +60,11 @@ define(function (require) {
                 // FIXME(user) 修复查看附件url的地址
                 u.each(email.attachments, function(item) {
                     if (/\.(doc|xls|ppt)x?$/i.test(item.name)) {
-                        item.preview_url = 'http://127.0.0.1:8765/doc/viewer/' +
+                        item.preview_url = 'http://' + location.hostname + ':8765/doc/viewer/' +
                             email.uidl + '/att/' + encodeURIComponent(item.name);
                     }
                     else {
-                        item.preview_url = 'http://127.0.0.1:8765/downloads/' +
+                        item.preview_url = 'http://' + location.hostname + ':8765/downloads/' +
                             email.uidl + '/att/' + encodeURIComponent(item.name);
                     }
                 });

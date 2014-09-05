@@ -45,6 +45,7 @@
       - [From, Contains, 'icafeauto@baidu.com']
       - [From, Contains, 'dr-api@baidu.com']
       - [SentTo, Contains, 'jp-video-rd@baidu.com']
+      - [SentTo, Contains, 'tieba-ecom-rd@baidu.com']
   action:
     Label: 监控邮件
     MarkAsRead: true
@@ -62,6 +63,7 @@
       - [From, '!Contains', ct_rsv@ctrip.com]
   action:
     Label: Spam
+    MarkAsRead: true
 
 - filter:
   name: HTTPs

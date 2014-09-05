@@ -239,7 +239,7 @@ define(function(require) {
         if (suggestions && suggestions[activeIndex]) {
             var item = suggestions[activeIndex];
             mai.addItem({name: item.name, address: item.email});
-            mai.layer.hide();
+            mai.set('suggestions', []);
             return;
         }
 

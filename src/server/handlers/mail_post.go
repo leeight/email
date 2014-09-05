@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/textproto"
 	"os"
 	"path"
 	"regexp"
@@ -55,11 +57,21 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	message := r.FormValue("message")
 
 	// 准备Header
-	header := make(map[string]string)
-	header["From"] = from.String()
-	header["To"] = base.AddressToString(to)
-	header["Cc"] = base.AddressToString(cc)
-	header["Subject"] = RFC2047.Encode(subject)
+	headers := textproto.MIMEHeader{}
+	headers.Set("From", from.String())
+	headers.Set("To", base.AddressToString(to))
+	headers.Set("Cc", base.AddressToString(cc))
+	headers.Set("Subject", RFC2047.Encode(subject))
+
+	uidl := r.FormValue("uidl")
+	if uidl != "" {
+		attachOriginalHeaders(uidl, &headers, ctx)
+	} else {
+		headers.Set("Thread-Topic", RFC2047.Encode(subject))
+		// TODO(user) 如何生成 Thread-Topic 和 Thread-Index 呢？
+		// https://searchcode.com/codesearch/view/34697166/#l-495
+		// http://managing.blue/2007/12/11/trying-to-make-use-of-outlooks-thread-index-header/
+	}
 
 	var attachments []string
 	var contentIds []string
@@ -93,7 +105,7 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		body, err = re.Enclose(rrr)
 		for k, v := range re.Headers() {
-			header[k] = v[0]
+			headers.Set(k, v[0])
 		}
 	} else if len(attachments) > 0 {
 		me := base.MixedEnvelope{
@@ -103,13 +115,13 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		body, err = me.Enclose(rrr)
 		for k, v := range me.Headers() {
-			header[k] = v[0]
+			headers.Set(k, v[0])
 		}
 	} else {
 		se := base.SimpleEnvelope{message}
 		body, err = se.Enclose(rrr)
 		for k, v := range se.Headers() {
-			header[k] = v[0]
+			headers.Set(k, v[0])
 		}
 	}
 
@@ -121,8 +133,8 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// 构造整个邮件的内容
 	raw := &bytes.Buffer{}
-	for k, v := range header {
-		raw.WriteString(fmt.Sprintf("%s: %s\r\n", k, v))
+	for k, v := range headers {
+		raw.WriteString(fmt.Sprintf("%s: %s\r\n", k, v[0]))
 	}
 	raw.WriteString("\r\n")
 	raw.Write(body)
@@ -138,7 +150,14 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(s)
 }
 
-func sendMail(ctx web.Context, from *mail.Address, to []*mail.Address, cc []*mail.Address, raw []byte) {
+// goroutine delivery email
+func sendMail(
+	ctx web.Context,
+	from *mail.Address,
+	to []*mail.Address,
+	cc []*mail.Address,
+	raw []byte) {
+
 	log := ctx.GetLogger()
 	config := ctx.GetConfig()
 
@@ -161,6 +180,53 @@ func sendMail(ctx web.Context, from *mail.Address, to []*mail.Address, cc []*mai
 		return
 	}
 	log.Info("Saved Sent mail = %s", name)
+}
+
+// 附加原始文件的头信息
+func attachOriginalHeaders(
+	uidl string,
+	headers *textproto.MIMEHeader,
+	ctx web.Context) {
+
+	log := ctx.GetLogger()
+	config := ctx.GetConfig()
+
+	fi, err := os.Open(path.Join(config.RawDir(), uidl+".txt"))
+	if err != nil {
+		log.Warning(err.Error())
+		return
+	}
+	defer fi.Close()
+
+	reader := bufio.NewReader(fi)
+	msg, err := mail.ReadMessage(reader)
+	if err != nil {
+		log.Warning(err.Error())
+		return
+	}
+
+	messageId := msg.Header.Get("Message-ID")
+	if messageId != "" {
+		headers.Set("In-Reply-To", "\n "+messageId)
+		references := msg.Header.Get("References")
+		if references != "" {
+			// By RFC 2822, the most immediate parent should appear last
+			// in the "References" header, so this order is intentional.
+			// TODO(user) 所以这个逻辑可能是不太对的
+			headers.Set("References", references+"\n "+messageId)
+		} else {
+			headers.Set("References", "\n "+messageId)
+		}
+	}
+
+	threadTopic := msg.Header.Get("Thread-Topic")
+	if threadTopic != "" {
+		headers.Set("Thread-Topic", threadTopic)
+	}
+	threadIndex := msg.Header.Get("Thread-Index")
+	if threadIndex != "" {
+		headers.Set("Thread-Index", threadIndex)
+	}
 }
 
 func getAddressList(value string) []*mail.Address {

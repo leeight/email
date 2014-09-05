@@ -87,7 +87,7 @@ define(function (require) {
             width: 100,
             title: '发送日期',
             content: function(item) {
-                return moment(new Date(item.date)).format('YYYY-MM-DD HH:mm:ss')
+                return moment(item.date).format('YYYY-MM-DD HH:mm:ss')
             }
         }
     ];

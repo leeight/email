@@ -42,6 +42,7 @@ func main() {
 
 	// 默认情况下的文档预览页面，提示：可以提交文档转码请求或者直接下载
 	http.Handle("/doc/viewer/", handlers.DocViewerHandler{context})
+	http.Handle("/ori/message/", handlers.OriMessageHandler{context})
 
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(config.Dirs.Base)))
