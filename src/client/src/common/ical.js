@@ -128,6 +128,9 @@ exports.format = function(calendar) {
   var location = calendar.VEVENT.LOCATION;
   calendar.VEVENT.LOCATION = location.split(':')[1] || location;
 
+  // 处理描述信息
+  calendar.VEVENT.DESCRIPTION = u.trim(calendar.VEVENT.DESCRIPTION);
+
   return calendar;
 };
 

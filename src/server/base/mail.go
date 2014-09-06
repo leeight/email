@@ -6,8 +6,6 @@ import (
 	"encoding/base64"
 	"io"
 	"io/ioutil"
-	// "log"
-	// "fmt"
 	"mime"
 	"mime/multipart"
 	"os"
@@ -40,10 +38,14 @@ var (
 	kContentTransferEncoding = "Content-Transfer-Encoding"
 )
 
+// 邮件正文的类型，例如 text/html, text/plain, text/calendar 等等
+type messageTypeMap map[string]string
+
 // 从邮件的正文中创建一个邮件对象 EMail 然后存储到
 // sqlite里面去
 func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	var email EMail
+	msgType := make(messageTypeMap)
 
 	// 编码转化函数
 	cd, _ := iconv.Open("utf-8", "gb2312")
@@ -82,7 +84,7 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 		}
 
 		body, _ := decodeMesssageBody(reader, contentType)
-		email.Message = string(body)
+		msgType[mediaType] = string(body)
 	} else if strings.HasPrefix(mediaType, "multipart/") {
 		// 邮件里面可能有附件或者截图之类的东东
 		mr := multipart.NewReader(msg.Body, params["boundary"])
@@ -94,7 +96,7 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 			if err != nil {
 				return nil, err
 			}
-			err = decodeMessageMultipart(part, &email, downloadDir, prefix)
+			err = decodeMessageMultipart(part, &msgType, downloadDir, prefix)
 			if err != nil {
 				return nil, err
 			}
@@ -111,16 +113,32 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	email.Bcc = msg.Header.Get(kBcc)
 	email.ReplyTo = msg.Header.Get(kReplyTo)
 	email.Date = date
-	// log.Printf("Subject = [%s]\n", msg.Header.Get(kSubject))
 	email.Subject = RFC2047.Decode(msg.Header.Get(kSubject))
 	email.Status = 0
+
+	if _, ok := msgType["text/html"]; ok {
+		email.Message = msgType["text/html"]
+	} else if _, ok := msgType["text/plain"]; ok {
+		email.Message = msgType["text/plain"]
+	} else {
+		for _, v := range msgType {
+			if len(v) > len(email.Message) {
+				email.Message = v
+			}
+		}
+	}
 
 	return &email, nil
 }
 
-func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, prefix string) error {
+func decodeMessageMultipart(part *multipart.Part, msgType *messageTypeMap, downloadDir, prefix string) error {
 	contentType := part.Header.Get(kContentType)
 	contentTransferEncoding := part.Header.Get(kContentTransferEncoding)
+
+	mediaType, params, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		return err
+	}
 
 	var reader io.Reader
 	if contentTransferEncoding == kBase64 {
@@ -132,16 +150,15 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 		reader = part
 	}
 
-	if strings.HasPrefix(contentType, "text/") {
+	if strings.HasPrefix(mediaType, "text/") {
 		// XXX(user) quoted-printable 类型的内部已经处理过了
 		body, _ := decodeMesssageBody(reader, contentType)
 
 		// XXX(user) src="cid:d3b11fe4b395a6995fcdb51988247200.png"
 		var r = regexp.MustCompile(`src="cid:([^"]+)"`)
 		body = r.ReplaceAll(body, []byte("src=\""+prefix+"/cid/$1\""))
-
-		email.Message = string(body)
-	} else if strings.HasPrefix(contentType, "image/") {
+		(*msgType)[mediaType] = string(body)
+	} else if strings.HasPrefix(mediaType, "image/") {
 		// 邮件中内嵌的内容（比如图片）
 		body, _ := ioutil.ReadAll(reader)
 
@@ -169,7 +186,7 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 		filename := RFC2047.Decode(part.FileName())
 		os.MkdirAll(path.Join(downloadDir, "att"), 0755)
 		ioutil.WriteFile(path.Join(downloadDir, "att", filename), body, 0644)
-	} else if strings.HasPrefix(contentType, "multipart/") {
+	} else if strings.HasPrefix(mediaType, "multipart/") {
 		// TODO(user) 需要注意递归的处理流程，例如：
 		// multipart/mixed
 		//  multipart/related
@@ -177,11 +194,6 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 		//   image/jpeg
 		//   image/jpeg
 		// application/pdf
-		_, params, err := mime.ParseMediaType(contentType)
-		if err != nil {
-			return err
-		}
-
 		mr := multipart.NewReader(part, params["boundary"])
 		for {
 			subpart, err := mr.NextPart()
@@ -191,17 +203,12 @@ func decodeMessageMultipart(part *multipart.Part, email *EMail, downloadDir, pre
 			if err != nil {
 				return err
 			}
-			err = decodeMessageMultipart(subpart, email, downloadDir, prefix)
+			err = decodeMessageMultipart(subpart, msgType, downloadDir, prefix)
 			if err != nil {
 				return err
 			}
 		}
 	} else {
-		_, params, err := mime.ParseMediaType(contentType)
-		if err != nil {
-			return err
-		}
-
 		// ----boundary_139482_2f47a231-302f-4eff-abfc-3775c844d98d
 		// Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;
 		// 	name="=?utf-8?B?5ZGI546w56qB5Ye65bel5L2c5Lia57upLnhsc3g=?="
