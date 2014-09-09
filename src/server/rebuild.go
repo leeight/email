@@ -23,7 +23,7 @@ func rebuild(file string, db *sql.DB, config *base.ServerConfig, update bool) er
 	uidl := baseName
 
 	// BEGIN 检查是否存在
-	var id int64 = -1
+	var id uint64 = 0
 	err := db.QueryRow("SELECT `id` FROM mails WHERE `uidl` = ?", uidl).Scan(&id)
 	if err != nil && err != sql.ErrNoRows {
 		log.Warning("%s", err)

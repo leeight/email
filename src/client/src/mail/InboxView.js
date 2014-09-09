@@ -47,15 +47,15 @@ define(function (require) {
         ListView.prototype.enterDocument.apply(this, arguments);
 
         // 提示新邮件
-        var subjects = [];
-        u.each(this.model.get('tableData'), function(email) {
-            if (email.is_read === 0) {
-                subjects.push(email.subject);
-            }
-        });
-        if (subjects.length) {
-            notification.show('新邮件', subjects.join('\n'));
-        }
+        // var subjects = [];
+        // u.each(this.model.get('tableData'), function(email) {
+        //     if (email.is_read === 0) {
+        //         subjects.push(email.subject);
+        //     }
+        // });
+        // if (subjects.length) {
+        //     notification.show('新邮件', subjects.join('\n'));
+        // }
     };
 
     require('er/util').inherits(MailInboxView, ListView);
