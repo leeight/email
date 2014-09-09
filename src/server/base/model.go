@@ -13,9 +13,14 @@ import (
 	"../net/mail"
 )
 
+type SearcherJsonRPCResponse struct {
+	Ids    []string `json:"ids"`
+	Tokens []string `json:"tokens"`
+}
+
 // 定义邮件类型，Database Model
 type EMail struct {
-	Id       int64     `json:"id"`
+	Id       uint64    `json:"id"`
 	Uidl     string    `json:"uidl"`
 	From     string    `json:"from"`
 	To       string    `json:"to"`
@@ -32,7 +37,7 @@ type EMail struct {
 
 // 定义邮件类型，View Model
 type EMailViewModel struct {
-	Id          int64           `json:"id"`
+	Id          uint64          `json:"id"`
 	Uidl        string          `json:"uidl"`
 	From        *mail.Address   `json:"from"`
 	To          []*mail.Address `json:"to"`

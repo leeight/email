@@ -42,6 +42,14 @@ define(
             // if (nav && nav.navId && nav.tabs) {
             //     require('bat-ria/ui/navigator').init(nav.navId, nav.tabs);
             // }
+            require('er/events').on('error', function (e) {
+                console.error(e.error);
+            });
+
+            //拦截全局错误，做相应的跳转
+            require('er/events').on('globalError', function(e){
+                console.error(e.error);
+            });
         }
 
         /**

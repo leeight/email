@@ -5,34 +5,21 @@
 
 define(function (require) {
     var ListAction = require('bat-ria/mvc/ListAction');
-    var util = require('common/util');
     var u = require('underscore');
-    var URL = require('er/URL');
     var locator = require('er/locator');
+
 
     /**
      * Action构造函数
      *
      * @constructor
      */
-    function MailInbox() {
+    function MailSearch() {
         ListAction.apply(this, arguments);
     }
 
-    MailInbox.prototype.modelType = require('./InboxModel');
-    MailInbox.prototype.viewType = require('./InboxView');
-
-
-    /**
-     * 进行查询引起的重定向操作
-     *
-     * @param {Object} args 查询参数
-     */
-    MailInbox.prototype.redirectForSearch = function (args) {
-        var path = '/mail/search';
-        var url = URL.withQuery(path, args);
-        this.redirect(url, { force: true });
-    };
+    MailSearch.prototype.modelType = require('./SearchModel');
+    MailSearch.prototype.viewType = require('./SearchView');
 
     /**
      * inheritDoc
@@ -40,18 +27,9 @@ define(function (require) {
      * @protected
      * @override
      */
-    MailInbox.prototype.initBehavior = function () {
+    MailSearch.prototype.initBehavior = function () {
         ListAction.prototype.initBehavior.apply(this, arguments);
 
-        // this.on('search', function(e) {
-        //     console.log(e);
-        //     e.preventDefault();
-        // });
-
-        this.view.get('create').on('click',
-            u.partial(util.composeMail, this.view, '撰写邮件', null));
-
-        document.title = '伊妹儿';
 
         this.view.on('batchmodify', function(e) {
             var ids = u.map(e.selectedItems, function(item) {
@@ -71,6 +49,6 @@ define(function (require) {
         });
     };
 
-    require('er/util').inherits(MailInbox, ListAction);
-    return MailInbox;
+    require('er/util').inherits(MailSearch, ListAction);
+    return MailSearch;
 });

@@ -1,0 +1,44 @@
+<!-- target: TPL_mail_search -->
+<div class="mail-inbox mail-search">
+    <div class="est-sidebar">
+        <ul>
+            <!-- for: ${navigators} as ${item} -->
+            <!-- if: ${item.active} -->
+            <li class="active"><a href="${item.path}">${item.name}</a></li>
+            <!-- else -->
+            <li><a href="${item.path}">${item.name}</a></li>
+            <!-- /if-->
+            <!-- /for -->
+        </ul>
+    </div>
+    <div class="est-main">
+        <div class="list-header">
+            <div class="list-batch">
+                <!-- <div data-ui-type="Button" data-ui-id="create" data-ui-skin="spring-add">新建</div> -->
+                <div data-ui-type="Button" data-ui-id="refresh">刷新</div>
+                <!-- &nbsp;|&nbsp; -->
+                <div data-ui-type="Button"
+                     data-ui-id="markAsRead"
+                     data-ui-extension-data-type="CustomData"
+                     data-ui-data-type="markAsRead"
+                     data-ui-group="batch">标记已读</div>
+                <div data-ui-type="Button"
+                     data-ui-id="delete"
+                     data-ui-extension-data-type="CustomData"
+                     data-ui-data-type="delete"
+                     data-ui-group="batch">删除</div>
+            </div>
+            <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
+                <input data-ui-id="keyword"
+                       data-ui-type="TextBox"
+                       data-ui-required="required"
+                       data-ui-width="300"
+                       placeholder="请输入关键词"
+                       name="keyword"
+                       value="${keyword}" />
+            </form>
+        </div>
+        <!-- import: listTable -->
+        <!-- import: listPager -->
+    </div>
+</div>

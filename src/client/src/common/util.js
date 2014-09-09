@@ -3,6 +3,9 @@
  * @author leeight(liyubei@baidu.com)
  **/
 define(function(require) {
+var moment = require('moment');
+var lib = require('esui/lib');
+var u = require('underscore');
 
 var exports = {};
 
@@ -45,6 +48,85 @@ exports.composeMail = function(view, opt_title, opt_actionOptions) {
             dialog.resize();
         }, 0);
     });
+};
+
+
+
+var tableFields = [
+    {
+        field: 'id',
+        width: 10,
+        title: 'ID',
+        content: function (item) {
+            return '<span title="' + item.uidl + '">#' + item.id + '</span>';
+        }
+    },
+    {
+        field: 'from',
+        width: 100,
+        title: '发件人',
+        content: function (item) {
+            var from = item.from || {
+                name: '未知来源',
+                address: '未知来源'
+            };
+            return '<span title="' + from.address + '">' +
+                lib.encodeHTML(from.name || from.address) +
+            '</span>';
+        }
+    },
+    {
+        field: 'subject',
+        title: '标题',
+        width: 700,
+        content: function (item) {
+            var extra = '';
+            if (item.attachments && item.attachments.length) {
+                extra = '<span class="x-icon-attchments" title="' +
+                u.map(item.attachments, function(x){
+                    return x.name + ' (' + x.size + ')';
+                }).join(' ') + '"></span>';
+            }
+
+            var prefix = '';
+            if (item.importance) {
+                prefix = '<i>' + item.importance + '</i>';
+            }
+
+            return prefix + '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
+                (item.subject || '(no subject)') + '</a>' + extra;
+        }
+    },
+    {
+        field: 'date',
+        width: 100,
+        title: '发送日期',
+        content: function(item) {
+            return moment(item.date).format('YYYY-MM-DD HH:mm:ss')
+        }
+    }
+];
+
+var tableRows = {
+    getRowClass: function(item, index) {
+        if (!item.is_read) {
+            return 'row-unread';
+        }
+    }
+}
+
+/**
+ * 列表页面的配置信息
+ * @return {Object}
+ */
+exports.mailListConfiguration = function() {
+    return {
+        fields: tableFields,
+        rows: tableRows,
+        sortable: false,
+        columnResizable: true,
+        select: 'multi'
+    };
 };
 
 return exports;

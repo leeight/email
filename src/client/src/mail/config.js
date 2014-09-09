@@ -9,6 +9,10 @@ define(function (require) {
     // 如果期望添加action时工具自动配置，请保持actionsConfig名称不变
     var actionsConfig = [
         {
+            type: 'mail/Search',
+            path: '/mail/search'
+        },
+        {
             type: 'mail/Compose',
             path: '/mail/compose'
         },

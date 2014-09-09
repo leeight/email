@@ -311,7 +311,7 @@ func (this *EMail) AddLabel(label string, db *sql.DB) error {
 	return nil
 }
 
-func (email *EMail) Store(db *sql.DB) (int64, error) {
+func (email *EMail) Store(db *sql.DB) (uint64, error) {
 	var stmt *sql.Stmt
 	var tx *sql.Tx
 	var result sql.Result
@@ -370,5 +370,5 @@ func (email *EMail) Store(db *sql.DB) (int64, error) {
 		return 0, err
 	}
 
-	return id, nil
+	return uint64(id), nil
 }

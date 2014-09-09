@@ -12,12 +12,12 @@ import (
 	"os/signal"
 	"path"
 	"reflect"
+	"strconv"
 	"strings"
-	"time"
 
 	"github.com/huichen/wukong/engine"
 	"github.com/huichen/wukong/types"
-	"github.com/microcosm-cc/bluemonday"
+	// "github.com/microcosm-cc/bluemonday"
 
 	"./base"
 	"./net/mail"
@@ -27,35 +27,19 @@ import (
 const (
 	SecondsInADay     = 86400
 	MaxTokenProximity = 2
-	WukongHome        = "/Volumes/HDD/Users/leeight/local/leeight.github.com/gopath/src/github.com/huichen/wukong"
 )
 
 var (
 	searcher = engine.Engine{}
-	// wbs      = map[uint64]EMail{}
 )
-
-type EMail struct {
-	Id      uint64 `json:"id"`
-	Subject string `json:"subject"`
-	From    string `json:"from"`
-	To      string `json:"to"`
-	Cc      string `json:"cc"`
-	Message string `json:"message"`
-	Date    string `json:"date"`
-	// Timestamp    uint64 `json:"timestamp"`
-	// UserName     string `json:"user_name"`
-	// RepostsCount uint64 `json:"reposts_count"`
-	// Text         string `json:"text"`
-}
 
 /*******************************************************************************
     索引
 *******************************************************************************/
-func indexMails(db *sql.DB) {
+func indexAllMails(db *sql.DB) {
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, `from`, `to`, `cc`, `subject`, `message`, `date` FROM mails WHERE `is_delete` != 1")
+	rows, err := db.Query("SELECT id, `from`, `to`, `cc`, `subject`, `date` FROM mails WHERE `is_delete` != 1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,15 +47,15 @@ func indexMails(db *sql.DB) {
 	log.Print("添加索引")
 
 	// 删除所有的html标签，只保留文本
-	sanitizer := bluemonday.Policy{}
+	// sanitizer := bluemonday.Policy{}
 
 	count := 0
 	for rows.Next() {
 		count++
 
-		email := EMail{}
+		email := base.EMail{}
 		rows.Scan(&email.Id, &email.From, &email.To,
-			&email.Cc, &email.Subject, &email.Message,
+			&email.Cc, &email.Subject,
 			&email.Date)
 
 		attrs := make([]string, 0)
@@ -96,15 +80,14 @@ func indexMails(db *sql.DB) {
 			}
 		}
 
-		date, _ := time.Parse("2006-01-02 15:04:05", email.Date)
-
+		log.Printf("%v, %d", email.Date, email.Date.Unix())
 		searcher.IndexDocument(email.Id, types.DocumentIndexData{
 			Content: strings.Join(attrs, "\x00") + "\x00" +
-				email.Subject + "\x00" +
-				sanitizer.Sanitize(email.Message),
+				email.Subject + "\x00",
+			// sanitizer.Sanitize(email.Message),
 			Fields: MailScoringFields{
 				// email.Date的格式是 2013-09-17 12:22:45
-				Timestamp:   date.Unix(),
+				Timestamp:   email.Date.Unix(),
 				IsCanonical: strings.Index(from.Address, "@baidu.com") != -1,
 			},
 		})
@@ -134,12 +117,7 @@ func (criteria MailScoringCriteria) Score(
 	}
 	msf := fields.(MailScoringFields)
 	output := make([]float32, 2)
-	// if doc.TokenProximity > MaxTokenProximity {
-	// 	output[0] = 1.0 / float32(doc.TokenProximity)
-	// } else {
-	// 	output[0] = 1.0
-	// }
-	output[0] = float32(msf.Timestamp / (SecondsInADay * 7))
+	output[0] = float32(msf.Timestamp / 5410243629)
 	if msf.IsCanonical {
 		output[1] = 1.0
 	} else {
@@ -151,10 +129,6 @@ func (criteria MailScoringCriteria) Score(
 /*******************************************************************************
     JSON-RPC
 *******************************************************************************/
-type JsonResponse struct {
-	EMails []*EMail `json:"emails"`
-}
-
 type JsonRpcHandler struct {
 	Context web.Context
 }
@@ -174,25 +148,16 @@ func (h JsonRpcHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	})
 
 	// 整理为输出格式
-	emails := []*EMail{}
-	for _, doc := range output.Docs {
-		email := EMail{Id: doc.DocId}
-		err := db.QueryRow("SELECT `from`, `to`, `cc`, `subject` FROM mails WHERE id = ?",
-			email.Id).Scan(&email.From, &email.To,
-			&email.Cc, &email.Subject)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for _, t := range output.Tokens {
-			email.Subject = strings.Replace(email.Subject, t, "<strong>"+t+"</strong>", -1)
-		}
-
-		emails = append(emails, &email)
+	ids := make([]string, len(output.Docs))
+	for idx, doc := range output.Docs {
+		ids[idx] = strconv.FormatUint(doc.DocId, 10)
 	}
-	response, _ := json.Marshal(&JsonResponse{EMails: emails})
+	response, _ := json.Marshal(&base.SearcherJsonRPCResponse{
+		Ids:    ids,
+		Tokens: output.Tokens,
+	})
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	io.WriteString(w, string(response))
 }
 
@@ -201,29 +166,33 @@ func (h JsonRpcHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 *******************************************************************************/
 func main() {
 	// 解析命令行参数
+	configPtr := flag.String("config", "config.yml", "The config file path")
 	flag.Parse()
+
+	config, err := base.GetConfig(*configPtr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	context := web.NewContext(config)
 
 	// 初始化
 	gob.Register(MailScoringFields{})
+
+	searcherDataDir := config.Service.Searcher.Datadir
+	log.Printf("DataDir = [%s]\n", searcherDataDir)
+
 	searcher.Init(types.EngineInitOptions{
-		SegmenterDictionaries: path.Join(WukongHome, "/data/dictionary.txt"),
-		StopTokenFile:         path.Join(WukongHome, "/data/stop_tokens.txt"),
+		SegmenterDictionaries: path.Join(searcherDataDir, "/dictionary.txt"),
+		StopTokenFile:         path.Join(searcherDataDir, "/stop_tokens.txt"),
 		IndexerInitOptions: &types.IndexerInitOptions{
 			IndexType: types.LocationsIndex,
 		},
 		UsePersistentStorage:    true,
 		PersistentStorageFolder: "db",
 	})
-	// wbs = make(map[uint64]Weibo)
-
-	config, err := base.GetConfig("config.yml")
-	if err != nil {
-		log.Fatal(err)
-	}
-	context := web.NewContext(config)
 
 	// 索引
-	go indexMails(context.GetDb())
+	go indexAllMails(context.GetDb())
 
 	// 捕获ctrl-c
 	c := make(chan os.Signal, 1)
@@ -237,7 +206,8 @@ func main() {
 	}()
 
 	http.Handle("/json", JsonRpcHandler{context})
-	// http.Handle("/", http.FileServer(http.Dir("static")))
-	log.Print("服务器启动")
-	http.ListenAndServe("localhost:9090", nil)
+	port := strconv.Itoa(config.Service.Searcher.Port)
+
+	log.Printf("服务器启动 localhost:%s\n", port)
+	http.ListenAndServe("localhost:"+port, nil)
 }

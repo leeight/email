@@ -133,6 +133,7 @@
     match: Any
     rules:
       - [SentTo, Contains, liyubei@baidu.com]
+      - [Subject, Contains, 文章推荐]
   action:
     Label: SentToMe
 

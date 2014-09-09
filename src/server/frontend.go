@@ -29,6 +29,7 @@ func main() {
 	// 自定义的API
 	http.Handle("/api/", handlers.MailListHandler{context})
 	http.Handle("/api/mail/read", handlers.MailReadHandler{context})
+	http.Handle("/api/mail/search", handlers.MailSearchHandler{context})
 	http.Handle("/api/mail/mark_as_read", handlers.MarkAsReadHandler{context})
 	http.Handle("/api/mail/delete", handlers.MailDeleteHandler{context})
 	http.Handle("/api/mail/post", handlers.MailPostHandler{context})

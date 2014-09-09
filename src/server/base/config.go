@@ -69,7 +69,13 @@ type frontendType struct {
 }
 
 type serviceType struct {
-	Doc docServiceType
+	Doc      docServiceType
+	Searcher searcherServiceType
+}
+
+type searcherServiceType struct {
+	Datadir string
+	Port    int
 }
 
 type docServiceType struct {
@@ -134,6 +140,13 @@ func GetConfig(file string) (*ServerConfig, error) {
 	config.Dirs.Base = filepath.Clean(
 		path.Join(filepath.Dir(abs),
 			"data", domain, config.Pop3.Username))
+
+	// 如果不是绝对路径，那么路径是相对于config.yml所在的目录来计算的
+	if !filepath.IsAbs(config.Service.Searcher.Datadir) {
+		config.Service.Searcher.Datadir = filepath.Clean(
+			path.Join(filepath.Dir(abs),
+				config.Service.Searcher.Datadir))
+	}
 
 	// 创建目录保证正确性
 	os.MkdirAll(config.DownloadDir(), 0755)
