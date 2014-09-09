@@ -45,6 +45,7 @@ func main() {
 	log.Printf("ReplyTo = %s\n", email.ReplyTo)
 	log.Printf("Date = %s\n", email.Date)
 	log.Printf("Message = %s\n", email.Message)
+	log.Printf("Message2 = %s\n", string(base.StripUnnecessaryTags([]byte(email.Message))))
 	log.Printf("Status = %d\n", email.Status)
 
 	ioutil.WriteFile("body.html", []byte(email.Message), 0644)
