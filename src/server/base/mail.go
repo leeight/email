@@ -121,7 +121,6 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 
 	for _, match := range sm {
 		fname := string(match[1])
-
 		if _, ok := resources[fname]; ok {
 			// 如果存在的话，那么这个文件需要写入cid目录
 			os.MkdirAll(path.Join(downloadDir, "cid"), 0755)
@@ -180,30 +179,6 @@ func decodeMultipartMessage(part *multipart.Part, messages kvType, resources kvT
 	if strings.HasPrefix(mediaType, "text/") {
 		body, _ := decodeMesssageBody(reader, ct)
 		messages[mediaType] = body
-	} else if strings.HasPrefix(mediaType, "image/") {
-		// 邮件中内嵌的内容（比如图片）
-		body, _ := ioutil.ReadAll(reader)
-
-		// TODO(user) 文件名的确定方案
-		// "Content-ID"
-		// "X-Attachment-Id"
-		// Content-Disposition: attachment; filename="DSC_0541.JPG"
-		filename := part.Header.Get(kContentId)
-		filename = strings.Replace(filename, "<", "", 1)
-		filename = strings.Replace(filename, ">", "", 1)
-		if filename == "" {
-			filename = part.FileName()
-		}
-
-		if filename != "" {
-			resources[filename] = body
-		}
-	} else if part.Header.Get(kContentDisposition) != "" {
-		filename := RFC2047.Decode(part.FileName())
-		if filename != "" {
-			body, _ := ioutil.ReadAll(reader)
-			resources[filename] = body
-		}
 	} else if strings.HasPrefix(mediaType, "multipart/") {
 		// TODO(user) 需要注意递归的处理流程，例如：
 		// multipart/mixed
@@ -227,11 +202,21 @@ func decodeMultipartMessage(part *multipart.Part, messages kvType, resources kvT
 			}
 		}
 	} else {
-		// ----boundary_139482_2f47a231-302f-4eff-abfc-3775c844d98d
-		// Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;
-		// 	name="=?utf-8?B?5ZGI546w56qB5Ye65bel5L2c5Lia57upLnhsc3g=?="
-		// Content-Transfer-Encoding: base64
-		filename := RFC2047.Decode(params["name"])
+		var filename string
+		cid := part.Header.Get(kContentId)
+		cdv := part.Header.Get(kContentDisposition)
+		if cid != "" {
+			// 优先考虑 Content-Id
+			// 需要把前后的 < 和 > 去掉
+			filename = regexp.MustCompile("[<>]").ReplaceAllString(cid, "")
+		} else if cdv != "" {
+			// 其次考虑 Content-Disposition
+			filename = part.FileName()
+		} else if params["name"] != "" {
+			// 最后考虑 Content-Type: image/png; name="xxx.jpg"; boundary="--12313--"
+			filename = RFC2047.Decode(params["name"])
+		}
+
 		if filename != "" {
 			body, _ := ioutil.ReadAll(reader)
 			resources[filename] = body
