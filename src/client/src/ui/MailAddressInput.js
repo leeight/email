@@ -37,7 +37,7 @@ define(function(require) {
 
         var index = +target.getAttribute('data-index');
         var item = this.suggestions[index];
-        this.addItem(item);
+        this.addItem({name: item.name, address: item.email});
     }
 
     /**

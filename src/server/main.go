@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	// "log"
+	"net/http"
 	"os"
 	"path"
 	"time"
@@ -111,9 +111,35 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 			}
 
 			log.Info("[ SAVE] %d -> %s\n", msg, uidl)
+
+			go addToIndexer(email.Id, config)
 		}
 
 		fmt.Println()
+	}
+}
+
+func addToIndexer(id uint64, config *base.ServerConfig) {
+	// 构造请求地址
+	searcherUrl := fmt.Sprintf("http://localhost:%d/add_document?id=%d",
+		config.Service.Searcher.Port, id)
+
+	// 发起请求
+	resp, err := http.Get(searcherUrl)
+	if err != nil {
+		log.Warning("%s", err.Error())
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Warning("%s", err.Error())
+		return
+	}
+
+	if string(body) != `{"success":true}` {
+		log.Warning("%s", string(body))
+		return
 	}
 }
 

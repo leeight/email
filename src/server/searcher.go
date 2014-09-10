@@ -54,47 +54,51 @@ func indexAllMails(db *sql.DB) {
 		count++
 
 		email := base.EMail{}
-		rows.Scan(&email.Id, &email.From, &email.To,
-			&email.Cc, &email.Subject,
-			&email.Date)
-
-		attrs := make([]string, 0)
-
-		from, err := mail.ParseAddress(email.From)
-		if err != nil {
-			continue
-		}
-		attrs = append(attrs, "from:"+from.Address)
-
-		addresses, err := mail.ParseAddressList(email.To)
-		if err == nil {
-			for _, address := range addresses {
-				attrs = append(attrs, "to:"+address.Address)
-			}
-		}
-
-		addresses, err = mail.ParseAddressList(email.Cc)
-		if err == nil {
-			for _, address := range addresses {
-				attrs = append(attrs, "cc:"+address.Address)
-			}
-		}
-
-		log.Printf("%v, %d", email.Date, email.Date.Unix())
-		searcher.IndexDocument(email.Id, types.DocumentIndexData{
-			Content: strings.Join(attrs, "\x00") + "\x00" +
-				email.Subject + "\x00",
-			// sanitizer.Sanitize(email.Message),
-			Fields: MailScoringFields{
-				// email.Date的格式是 2013-09-17 12:22:45
-				Timestamp:   email.Date.Unix(),
-				IsCanonical: strings.Index(from.Address, "@baidu.com") != -1,
-			},
-		})
+		rows.Scan(
+			&email.Id, &email.From, &email.To,
+			&email.Cc, &email.Subject, &email.Date,
+		)
+		addToIndexer(&email)
 	}
 
 	searcher.FlushIndex()
 	log.Printf("索引了%d封邮件\n", count)
+}
+
+func addToIndexer(email *base.EMail) {
+	attrs := make([]string, 0)
+
+	from, err := mail.ParseAddress(email.From)
+	if err != nil {
+		return
+	}
+	attrs = append(attrs, "from:"+from.Address)
+
+	addresses, err := mail.ParseAddressList(email.To)
+	if err == nil {
+		for _, address := range addresses {
+			attrs = append(attrs, "to:"+address.Address)
+		}
+	}
+
+	addresses, err = mail.ParseAddressList(email.Cc)
+	if err == nil {
+		for _, address := range addresses {
+			attrs = append(attrs, "cc:"+address.Address)
+		}
+	}
+
+	log.Printf("%v, %d", email.Date, email.Date.Unix())
+	searcher.IndexDocument(email.Id, types.DocumentIndexData{
+		Content: strings.Join(attrs, "\x00") + "\x00" +
+			email.Subject + "\x00",
+		// sanitizer.Sanitize(email.Message),
+		Fields: MailScoringFields{
+			// email.Date的格式是 2013-09-17 12:22:45
+			Timestamp:   email.Date.Unix(),
+			IsCanonical: strings.Index(from.Address, "@baidu.com") != -1,
+		},
+	})
 }
 
 /*******************************************************************************
@@ -161,6 +165,36 @@ func (h JsonRpcHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, string(response))
 }
 
+type AddDocumentHandler struct {
+	Context web.Context
+}
+
+func (h AddDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	db := h.Context.GetDb()
+	defer db.Close()
+
+	id := req.URL.Query().Get("id")
+	if id == "" {
+		http.Error(w, "invalid request.", http.StatusBadRequest)
+		return
+	}
+
+	email := base.EMail{}
+	sql := "SELECT id, `from`, `to`, `cc`, `subject`, `date` FROM mails WHERE `is_delete` != 1 AND `id` = ?"
+	err := db.QueryRow(sql, id).Scan(
+		&email.Id, &email.From, &email.To,
+		&email.Cc, &email.Subject, &email.Date,
+	)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	addToIndexer(&email)
+
+	io.WriteString(w, `{"success":true}`)
+}
+
 /*******************************************************************************
 	主函数
 *******************************************************************************/
@@ -206,6 +240,8 @@ func main() {
 	}()
 
 	http.Handle("/json", JsonRpcHandler{context})
+	http.Handle("/add_document", AddDocumentHandler{context})
+	// http.Handle("/del_document", DelDocumentHandler{context})
 	port := strconv.Itoa(config.Service.Searcher.Port)
 
 	log.Printf("服务器启动 localhost:%s\n", port)
