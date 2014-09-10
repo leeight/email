@@ -47,6 +47,7 @@
       - [SentTo, Contains, 'jp-video-rd@baidu.com']
       - [SentTo, Contains, 'tieba-ecom-rd@baidu.com']
       - [Subject, Contains, '一个月以上未活动版本统计']
+      - [Subject, Contains, '[LOG.BAIDU.JP][WARN]']
   action:
     Label: 监控邮件
     MarkAsRead: true

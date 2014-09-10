@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"time"
+	// "time"
 	// "io/ioutil"
 	// "log"
 	// "regexp"
@@ -88,8 +88,8 @@ func main() {
 	// d, err := yaml.Marshal(&config.Service.Doc)
 	// fmt.Println(string(d))
 	// return
-	fmt.Printf("%d\n", time.Now().UnixNano())
-	return
+	// fmt.Printf("%d\n", time.Now().UnixNano())
+	// return
 	filters, err := base.GetFilters("filters.yml")
 	if err != nil {
 		panic(err)

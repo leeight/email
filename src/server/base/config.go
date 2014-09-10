@@ -14,15 +14,6 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
-const (
-	kDefaultInterval    = 60
-	kDefaultDownloadDir = "downloads"
-	kDefaultRawDir      = "raw"
-	kDefaultDbName      = "foo.db"
-	kDefaultPop3Port    = 995
-	kDefautlSmtpPort    = 25
-)
-
 func fixHostname(host string, port, defaultPort int) string {
 	if port <= 0 {
 		port = defaultPort

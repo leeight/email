@@ -15,11 +15,6 @@ import (
 	"../RFC2047"
 )
 
-var (
-	kDefaultContentType             = "text/html; charset=\"utf-8\""
-	kDefaultContentTransferEncoding = "base64"
-)
-
 // 我们发送的时候不考虑 text/plain 的情况了
 
 // 纯HTML邮件

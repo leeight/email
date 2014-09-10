@@ -16,22 +16,6 @@ type MoveMessaeAction struct{}
 type CopyMessageAction struct{}
 type ChangeStatusAction struct{}
 
-// 照着Mac Outlook里面的Rules支持的动作写的
-// 摘抄了部分容易实现的功能
-const (
-	kActionMoveMessage     = "MoveMessage"
-	kActionCopyMessage     = "CopyMessage"
-	kActionDeleteMessage   = "DeleteMessage"
-	kActionLabel           = "Label"
-	kActionMarkAsRead      = "MarkAsRead"
-	kActionChangeStatus    = "ChangeStatus"
-	kActionToDo            = "ToDo"
-	kActionReply           = "Reply"
-	kActionForward         = "Forward"
-	kActionSaveAttachments = "SaveAttachments"
-	kActionDoNotNotify     = "DoNotNotify"
-)
-
 // 给邮件打Tag
 func (this LabelAction) Exec(email *EMail, args ...interface{}) error {
 	value := args[0]

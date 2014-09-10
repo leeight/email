@@ -12,34 +12,6 @@ import (
 	"../net/mail"
 )
 
-const (
-	kOpIs             = "Is"
-	kOpContains       = "Contains"
-	kOpExists         = "Exists"
-	KOpOnlyMe         = "Only Me"
-	kOpMe             = "Me"
-	kOpNotMe          = "Not Me"
-	kOpCcMe           = "Cc Me"
-	kOpToOrCcMe       = "To or Cc Me"
-	kOpHasAttachments = "HasAttachments"
-	kOpRange          = "Range"
-	kMatchAll         = "All"
-	kMatchAny         = "Any"
-)
-
-const (
-	kHFrom          = "From"
-	kHTo            = "To"
-	kHCc            = "Cc"
-	kHSubject       = "Subject"
-	kHSentTo        = "SentTo"
-	kHBody          = "Body"
-	kHSubjectOrBody = "SubjectOrBody"
-	kHDate          = "Date"
-	kHSize          = "Size"
-	kHAttachments   = "Attachments"
-)
-
 type Filter struct {
 	Name      string
 	Disable   bool
@@ -61,28 +33,28 @@ func CheckRule(email *EMail, msg *mail.Message, rule []string) bool {
 	}
 
 	switch key {
-	case kHFrom:
+	case kFrom:
 		from, err := mail.ParseAddress(email.From)
 		if err != nil {
 			return false
 		}
 
 		return operator.Exec(from.Address, rule[2])
-	case kHTo:
+	case kTo:
 		to, err := mail.ParseAddressList(email.To)
 		if err != nil {
 			return false
 		}
 
 		return operator.Exec(to, rule[2])
-	case kHCc:
+	case kCc:
 		cc, err := mail.ParseAddressList(email.Cc)
 		if err != nil {
 			return false
 		}
 
 		return operator.Exec(cc, rule[2])
-	case kHSentTo:
+	case kSentTo:
 		to, err := mail.ParseAddressList(email.To)
 		if err == nil {
 			if operator.Exec(to, rule[2]) {
@@ -97,19 +69,19 @@ func CheckRule(email *EMail, msg *mail.Message, rule []string) bool {
 		}
 
 		return false
-	case kHSubject:
+	case kSubject:
 		return operator.Exec(email.Subject, rule[2])
-	case kHBody:
+	case kBody:
 		return operator.Exec(email.Message, rule[2])
-	case kHSubjectOrBody:
+	case kSubjectOrBody:
 		a := operator.Exec(email.Subject, rule[2])
 		b := operator.Exec(email.Message, rule[2])
 		return a || b
-	case kHDate:
+	case kDate:
 		return operator.Exec(email.Date, rule[2])
 	// case kHSize:
 	// 	break
-	case kHAttachments:
+	case kAttachments:
 		// TODO(user) 这个判断准确么
 		a := msg.Header.Get("X-Has-Attach") == "yes"
 		b := msg.Header.Get("X-MS-Has-Attach") == "yes"

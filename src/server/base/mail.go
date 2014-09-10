@@ -21,23 +21,6 @@ import (
 	"github.com/qiniu/iconv"
 )
 
-// 一些常量定义
-var (
-	kSubject                 = "Subject"
-	kFrom                    = "From"
-	kTo                      = "To"
-	kCc                      = "CC"
-	kBcc                     = "BCC"
-	kReplyTo                 = "Reply-To"
-	kDate                    = "Date"
-	kContentType             = "Content-Type"
-	kQuotedPrintable         = "quoted-printable"
-	kBase64                  = "base64"
-	kContentId               = "Content-ID"
-	kContentDisposition      = "Content-Disposition"
-	kContentTransferEncoding = "Content-Transfer-Encoding"
-)
-
 type kvType map[string][]byte
 
 // 从邮件的正文中创建一个邮件对象 EMail 然后存储到
@@ -211,7 +194,7 @@ func decodeMultipartMessage(part *multipart.Part, messages kvType, resources kvT
 			filename = regexp.MustCompile("[<>]").ReplaceAllString(cid, "")
 		} else if cdv != "" {
 			// 其次考虑 Content-Disposition
-			filename = part.FileName()
+			filename = RFC2047.Decode(part.FileName())
 		} else if params["name"] != "" {
 			// 最后考虑 Content-Type: image/png; name="xxx.jpg"; boundary="--12313--"
 			filename = RFC2047.Decode(params["name"])
