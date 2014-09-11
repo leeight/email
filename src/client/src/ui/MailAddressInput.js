@@ -259,7 +259,7 @@ define(function(require) {
      * @return {?{name:string,address:string}}
      */
     function parseItem(value) {
-        var pattern = /((['"])?(.+)\2\s+)?<?([\w\.]+@[\w\.]+)>?(;+)?/;
+        var pattern = /((['"])?(.+)\2\s+)?<?([\-\w\.]+@[\-\w\.]+)>?(;+)?/;
         var match = pattern.exec(value);
         if (!match) {
             return null;

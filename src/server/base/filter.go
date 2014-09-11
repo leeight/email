@@ -191,7 +191,7 @@ func RunFilter(email *EMail, filters []Filter, rawDir string, db *sql.DB) error 
 }
 
 func GetFilters(file string) ([]Filter, error) {
-	data, err := ioutil.ReadFile("filters.yml")
+	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
