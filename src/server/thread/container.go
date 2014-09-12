@@ -10,6 +10,10 @@ type Container struct {
 	children []*Container
 }
 
+func (c *Container) Size() int {
+	return len(c.children)
+}
+
 func (c *Container) GetMessage() *Message {
 	return c.message
 }
@@ -32,7 +36,7 @@ func (c *Container) IsEmpty() bool {
 	return c.message == nil
 }
 
-func (c *Container) HasDescendant(container *Container) bool {
+func (c *Container) hasDescendant(container *Container) bool {
 	if c == container {
 		return true
 	}
@@ -43,7 +47,7 @@ func (c *Container) HasDescendant(container *Container) bool {
 
 	var descendantPresent bool
 	for _, child := range c.children {
-		if child.HasDescendant(container) {
+		if child.hasDescendant(container) {
 			descendantPresent = true
 			break
 		}
@@ -52,15 +56,15 @@ func (c *Container) HasDescendant(container *Container) bool {
 	return descendantPresent
 }
 
-func (c *Container) AddChild(container *Container) {
+func (c *Container) addChild(container *Container) {
 	if container.parent != nil {
-		container.parent.RemoveChild(container)
+		container.parent.removeChild(container)
 	}
 	container.parent = c
 	c.children = append(c.children, container)
 }
 
-func (c *Container) RemoveChild(container *Container) {
+func (c *Container) removeChild(container *Container) {
 	for idx, child := range c.children {
 		if child == container {
 			c.children = append(c.children[:idx], c.children[idx+1:]...)
@@ -69,16 +73,17 @@ func (c *Container) RemoveChild(container *Container) {
 	}
 }
 
-func (c *Container) PromoteChildren(container *Container) {
-	for _, child := range container.children {
-		c.AddChild(child)
+func (c *Container) promoteChildren(container *Container) {
+	for i := len(container.children) - 1; i >= 0; i-- {
+		child := container.children[i]
+		c.addChild(child)
 	}
-	c.RemoveChild(container)
+	c.removeChild(container)
 }
 
 func (c *Container) GetConversation(msgid string) []*Message {
 	messages := make([]*Message, 0)
-	container := c.GetSpecificChild(msgid)
+	container := c.getSpecificChild(msgid)
 	if container == nil {
 		return messages
 	}
@@ -94,14 +99,14 @@ func (c *Container) GetConversation(msgid string) []*Message {
 	return messages
 }
 
-func (c *Container) GetSpecificChild(msgid string) *Container {
+func (c *Container) getSpecificChild(msgid string) *Container {
 	if !c.IsEmpty() && c.message.Id == msgid {
 		return c
 	}
 
 	var specificChild *Container
 	for _, child := range c.children {
-		found := child.GetSpecificChild(msgid)
+		found := child.getSpecificChild(msgid)
 		if found != nil {
 			return found
 		}
@@ -110,7 +115,7 @@ func (c *Container) GetSpecificChild(msgid string) *Container {
 	return specificChild
 }
 
-func (c *Container) ThreadParent() *Container {
+func (c *Container) threadParent() *Container {
 	if c.IsEmpty() || c.parent == nil {
 		return c
 	}
@@ -144,30 +149,27 @@ func (c *Container) FlattenChildren() []*Message {
 
 // Recursively walk all containers under the root set.
 // For each container:
-func (c *Container) PruneEmpties() {
-	for _, container := range c.children {
-		container.PruneEmpties()
+func (c *Container) pruneEmpties() {
+	for i := len(c.children) - 1; i >= 0; i-- {
+		container := c.children[i]
+		container.pruneEmpties()
 
 		// A. If it is an empty container with no children, nuke it.
 		if container.IsEmpty() && len(container.children) == 0 {
-			c.RemoveChild(container)
+			c.removeChild(container)
 		} else if container.IsEmpty() && len(container.children) > 0 {
 			// B. If the Container has no Message, but does have children,
 			// remove this container but promote its children to this level
 			// (that is, splice them in to the current child list.)
 			if c.parent == nil && len(container.children) == 1 {
-				c.PromoteChildren(container)
+				c.promoteChildren(container)
 			} else if c.parent == nil && len(container.children) > 1 {
 				// IGNORE
 				// Do not promote the children if doing so would promote them
 				// to the root set -- unless there is only one child, in which case, do.
 			} else {
-				c.PromoteChildren(container)
+				c.promoteChildren(container)
 			}
 		}
 	}
-}
-
-func NewContainer() *Container {
-	return &Container{message: nil}
 }

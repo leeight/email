@@ -1,6 +1,7 @@
 package thread
 
 import (
+	// "log"
 	"regexp"
 )
 
@@ -50,8 +51,8 @@ func (t *Thread) createIdTable(messages []*Message) {
 				// to see if A is reachable, and also search down the children of
 				// A to see if B is reachable. If either is already reachable as
 				// a child of the other, don't add the link.
-				!container.HasDescendant(prev) {
-				prev.AddChild(container)
+				!container.hasDescendant(prev) {
+				prev.addChild(container)
 			}
 
 			prev = container
@@ -69,8 +70,8 @@ func (t *Thread) createIdTable(messages []*Message) {
 
 		// Note that at all times, the various ``parent'' and ``child'' fields must be
 		// kept inter-consistent.
-		if prev != nil && !parentContainer.HasDescendant(prev) {
-			prev.AddChild(parentContainer)
+		if prev != nil && !parentContainer.hasDescendant(prev) {
+			prev.addChild(parentContainer)
 		}
 	}
 }
@@ -85,6 +86,8 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 		if container.IsEmpty() {
 			if len(container.children) > 0 {
 				this = container.children[0]
+			} else {
+				panic("Should not reach here.")
 			}
 		} else {
 			this = container
@@ -117,11 +120,11 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 					t.subjectTable[subject] = this
 				}
 			}
-
 		}
 	}
 
-	for _, container := range roots.children {
+	for i := len(roots.children) - 1; i >= 0; i-- {
+		container := roots.children[i]
 		subject := normalizeSubject(container.GetSubject())
 
 		c := t.subjectTable[subject]
@@ -133,15 +136,15 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 			// If both are dummies, append one's children to the other,
 			// and remove the now-empty container.
 			for _, child := range container.children {
-				c.AddChild(child)
+				c.addChild(child)
 			}
-			container.parent.RemoveChild(container)
+			container.parent.removeChild(container)
 		} else if c.IsEmpty() && !container.IsEmpty() {
 			// If one container is a empty and the other is not,
 			// make the non-empty one be a child of the empty,
 			// and a sibling of the other ``real'' messages with
 			// the same subject (the empty's children.)
-			c.AddChild(container)
+			c.addChild(container)
 		} else if !isReplyOrForward(c.message.Subject) &&
 			// TODO(user) 为啥有这个判断了呢?
 			!container.IsEmpty() &&
@@ -149,11 +152,11 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 			// If that container is a non-empty, and that message's
 			// subject does not begin with ``Re:'', but this message's
 			// subject does, then make this be a child of the other.
-			c.AddChild(container)
+			c.addChild(container)
 		} else {
 			nc := &Container{message: nil}
-			nc.AddChild(c)
-			nc.AddChild(container)
+			nc.addChild(c)
+			nc.addChild(container)
 			t.subjectTable[subject] = nc
 		}
 	}
@@ -166,11 +169,11 @@ func (t *Thread) GetRoots() *Container {
 
 	for _, child := range t.idTable {
 		if child.parent == nil {
-			roots.AddChild(child)
+			roots.addChild(child)
 		}
 	}
 
-	roots.PruneEmpties()
+	roots.pruneEmpties()
 
 	return roots
 }

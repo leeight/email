@@ -130,6 +130,8 @@ func main() {
 	// msgid := "221EDC891526FF488A73B41BEE14085CD3C24B@M1-MAIL-MBX01.internal.baidu.com"
 	// msgid := "036F131D-3526-4E82-894C-50A36895D070@coffeeonmars.com"
 	roots := t.GetRoots()
+	// fmt.Printf("%d\n", roots.Size())
+	// return
 	for subject, container := range t.GroupBySubject(roots) {
 		messages := container.FlattenChildren()
 		if len(messages) > 0 {
