@@ -125,16 +125,25 @@ func main() {
 	// fmt.Printf("%d\n", len(messages))
 
 	// messages := make([]*thread.Message, 0)
-	thread := thread.NewThread(messages)
+	t := thread.NewThread(messages)
 	// msgid := "AE0EBE28-8122-432A-8F1E-BE2C40EA55AE@designdrumm.com"
 	// msgid := "221EDC891526FF488A73B41BEE14085CD3C24B@M1-MAIL-MBX01.internal.baidu.com"
 	// msgid := "036F131D-3526-4E82-894C-50A36895D070@coffeeonmars.com"
-	roots := thread.GetRoots()
-	for subject, container := range thread.GroupBySubject(roots) {
-		fmt.Printf("%s\n", subject)
+	roots := t.GetRoots()
+	for subject, container := range t.GroupBySubject(roots) {
 		messages := container.FlattenChildren()
-		for _, msg := range messages {
-			fmt.Printf("    %s => %s\n", msg.Uidl, msg.Subject)
+		if len(messages) > 0 {
+			if !container.IsEmpty() {
+				newmsg := make([]*thread.Message, len(messages)+1)
+				copy(newmsg[1:], messages[0:])
+				newmsg[0] = container.GetMessage()
+				messages = newmsg
+			}
+
+			fmt.Printf("%s\n", subject)
+			for _, msg := range messages {
+				fmt.Printf("    %s => %s\n", msg.Uidl, msg.Subject)
+			}
 		}
 	}
 }

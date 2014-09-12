@@ -176,13 +176,13 @@ func (t *Thread) GetRoots() *Container {
 }
 
 func normalizeSubject(subject string) string {
-	re := regexp.MustCompile(`(?i)((Re|Fwd|回复|答复)(\[[\d+]\])?[:：](\s*)?)*(.*)`)
+	re := regexp.MustCompile(`(?i)((Re|Fwd|Fw|回复|答复)(\[[\d+]\])?[:：](\s*)?)*(.*)`)
 	ss := re.FindStringSubmatch(subject)
 	return ss[5]
 }
 
 func isReplyOrForward(subject string) bool {
-	re := regexp.MustCompile(`^(?i)(Re|Fwd|回复|答复)`)
+	re := regexp.MustCompile(`^(?i)(Re|Fwd|Fw|回复|答复)\s*[:：]`)
 	return re.MatchString(subject)
 }
 

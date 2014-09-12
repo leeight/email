@@ -10,6 +10,10 @@ type Container struct {
 	children []*Container
 }
 
+func (c *Container) GetMessage() *Message {
+	return c.message
+}
+
 func (c *Container) GetSubject() string {
 	if c.IsEmpty() {
 		if len(c.children) > 0 {

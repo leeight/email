@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/saintfish/chardet"
+
 	"./base"
 )
 
@@ -35,6 +37,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	detector := chardet.NewTextDetector()
+
+	result, err := detector.DetectBest([]byte(email.Subject))
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Charset = %s\n", result.Charset)
 
 	log.Printf("Id = %d\n", email.Id)
 	log.Printf("Subject = %s\n", email.Subject)
