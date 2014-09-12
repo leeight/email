@@ -135,7 +135,7 @@ func Decode(s string) string {
 		charset, tb, err = decodeBuffer(p)
 		if err != nil {
 			if err == NotInvalidEncoding {
-				buffer = append(buffer, []byte(p)...)
+				buffer = append(buffer, []byte(" "+p)...)
 			} else {
 				return s
 			}
