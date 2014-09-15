@@ -2,7 +2,7 @@ package thread
 
 import (
 	// "log"
-	// "fmt"
+	"fmt"
 	"regexp"
 )
 
@@ -11,76 +11,10 @@ type ContainerMap map[string]*Container
 type Thread struct {
 	idTable      ContainerMap
 	subjectTable ContainerMap
+	roots        *Container
 }
 
-func (t *Thread) createIdTable(messages []*Message) {
-	// 初始化
-	t.idTable = make(ContainerMap)
-
-	for _, m := range messages {
-		parentContainer, ok := t.idTable[m.Id]
-		if ok {
-			// 如果 id_table 包含这个 message-id 的话，检查一下是否是
-			// empty container
-			if parentContainer.IsEmpty() {
-				parentContainer.message = m
-			}
-		} else {
-			// id_table 不包含这个 message-id，那么创建一个新的
-			parentContainer = &Container{message: m}
-			t.idTable[m.Id] = parentContainer
-		}
-
-		// Link the References field's Containers together in the order
-		// implied by the References header.
-		// For each element in the message's References field:
-		var prev *Container
-		for _, ref := range m.References {
-			container, ok := t.idTable[ref]
-			if !ok {
-				// If there's one in id_table use that;
-				// Otherwise, make (and index) one with a null Message.
-				container = &Container{message: nil}
-				t.idTable[ref] = container
-			}
-
-			if prev != nil &&
-				// If they are already linked, don't change the existing links.
-				container.parent == nil &&
-				// Do not add a link if adding that link would introduce a loop:
-				// that is, before asserting A->B, search down the children of B
-				// to see if A is reachable, and also search down the children of
-				// A to see if B is reachable. If either is already reachable as
-				// a child of the other, don't add the link.
-				!container.hasDescendant(prev) {
-				prev.addChild(container)
-			}
-
-			prev = container
-		}
-
-		// Set the parent of this message to be the last element in References.
-		// Note that this message may have a parent already: this can happen because we saw this ID
-		// in a References field, and presumed a parent based on the other entries in that field.
-		// Now that we have the actual message, we can be more definitive, so throw away the old parent
-		// and use this new one. Find this Container in the parent's children list, and unlink it.
-
-		// Note that this could cause this message to now have no parent, if it has no references
-		// field, but some message referred to it as the non-first element of its references.
-		// (Which would have been some kind of lie...)
-
-		// Note that at all times, the various ``parent'' and ``child'' fields must be
-		// kept inter-consistent.
-		if prev != nil && !parentContainer.hasDescendant(prev) {
-			prev.addChild(parentContainer)
-		}
-	}
-}
-
-func (t *Thread) createSubjectTable(roots *Container) {
-	// 初始化
-	t.subjectTable = make(ContainerMap)
-
+func (t *Thread) initSubjectTable(roots *Container) {
 	// 先构造一个初级的subjectTable
 	for _, this := range roots.children {
 		subject := normalizeSubject(this.GetSubject())
@@ -110,8 +44,69 @@ func (t *Thread) createSubjectTable(roots *Container) {
 	}
 }
 
+func (t *Thread) AddMessage(m *Message) *Container {
+	parentContainer, ok := t.idTable[m.Id]
+	if ok {
+		// 如果 id_table 包含这个 message-id 的话，检查一下是否是
+		// empty container
+		if parentContainer.IsEmpty() {
+			parentContainer.message = m
+		}
+	} else {
+		// id_table 不包含这个 message-id，那么创建一个新的
+		parentContainer = &Container{message: m}
+		t.idTable[m.Id] = parentContainer
+	}
+
+	// Link the References field's Containers together in the order
+	// implied by the References header.
+	// For each element in the message's References field:
+	var prev *Container
+	for _, ref := range m.References {
+		container, ok := t.idTable[ref]
+		if !ok {
+			// If there's one in id_table use that;
+			// Otherwise, make (and index) one with a null Message.
+			container = &Container{message: nil}
+			t.idTable[ref] = container
+		}
+
+		if prev != nil &&
+			// If they are already linked, don't change the existing links.
+			container.parent == nil &&
+			// Do not add a link if adding that link would introduce a loop:
+			// that is, before asserting A->B, search down the children of B
+			// to see if A is reachable, and also search down the children of
+			// A to see if B is reachable. If either is already reachable as
+			// a child of the other, don't add the link.
+			!container.hasDescendant(prev) {
+			prev.addChild(container)
+		}
+
+		prev = container
+	}
+
+	// Set the parent of this message to be the last element in References.
+	// Note that this message may have a parent already: this can happen because we saw this ID
+	// in a References field, and presumed a parent based on the other entries in that field.
+	// Now that we have the actual message, we can be more definitive, so throw away the old parent
+	// and use this new one. Find this Container in the parent's children list, and unlink it.
+
+	// Note that this could cause this message to now have no parent, if it has no references
+	// field, but some message referred to it as the non-first element of its references.
+	// (Which would have been some kind of lie...)
+
+	// Note that at all times, the various ``parent'' and ``child'' fields must be
+	// kept inter-consistent.
+	if prev != nil && !parentContainer.hasDescendant(prev) {
+		prev.addChild(parentContainer)
+	}
+
+	return t.idTable[m.Id]
+}
+
 func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
-	t.createSubjectTable(roots)
+	t.initSubjectTable(roots)
 
 	l := len(roots.children)
 	for i := l - 1; i >= 0; i-- {
@@ -187,17 +182,22 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 }
 
 func (t *Thread) GetRoots() *Container {
-	roots := &Container{message: nil}
-
 	for _, child := range t.idTable {
 		if child.parent == nil {
-			roots.addChild(child)
+			t.roots.addChild(child)
 		}
 	}
 
-	roots.pruneEmpties()
+	t.roots.pruneEmpties()
 
-	return roots
+	return t.roots
+}
+
+func (t *Thread) String() {
+	for k, v := range t.idTable {
+		fmt.Printf("%s -> %s\n", k, v)
+	}
+	fmt.Println()
 }
 
 func normalizeSubject(subject string) string {
@@ -213,7 +213,14 @@ func isReplyOrForward(subject string) bool {
 
 func NewThread(messages []*Message) *Thread {
 	thread := &Thread{}
-	thread.createIdTable(messages)
+
+	thread.roots = &Container{message: nil}
+	thread.subjectTable = make(ContainerMap)
+	thread.idTable = make(ContainerMap)
+
+	for _, m := range messages {
+		thread.AddMessage(m)
+	}
 
 	return thread
 }

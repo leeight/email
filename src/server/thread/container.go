@@ -1,13 +1,27 @@
 package thread
 
 import (
-// "fmt"
+	// "fmt"
+	"encoding/json"
 )
 
 type Container struct {
 	message  *Message
 	parent   *Container
 	children []*Container
+}
+
+func (c *Container) String() string {
+	type DummyType struct {
+		Message  *Message
+		Parent   *Container
+		Children []*Container
+	}
+	raw, err := json.Marshal(&DummyType{c.message, c.parent, c.children})
+	if err != nil {
+		return err.Error()
+	}
+	return string(raw)
 }
 
 func (c *Container) Size() int {
