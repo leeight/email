@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,8 +10,10 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"time"
 
 	"../RFC2047"
+	"../base"
 	"../net/mail"
 	"../thread"
 )
@@ -119,33 +122,89 @@ func readAllMessages() []*thread.Message {
 	return messages
 }
 
+func addThread(db *sql.DB, subject string, mids []string) error {
+	// 根据 mids 的内容查询最后一封邮件的内容
+	// date, from
+	var date time.Time
+	var from string
+	err := db.QueryRow("SELECT `date`, `from` FROM `mails` WHERE `uidl` = ?",
+		mids[len(mids)-1]).Scan(&date, &from)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	stmt, err := tx.Prepare("INSERT INTO threads (`from`, `date`, `subject`," +
+		"`mids`, `is_read`, `is_delete`, `is_spam`) VALUES (?, ?, ?, ?, 1, 0, 0)")
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(from, date, subject, strings.Join(mids, ","))
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	log.Printf("%d -> %v\n", id, mids)
+
+	return nil
+}
+
 func main() {
+	config, err := base.GetConfig("config.yml")
+
+	db, err := sql.Open("sqlite3", config.DbPath())
+	if err != nil {
+		log.Panic(err)
+		return
+	}
+	defer db.Close()
+
+	db.Exec("DELETE FROM threads")
+
 	messages := readAllMessages()
 	// messages := getAllMessages()
-	// fmt.Printf("%d\n", len(messages))
 
-	// messages := make([]*thread.Message, 0)
 	t := thread.NewThread(messages)
-	// msgid := "AE0EBE28-8122-432A-8F1E-BE2C40EA55AE@designdrumm.com"
-	// msgid := "221EDC891526FF488A73B41BEE14085CD3C24B@M1-MAIL-MBX01.internal.baidu.com"
-	// msgid := "036F131D-3526-4E82-894C-50A36895D070@coffeeonmars.com"
 	roots := t.GetRoots()
-	// fmt.Printf("%d\n", roots.Size())
-	// return
+
 	for subject, container := range t.GroupBySubject(roots) {
 		messages := container.FlattenChildren()
-		if len(messages) > 0 {
-			if !container.IsEmpty() {
-				newmsg := make([]*thread.Message, len(messages)+1)
-				copy(newmsg[1:], messages[0:])
-				newmsg[0] = container.GetMessage()
-				messages = newmsg
-			}
-
-			fmt.Printf("%s\n", subject)
-			for _, msg := range messages {
-				fmt.Printf("    %s => %s\n", msg.Uidl, msg.Subject)
-			}
+		// if len(messages) > 0 {
+		if !container.IsEmpty() {
+			newmsg := make([]*thread.Message, len(messages)+1)
+			copy(newmsg[1:], messages[0:])
+			newmsg[0] = container.GetMessage()
+			messages = newmsg
 		}
+
+		mids := make([]string, len(messages))
+		// fmt.Printf("%s\n", subject)
+		for idx, msg := range messages {
+			mids[idx] = msg.Uidl
+			// fmt.Printf("    %s => %s\n", msg.Uidl, msg.Subject)
+		}
+		addThread(db, subject, mids)
+		// }
 	}
 }

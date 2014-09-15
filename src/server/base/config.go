@@ -83,6 +83,7 @@ type ServerConfig struct {
 	Smtp     smtpType
 	Frontend frontendType
 	Service  serviceType
+	Db       string
 	Dirs     struct {
 		Base string
 	}
@@ -97,7 +98,11 @@ func (config *ServerConfig) RawDir() string {
 }
 
 func (config *ServerConfig) DbPath() string {
-	return path.Join(config.Dirs.Base, kDefaultDbName)
+	if config.Db == "" {
+		return path.Join(config.Dirs.Base, kDefaultDbName)
+	} else {
+		return path.Join(config.Dirs.Base, config.Db)
+	}
 }
 
 func GetConfig(file string) (*ServerConfig, error) {
@@ -142,6 +147,7 @@ func GetConfig(file string) (*ServerConfig, error) {
 	// 创建目录保证正确性
 	os.MkdirAll(config.DownloadDir(), 0755)
 	os.MkdirAll(config.RawDir(), 0755)
+	os.MkdirAll(path.Dir(config.DbPath()), 0755)
 
 	log.Printf("Config: %s\n", abs)
 	log.Printf("Dirs.Base: %s\n", config.Dirs.Base)

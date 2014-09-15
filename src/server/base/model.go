@@ -35,6 +35,16 @@ type EMail struct {
 	IsDelete int       `json:"is_delete"`
 }
 
+type Thread struct {
+	Id       uint64        `json:"id"`
+	From     *mail.Address `json:"from"`
+	Date     time.Time     `json:"date"`
+	Subject  string        `json:"subject"`
+	Mids     string        `json:"mids"`
+	IsRead   int           `json:"is_read"`
+	IsDelete int           `json:"is_delete"`
+}
+
 // 定义邮件类型，View Model
 type EMailViewModel struct {
 	Id          uint64          `json:"id"`

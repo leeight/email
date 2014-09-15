@@ -6,6 +6,7 @@ define(function(require) {
 var moment = require('moment');
 var lib = require('esui/lib');
 var u = require('underscore');
+var ical = require('common/ical');
 
 var exports = {};
 
@@ -51,61 +52,66 @@ exports.composeMail = function(view, opt_title, opt_actionOptions) {
 };
 
 
-
-var tableFields = [
-    {
-        field: 'id',
-        width: 10,
-        title: 'ID',
-        content: function (item) {
-            return '<span title="' + item.uidl + '">#' + item.id + '</span>';
-        }
-    },
-    {
-        field: 'from',
-        width: 100,
-        title: '发件人',
-        content: function (item) {
-            var from = item.from || {
-                name: '未知来源',
-                address: '未知来源'
-            };
-            return '<span title="' + from.address + '">' +
-                lib.encodeHTML(from.name || from.address) +
-            '</span>';
-        }
-    },
-    {
-        field: 'subject',
-        title: '标题',
-        width: 700,
-        content: function (item) {
-            var extra = '';
-            if (item.attachments && item.attachments.length) {
-                extra = '<span class="x-icon-attchments" title="' +
-                u.map(item.attachments, function(x){
-                    return x.name + ' (' + x.size + ')';
-                }).join(' ') + '"></span>';
+function getTableFields(linkBuilder) {
+    var tableFields = [
+        {
+            field: 'id',
+            width: 10,
+            title: 'ID',
+            content: function (item) {
+                return '<span title="' + item.uidl + '">#' + item.id + '</span>';
             }
-
-            var prefix = '';
-            if (item.importance) {
-                prefix = '<i>' + item.importance + '</i>';
+        },
+        {
+            field: 'from',
+            width: 100,
+            title: '发件人',
+            content: function (item) {
+                var from = item.from || {
+                    name: '未知来源',
+                    address: '未知来源'
+                };
+                return '<span title="' + from.address + '">' +
+                    lib.encodeHTML(from.name || from.address) +
+                '</span>';
             }
+        },
+        {
+            field: 'subject',
+            title: '标题',
+            width: 700,
+            content: function (item) {
+                var extra = '';
+                if (item.attachments && item.attachments.length) {
+                    extra = '<span class="x-icon-attchments" title="' +
+                    u.map(item.attachments, function(x){
+                        return x.name + ' (' + x.size + ')';
+                    }).join(' ') + '"></span>';
+                }
 
-            return prefix + '<a href="#/mail/view~id=' + item.id + '&uidl=' + item.uidl + '">' +
-                (item.subject || '(no subject)') + '</a>' + extra;
+                var prefix = '';
+                if (item.importance) {
+                    prefix = '<i>' + item.importance + '</i>';
+                }
+
+                var href = linkBuilder(item);
+                return prefix + '<a href="' + href + '">' +
+                    (item.subject || '(no subject)') + '</a>' + extra;
+            }
+        },
+        {
+            field: 'date',
+            width: 100,
+            title: '发送日期',
+            content: function(item) {
+                // return moment(item.date).format('YYYY-MM-DD HH:mm:ss')
+                return moment(item.date).fromNow()
+            }
         }
-    },
-    {
-        field: 'date',
-        width: 100,
-        title: '发送日期',
-        content: function(item) {
-            return moment(item.date).format('YYYY-MM-DD HH:mm:ss')
-        }
-    }
-];
+    ];
+
+    return tableFields;
+}
 
 var tableRows = {
     getRowClass: function(item, index) {
@@ -115,18 +121,64 @@ var tableRows = {
     }
 }
 
+function defaultLinkBuilder(item) {
+    return '#/mail/view~id=' + item.id + '&uidl=' + item.uidl;
+}
+
 /**
  * 列表页面的配置信息
+ * @param {function(item):string} opt_linkBuilder 构造标题的链接
  * @return {Object}
  */
-exports.mailListConfiguration = function() {
+exports.mailListConfiguration = function(opt_linkBuilder) {
+    var linkBuilder = opt_linkBuilder || defaultLinkBuilder;
     return {
-        fields: tableFields,
+        fields: getTableFields(linkBuilder),
         rows: tableRows,
         sortable: false,
         columnResizable: true,
         select: 'multi'
     };
+};
+
+exports.applyEMailPath = function(email) {
+    var date = moment(email.date)
+    email.date = date.format('YYYY-MM-DD HH:mm:ss') + ' (' + date.fromNow() + ')';
+
+    if (!email.from) {
+        email.from = {
+            name: '未知来源',
+            address: '未知来源'
+        };
+    }
+
+    if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
+        try {
+            var calendar = ical.parse(email.message);
+            email.message = ical.format(calendar);
+            email.is_calendar = true;
+        }
+        catch(ex) {
+            email.message = '<pre><b>' + ex.toString() + '</b>\n' + email.message + '</pre>';
+        }
+    } else {
+        // FIXME(user) 修复了 http://gitlab.baidu.com/baidu/email/issues/20 之后应该就不需要了
+        email.message = email.message.replace(/聽/g, '');
+    }
+
+    // FIXME(user) 修复查看附件url的地址
+    u.each(email.attachments, function(item) {
+        if (/\.(doc|xls|ppt)x?$/i.test(item.name)) {
+            item.preview_url = 'http://' + location.hostname + ':8765/doc/viewer/' +
+                email.uidl + '/att/' + encodeURIComponent(item.name);
+        }
+        else {
+            item.preview_url = 'http://' + location.hostname + ':8765/downloads/' +
+                email.uidl + '/att/' + encodeURIComponent(item.name);
+        }
+    });
+
+    return email;
 };
 
 return exports;

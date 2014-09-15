@@ -22,6 +22,11 @@
         line-height: 20px;
         td {
             white-space: normal;
+            width: 100%;
+        }
+
+        time {
+            float: right;
         }
     }
 
@@ -63,5 +68,28 @@
         pre {
             padding: 10px 0;
         }
+    }
+}
+
+
+.mail-view-collapse {
+    .mail-body {
+        display: none;
+    }
+
+    .list-summary-table tr {
+        display: none;
+    }
+
+    .list-summary-table tr:first-child {
+        display: table-row;
+    }
+
+    .list-summary {
+        border-bottom: none;
+    }
+
+    .list-header {
+        cursor: pointer;
     }
 }

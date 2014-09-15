@@ -42,6 +42,11 @@ define(function (require) {
                     active: false
                 },
                 {
+                    path: '#/thread/list',
+                    name: 'All Thread',
+                    active: false
+                },
+                {
                     path: '#/mail/sent',
                     name: 'Sent Mail',
                     active: false

@@ -1,5 +1,10 @@
 <!-- target: TPL_mail_view -->
+<!-- if: ${email.collapse} -->
+<div class="mail-view mail-view-collapse">
+<!-- else -->
 <div class="mail-view">
+<!-- /if -->
+    <!-- if: !${email.hide_subject} -->
     <div class="mail-subject">
         <!-- if: ${email.subject} -->
         <h2>${email.subject}</h2>
@@ -13,6 +18,8 @@
             <!-- /for -->
         <!-- /if -->
     </div>
+    <!-- /if -->
+
     <div class="list-header">
         <div class="list-summary">
             <table class="list-summary-table">
@@ -34,6 +41,8 @@
                     <a data-ui-type="Link" data-ui-id="delete" href="javascript:void(0)">删除</a>
                     &nbsp;|&nbsp;
                     <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
+
+                    <time>${email.date}</time>
                   </td>
                 </tr>
                 <!-- if: ${email.to} -->
@@ -67,10 +76,6 @@
                 </tr>
                 <!-- /if -->
                 <tr>
-                  <th>日期：</th>
-                  <td>${email.date}</td>
-                </tr>
-                <tr>
                   <th>源文件：</th>
                   <td>
                     <a href="http://${hostname}:8765/raw/${uidl}.txt" target="_blank">查看</a>
@@ -91,7 +96,10 @@
             </table>
         </div>
     </div>
-    <div class="mail-body" id="mail-body">
+    <!-- if: ${email.collapse} -->
+    <div class="mail-body">加载中...</div>
+    <!-- else -->
+    <div class="mail-body">
       <!-- if: ${email.is_calendar} -->
           <!-- if: ${email.message.METHOD} == "REQUEST" -->
           <!-- var: vevent = ${email.message.VEVENT} -->
@@ -127,4 +135,5 @@
       ${email.message|raw}
       <!-- /if -->
     </div>
+    <!-- /if -->
 </div>

@@ -18,6 +18,8 @@ define(function (require) {
         markAsRead: '/api/mail/mark_as_read',
         deleteMails: '/api/mail/delete',
         labelList: '/api/labels',
+        threadList: '/api/thread/list',
+        readThread: '/api/thread/read',
         contactsList: '/api/contacts'
     };
 

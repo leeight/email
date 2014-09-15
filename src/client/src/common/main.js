@@ -14,6 +14,7 @@ define(
          * @ignore
          */
         function requireConfigs() {
+            require('../thread/config');
             require('../mail/config');
             require('../dev/config');
 

@@ -33,7 +33,7 @@ define(function (require) {
 
         // 处理邮件正文内部链接的点击行为
         var view = this.view;
-        $('#mail-body a, .list-summary-table a').click(function() {
+        $('.mail-body a, .list-summary-table a').click(function() {
             var node = this;
             if (/javascript:/.test(node.href)) {
                 return;

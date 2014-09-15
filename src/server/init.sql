@@ -27,3 +27,14 @@ CREATE TABLE mail_tags (
   mid INTEGER,
   tid INTEGER
 );
+
+CREATE TABLE threads (
+  'id' INTEGER NOT NULL PRIMARY KEY,  -- 自增的Id
+  'from' VARCHAR(1024),               -- 最后一封邮件的发件人
+  'date' DATETIME,                    -- 最后一封邮件的发送的日期
+  'subject' VARCHAR(1024),            -- 邮件的标题
+  'mids' text,                        -- 相关邮件的 uidl 列表，逗号分割
+  'is_read' INTEGER,                  -- 是否已经读过了
+  'is_delete' INTEGER,                -- 是否已经删除
+  'is_spam' INTEGER                   -- 是否是垃圾邮件
+);
