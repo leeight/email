@@ -113,13 +113,16 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	// 有时候标题是有问题的，很奇怪的CASE
 	// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=2749&uidl=722275
 	detector := chardet.NewTextDetector()
-	result, err := detector.DetectBest([]byte(email.Subject))
-	if err == nil && result.Charset == "GB-18030" {
-		decodedSubject, err := fixMessageEncoding(
-			bytes.NewBufferString(email.Subject),
-			"text/html; charset=\"GB18030\"")
-		if err == nil {
-			email.Subject = string(decodedSubject)
+	cleanSubject := regexp.MustCompile("[\u0000-\u00ff]").ReplaceAllString(email.Subject, "")
+	if cleanSubject != "" {
+		result, err := detector.DetectBest([]byte(cleanSubject))
+		if err == nil && result.Charset == "GB-18030" {
+			decodedSubject, err := fixMessageEncoding(
+				bytes.NewBufferString(email.Subject),
+				"text/html; charset=\"GB18030\"")
+			if err == nil {
+				email.Subject = string(decodedSubject)
+			}
 		}
 	}
 

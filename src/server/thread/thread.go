@@ -2,6 +2,7 @@ package thread
 
 import (
 	// "log"
+	// "fmt"
 	"regexp"
 )
 
@@ -76,28 +77,13 @@ func (t *Thread) createIdTable(messages []*Message) {
 	}
 }
 
-func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
+func (t *Thread) createSubjectTable(roots *Container) {
 	// 初始化
 	t.subjectTable = make(ContainerMap)
 
 	// 先构造一个初级的subjectTable
-	for _, container := range roots.children {
-		var this *Container
-		if container.IsEmpty() {
-			if len(container.children) > 0 {
-				this = container.children[0]
-			} else {
-				panic("Should not reach here.")
-			}
-		} else {
-			this = container
-		}
-
-		if this == nil || this.IsEmpty() {
-			continue
-		}
-
-		subject := normalizeSubject(this.message.Subject)
+	for _, this := range roots.children {
+		subject := normalizeSubject(this.GetSubject())
 		if subject == "" {
 			continue
 		}
@@ -115,49 +101,85 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 			if !old.IsEmpty() {
 				if this.IsEmpty() {
 					t.subjectTable[subject] = this
-				} else if isReplyOrForward(old.message.Subject) &&
-					!isReplyOrForward(this.message.Subject) {
+				} else if isReplyOrForward(old.GetSubject()) &&
+					!isReplyOrForward(this.GetSubject()) {
 					t.subjectTable[subject] = this
 				}
 			}
 		}
 	}
+}
 
-	for i := len(roots.children) - 1; i >= 0; i-- {
-		container := roots.children[i]
-		subject := normalizeSubject(container.GetSubject())
+func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
+	t.createSubjectTable(roots)
 
-		c := t.subjectTable[subject]
-		if c == nil || c == container {
+	l := len(roots.children)
+	for i := l - 1; i >= 0; i-- {
+		if i >= len(roots.children) {
+			i = len(roots.children) - 1
+		}
+
+		this := roots.children[i]
+		subject := normalizeSubject(this.GetSubject())
+
+		that := t.subjectTable[subject]
+		if that == nil || that == this {
 			continue
 		}
 
-		if c.IsEmpty() && container.IsEmpty() {
+		if that.IsEmpty() && this.IsEmpty() {
 			// If both are dummies, append one's children to the other,
 			// and remove the now-empty container.
-			for _, child := range container.children {
-				c.addChild(child)
+
+			for _, child := range this.children {
+				that.addChild(child)
 			}
-			container.parent.removeChild(container)
-		} else if c.IsEmpty() && !container.IsEmpty() {
+			this.parent.removeChild(this)
+		} else if that.IsEmpty() && !this.IsEmpty() {
 			// If one container is a empty and the other is not,
 			// make the non-empty one be a child of the empty,
 			// and a sibling of the other ``real'' messages with
 			// the same subject (the empty's children.)
-			c.addChild(container)
-		} else if !isReplyOrForward(c.message.Subject) &&
-			// TODO(user) 为啥有这个判断了呢?
-			!container.IsEmpty() &&
-			isReplyOrForward(container.message.Subject) {
-			// If that container is a non-empty, and that message's
-			// subject does not begin with ``Re:'', but this message's
-			// subject does, then make this be a child of the other.
-			c.addChild(container)
+
+			that.addChild(this)
+		} else if !that.IsEmpty() && this.IsEmpty() {
+			// If one container is a empty and the other is not,
+			// make the non-empty one be a child of the empty,
+			// and a sibling of the other ``real'' messages with
+			// the same subject (the empty's children.)
+
+			this.addChild(that)
+			t.subjectTable[subject] = this
 		} else {
-			nc := &Container{message: nil}
-			nc.addChild(c)
-			nc.addChild(container)
-			t.subjectTable[subject] = nc
+			// Both are not empty container
+			if isReplyOrForward(that.GetSubject()) &&
+				!isReplyOrForward(this.GetSubject()) {
+				// If that container is a non-empty, and that message's subject begins with ``Re:'',
+				// but this message's subject does not, then make that be a child of this one --
+				// they were misordered. (This happens somewhat implicitly, since if there are two
+				// messages, one with Re: and one without, the one without will be in the hash table,
+				// regardless of the order in which they were seen.)
+
+				this.addChild(that)
+				t.subjectTable[subject] = this
+			} else if !isReplyOrForward(that.GetSubject()) &&
+				isReplyOrForward(this.GetSubject()) {
+				// If that container is a non-empty, and that message's
+				// subject does not begin with ``Re:'', but this message's
+				// subject does, then make this be a child of the other.
+
+				that.addChild(this)
+			} else {
+				// Otherwise, make a new empty container and make both msgs be a child of it.
+				// This catches the both-are-replies and neither-are-replies cases, and makes
+				// them be siblings instead of asserting a hierarchical relationship which might
+				// not be true.
+
+				nc := &Container{message: nil}
+				nc.addChild(that)
+				nc.addChild(this)
+				t.subjectTable[subject] = nc
+			}
 		}
 	}
 

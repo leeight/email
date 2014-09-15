@@ -20,13 +20,7 @@ func (c *Container) GetMessage() *Message {
 
 func (c *Container) GetSubject() string {
 	if c.IsEmpty() {
-		if len(c.children) > 0 {
-			if c.children[0].IsEmpty() {
-				return ""
-			}
-			return c.children[0].message.Subject
-		}
-		return ""
+		return c.children[0].message.Subject
 	} else {
 		return c.message.Subject
 	}
@@ -67,6 +61,7 @@ func (c *Container) addChild(container *Container) {
 func (c *Container) removeChild(container *Container) {
 	for idx, child := range c.children {
 		if child == container {
+			container.parent = nil
 			c.children = append(c.children[:idx], c.children[idx+1:]...)
 			break
 		}

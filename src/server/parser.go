@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/saintfish/chardet"
 
@@ -40,7 +41,9 @@ func main() {
 
 	detector := chardet.NewTextDetector()
 
-	result, err := detector.DetectBest([]byte(email.Subject))
+	subject := regexp.MustCompile("[\u0000-\u00ff]").ReplaceAllString(email.Subject, "")
+	log.Printf("subject = %s\n", subject)
+	result, err := detector.DetectBest([]byte(subject))
 	if err != nil {
 		log.Fatal(err)
 	}
