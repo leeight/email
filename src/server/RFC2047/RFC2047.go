@@ -152,5 +152,5 @@ func Decode(s string) string {
 	if err != nil {
 		return s
 	}
-	return ret
+	return strings.TrimSpace(ret)
 }
