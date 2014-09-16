@@ -6,6 +6,7 @@
 define(
     function (require) {
         var config = require('common/config');
+        var etpl = require('etpl');
 
         /**
          * 引入各业务模块的Action配置
@@ -59,6 +60,12 @@ define(
          * @ignore
          */
         function start() {
+            etpl.addFilter('summary', function(body) {
+                // 获取邮件内容的的简略信息
+                var rv = body.trim().replace(/(<[^>]+>|\s+)/g, '').substr(0, 100);
+                return rv;
+            });
+
             require('bat-ria/main')
                 .start(config)
                 .then(init);

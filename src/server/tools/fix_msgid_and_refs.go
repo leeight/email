@@ -18,7 +18,7 @@ import (
 func getReferences(msg *mail.Message) string {
 	re := regexp.MustCompile("[<>]")
 	references := make([]string, 0)
-	for _, ref := range regexp.MustCompile(`\s+`).Split(msg.Header.Get("References"), -1) {
+	for _, ref := range regexp.MustCompile(`[\s,]+`).Split(msg.Header.Get("References"), -1) {
 		ref = re.ReplaceAllString(ref, "")
 		if ref != "" {
 			references = append(references, ref)
@@ -30,7 +30,7 @@ func getReferences(msg *mail.Message) string {
 	ss := regexp.MustCompile("<([^<>]+)>").FindStringSubmatch(msg.Header.Get("In-Reply-To"))
 	if len(ss) > 0 {
 		for _, ref := range references {
-			if ref == ss[1] {
+			if ref == ss[1] && ss[1] != "" {
 				// 已经存在了，不需要加入新的了
 				return strings.Join(references, ",")
 			}

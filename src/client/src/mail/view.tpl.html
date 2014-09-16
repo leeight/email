@@ -24,26 +24,34 @@
         <div class="list-summary">
             <table class="list-summary-table">
                 <tr>
-                  <th>发件人：</th>
-                  <td>
-                    <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
-                    &nbsp;|&nbsp;
-                    <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
-                    &nbsp;|&nbsp;
-                    <a data-ui-type="Link" data-ui-id="replyAll" href="javascript:void(0)">全部回复</a>
-                    <!-- if: ${email.attachments.length} -->
-                    &nbsp;|&nbsp;
-                    <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="replyWithAttachments" href="javascript:void(0)">带附件回复</a>
-                    <!-- /if -->
-                    &nbsp;|&nbsp;
-                    <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
-                    &nbsp;|&nbsp;
-                    <a data-ui-type="Link" data-ui-id="delete" href="javascript:void(0)">删除</a>
-                    &nbsp;|&nbsp;
-                    <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
-
-                    <time>${email.date}</time>
-                  </td>
+                    <th>发件人：</th>
+                    <td>
+                        <!-- if: ${email.collapse} -->
+                        <span class="mail-body-summary">
+                            <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
+                            ${email.message|summary|raw}
+                        </span>
+                        <!-- else -->
+                        <span class="view-actions">
+                            <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
+                            &nbsp;|&nbsp;
+                            <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
+                            &nbsp;|&nbsp;
+                            <a data-ui-type="Link" data-ui-id="replyAll" href="javascript:void(0)">全部回复</a>
+                            <!-- if: ${email.attachments.length} -->
+                            &nbsp;|&nbsp;
+                            <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="replyWithAttachments" href="javascript:void(0)">带附件回复</a>
+                            <!-- /if -->
+                            &nbsp;|&nbsp;
+                            <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
+                            &nbsp;|&nbsp;
+                            <a data-ui-type="Link" data-ui-id="delete" href="javascript:void(0)">删除</a>
+                            &nbsp;|&nbsp;
+                            <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
+                        </span>
+                        <!-- /if -->
+                        <time>${email.date}</time>
+                    </td>
                 </tr>
                 <!-- if: ${email.to} -->
                 <tr>

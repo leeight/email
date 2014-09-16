@@ -5,9 +5,7 @@
 
 define(function (require) {
     var ListModel = require('bat-ria/mvc/ListModel');
-    var datasource = require('er/datasource');
     var api = require('common/config').api;
-    var batUtil = require('bat-ria/util');
 
     /**
      * [Please Input Model Description]
