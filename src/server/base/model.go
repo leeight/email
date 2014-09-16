@@ -30,6 +30,8 @@ type EMail struct {
 	Date     time.Time `json:"date"`
 	Subject  string    `json:"subject"`
 	Message  string    `json:"message"`
+	MsgId    string    `json:"msg_id"` // Message-Id的值
+	Refs     string    `json:"refs"`   // References和In-Reply-To的值,逗号分割
 	Status   int       `json:"status"`
 	IsRead   int       `json:"is_read"`
 	IsDelete int       `json:"is_delete"`

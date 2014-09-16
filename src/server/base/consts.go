@@ -28,6 +28,9 @@ const (
 	kQuotedPrintable                = "quoted-printable"
 	kBase64                         = "base64"
 	kContentId                      = "Content-ID"
+	kMessageId                      = "Message-ID"
+	kReferences                     = "References"
+	kInReplyTo                      = "In-Reply-To"
 	kContentDisposition             = "Content-Disposition"
 	kContentTransferEncoding        = "Content-Transfer-Encoding"
 	kDefaultInterval                = 60

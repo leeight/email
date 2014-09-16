@@ -109,6 +109,9 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	email.Date = date
 	email.Subject = RFC2047.Decode(msg.Header.Get(kSubject))
 	email.Status = 0
+	email.MsgId = regexp.MustCompile("[<>]").ReplaceAllString(
+		msg.Header.Get(kMessageId), "")
+	email.Refs = getReferences(msg)
 
 	// 有时候标题是有问题的，很奇怪的CASE
 	// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=2749&uidl=722275
@@ -176,6 +179,35 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	}
 
 	return &email, nil
+}
+
+// 根据References和In-Reply-To的组合，返回合适的email.refs字段的值
+func getReferences(msg *mail.Message) string {
+	re := regexp.MustCompile("[<>]")
+	references := make([]string, 0)
+	for _, ref := range regexp.MustCompile(`\s+`).Split(msg.Header.Get(kReferences), -1) {
+		ref = re.ReplaceAllString(ref, "")
+		if ref != "" {
+			references = append(references, ref)
+		}
+	}
+
+	// If both headers exist, take the first thing in the In-Reply-To header
+	// that looks like a Message-ID, and append it to the References header.
+	ss := regexp.MustCompile("<([^<>]+)>").FindStringSubmatch(msg.Header.Get(kInReplyTo))
+	if len(ss) > 0 {
+		for _, ref := range references {
+			if ref == ss[1] {
+				// 已经存在了，不需要加入新的了
+				return strings.Join(references, ",")
+			}
+		}
+
+		// 不存在，追加新的进去
+		references = append(references, ss[1])
+	}
+
+	return strings.Join(references, ",")
 }
 
 // 根据不同的编码类型，得到对应的解码方式
@@ -377,13 +409,15 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 			"UPDATE mails SET " +
 				"`uidl` = ?, `from` = ?, `to` = ?, `cc` = ?, `bcc` = ?, " +
 				"`reply_to` = ?, `date` = ?, `subject` = ?, `message` = ?, " +
+				"`msg_id` = ?, `refs` = ?, " +
 				"`is_read` = ?, `is_delete` = ? " +
 				"WHERE `id` = ?")
 	} else {
 		stmt, err = tx.Prepare(
 			"INSERT INTO mails " +
-				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, `subject`, `message`, `is_read`, `is_delete`) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)")
+				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, " +
+				"`subject`, `message`, `msg_id`, `refs`, `is_read`, `is_delete`) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)")
 	}
 
 	if err != nil {
@@ -395,11 +429,12 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 		// 更新
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
 			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message,
-			email.IsRead, email.IsDelete, email.Id)
+			email.MsgId, email.Refs, email.IsRead, email.IsDelete, email.Id)
 	} else {
 		// 插入
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
-			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message)
+			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message,
+			email.MsgId, email.Refs)
 	}
 
 	if err != nil {
