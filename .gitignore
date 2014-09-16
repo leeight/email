@@ -18,6 +18,8 @@ tmp.db
 raw.txt
 
 /data/*
+/db
+/java
 /test/*
 /src/server/raw
 /src/server/filters.yml
@@ -25,3 +27,10 @@ raw.txt
 config.yml
 126.config.yml
 
+/email-client.sublime-project
+/email-client.sublime-workspace
+/src/server/a.go
+/src/server/deleted_mails.json
+/src/server/messages.json
+/src/server/orm_test.db
+/src/server/threads.txt
