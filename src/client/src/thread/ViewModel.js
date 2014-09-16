@@ -41,6 +41,18 @@ define(function (require) {
         }
     };
 
+    ThreadViewModel.prototype.getEMailById = function(uidl) {
+        var emails = this.get('emails');
+
+        for(var i = 0; i < emails.length; i ++) {
+            if (emails[i].uidl == uidl) {
+                return emails[i];
+            }
+        }
+
+        return null;
+    };
+
 
     // return模块
     require('er/util').inherits(ThreadViewModel, BaseModel);

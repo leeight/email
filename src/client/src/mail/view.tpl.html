@@ -1,8 +1,8 @@
 <!-- target: TPL_mail_view -->
 <!-- if: ${email.collapse} -->
-<div class="mail-view mail-view-collapse">
+<div class="mail-view mail-view-collapse" data-id="${email.uidl}">
 <!-- else -->
-<div class="mail-view">
+<div class="mail-view" data-id="${email.uidl}">
 <!-- /if -->
     <!-- if: !${email.hide_subject} -->
     <div class="mail-subject">
@@ -26,12 +26,10 @@
                 <tr>
                     <th>发件人：</th>
                     <td>
-                        <!-- if: ${email.collapse} -->
                         <span class="mail-body-summary">
                             <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
                             ${email.message|summary|raw}
                         </span>
-                        <!-- else -->
                         <span class="view-actions">
                             <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
                             &nbsp;|&nbsp;
@@ -49,7 +47,6 @@
                             &nbsp;|&nbsp;
                             <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
                         </span>
-                        <!-- /if -->
                         <time>${email.date}</time>
                     </td>
                 </tr>
@@ -86,9 +83,9 @@
                 <tr>
                   <th>源文件：</th>
                   <td>
-                    <a href="http://${hostname}:8765/raw/${uidl}.txt" target="_blank">查看</a>
+                    <a href="http://${hostname}:8765/raw/${email.uidl}.txt" target="_blank">查看</a>
                     &nbsp;|&nbsp;
-                    <a href="http://${hostname}:8765/ori/message/${uidl}.html" target="_blank">未过滤内容的邮件</a>
+                    <a href="http://${hostname}:8765/ori/message/${email.uidl}.html" target="_blank">未过滤内容的邮件</a>
                   </td>
                 </tr>
                 <!-- if: ${email.attachments.length} -->

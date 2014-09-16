@@ -5,10 +5,7 @@
 
 define(function (require) {
     var BaseAction = require('bat-ria/mvc/BaseAction');
-    var lib = require('esui/lib');
-    var mail = require('encoding/mail');
-    var u = require('underscore');
-    var util = require('common/util');
+    var compose = require('common/compose');
 
     /**
      * Action构造函数
@@ -32,25 +29,7 @@ define(function (require) {
         BaseAction.prototype.initBehavior.apply(this, arguments);
 
         // 处理邮件正文内部链接的点击行为
-        var view = this.view;
-        $('.mail-body a, .list-summary-table a').click(function() {
-            var node = this;
-            if (/javascript:/.test(node.href)) {
-                return;
-            }
-
-            if (/^mailto:/.test(node.href)) {
-                var address = node.title;
-                var name = node.innerHTML;
-                util.composeMail(view, null, {
-                    to: [ {name: name, address: address} ]
-                });
-                return false;
-            }
-            else if (node.target !== '_blank') {
-                node.target = '_blank';
-            }
-        });
+        compose.handleClickAction(this.view);
 
         this.view.get('reply').on('click', this._replyMail, this);
         this.view.get('replyAll').on('click', this._replyAllMail, this);
@@ -75,31 +54,7 @@ define(function (require) {
      * "=?utf-8?b?5p2O546J5YyX?=" <liyubei@baidu.com>
      */
     MailView.prototype._replyMail = function() {
-        var email = this.model.get('email');
-
-        var subject = email.subject;
-        var message = '<br>' +
-            'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
-            '<br><blockquote>\n' + email.message + '\n</blockquote>';
-        var to = [ email.from ];
-        var cc = [];
-        u.each(email.to || [], function(item){
-            cc.push(item);
-        });
-        u.each(email.cc || [], function(item){
-            cc.push(item);
-        });
-        if (!/^(RE|回复|答复)[:：]/i.test(email.subject)) {
-            subject = '回复: ' + subject;
-        }
-
-        util.composeMail(this.view, '回复邮件', {
-            to: to,
-            cc: cc,
-            uidl: email.uidl,
-            subject: subject,
-            message: message
-        });
+        compose.reply(this.model.get('email'), this.view);
     };
 
     /**
@@ -107,31 +62,7 @@ define(function (require) {
      * "=?utf-8?b?5p2O546J5YyX?=" <liyubei@baidu.com>
      */
     MailView.prototype._replyAllMail = function() {
-        var email = this.model.get('email');
-
-        var subject = email.subject;
-        var message = '<br>' +
-            'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
-            '<br><blockquote>\n' + email.message + '\n</blockquote>';
-        var to = [ email.from ];
-        var cc = [];
-        u.each(email.to || [], function(item){
-            to.push(item);
-        });
-        u.each(email.cc || [], function(item){
-            cc.push(item);
-        });
-        if (!/^(RE|回复|答复)[:：]/i.test(email.subject)) {
-            subject = '回复: ' + subject;
-        }
-
-        util.composeMail(this.view, '回复邮件', {
-            to: to,
-            cc: cc,
-            uidl: email.uidl,
-            subject: subject,
-            message: message
-        });
+        compose.replyAll(this.model.get('email'), this.view);
     };
 
 
@@ -143,37 +74,7 @@ define(function (require) {
     //
     // Message
     MailView.prototype._forwardMail = function() {
-        var email = this.model.get('email');
-
-        var subject = email.subject;
-        var message = '<br>' +
-            '---------- Forwarded message ----------<br>\n' +
-            'From: &lt;' + email.from.address + '&gt;<br>\n' +
-            'To: ' + mail.dumpAddress(email.to) + '<br>\n' +
-            'Subject: ' + subject + '<br>\n' +
-            'Date: ' + email.date + '<br>\n' +
-            '<br><br>\n' + email.message + '';
-
-        if (!/^(Fwd|转发)[:：]/i.test(email.subject)) {
-            subject = '转发: ' + subject;
-        }
-
-
-        var attachments = u.map(email.attachments, function(item){
-            return {
-                title: item.name,
-                value: email.uidl + '/att/' + item.name,
-                checked: true
-            };
-        });
-        util.composeMail(this.view, '转发邮件', {
-            to: '',
-            cc: '',
-            uidl: email.uidl,
-            subject: subject,
-            message: message,
-            attachments: attachments
-        });
+        compose.forward(this.model.get('email'), this.view);
     };
 
     require('er/util').inherits(MailView, BaseAction);

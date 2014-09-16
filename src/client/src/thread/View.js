@@ -5,10 +5,7 @@
 
 define(function (require) {
     var BaseAction = require('bat-ria/mvc/BaseAction');
-    var lib = require('esui/lib');
-    var mail = require('encoding/mail');
-    var u = require('underscore');
-    var util = require('common/util');
+    var compose = require('common/compose');
 
     /**
      * Action构造函数
@@ -32,23 +29,21 @@ define(function (require) {
         BaseAction.prototype.initBehavior.apply(this, arguments);
 
         // 处理邮件正文内部链接的点击行为
-        var view = this.view;
-        $('.mail-body a, .list-summary-table a').click(function() {
-            var node = this;
-            if (/javascript:/.test(node.href)) {
-                return;
-            }
+        compose.handleClickAction(this.view);
 
-            if (/^mailto:/.test(node.href)) {
-                var address = node.title;
-                var name = node.innerHTML;
-                util.composeMail(view, null, {
-                    to: [ {name: name, address: address} ]
-                });
-                return false;
-            }
-            else if (node.target !== '_blank') {
-                node.target = '_blank';
+        var model = this.model;
+        $('.mail-view').click(function() {
+            var mail = $(this);
+            if (mail.hasClass('mail-view-collapse')) {
+                mail.removeClass('mail-view-collapse');
+
+                // 初始化内容
+                var data = model.getEMailById(mail.data('id'));
+                if (data) {
+                    mail.find('.mail-body').html(data.message);
+                }
+            } else {
+                mail.addClass('mail-view-collapse');
             }
         });
     };
