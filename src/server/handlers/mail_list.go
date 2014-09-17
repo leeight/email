@@ -3,10 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"../base"
 	"../web"
+	"./schema"
 )
 
 type MailListHandler struct {
@@ -19,60 +19,13 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	db := ctx.GetDb()
 	defer db.Close()
 
-	var (
-		kDefaultPageSize = 15
-		kDefaultPageNo   = 1
-	)
+	params := new(schema.MailListSchema)
+	params.Init(r)
 
-	// TODO(user) 如何更通用一些呢？ 解析url参数
-	pageSize, err := strconv.Atoi(r.PostFormValue("pageSize"))
-	if err != nil {
-		pageSize = kDefaultPageSize
-	}
+	listSql := params.BuildListSql()
+	log.Info(listSql)
 
-	pageNo, err := strconv.Atoi(r.PostFormValue("pageNo"))
-	if err != nil {
-		pageNo = kDefaultPageNo
-	}
-
-	labelId, err := strconv.Atoi(r.PostFormValue("label"))
-	if err != nil {
-		labelId = -1
-	}
-
-	skipCount := (pageNo - 1) * pageSize
-	if skipCount < 0 {
-		skipCount = 0
-	}
-
-	isDeleted := r.PostFormValue("is_delete")
-	isSent := r.PostFormValue("is_sent")
-
-	// 准备sql
-	sql := "SELECT " +
-		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
-		"`reply_to`, `subject`, `date`, `is_read` " +
-		"FROM mails "
-	if isDeleted == "1" {
-		sql += "WHERE `is_delete` = 1 "
-	} else {
-		if labelId > 0 {
-			sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ") "
-		} else {
-			sql += "WHERE `is_delete` != 1 "
-		}
-	}
-
-	if isSent == "1" {
-		sql += "AND `is_sent` = 1 "
-	} else {
-		sql += "AND `is_sent` != 1 "
-	}
-
-	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
-	log.Info(sql)
-
-	rows, err := db.Query(sql, skipCount, pageSize)
+	rows, err := db.Query(listSql, params.SkipCount, params.PageSize)
 	if err != nil {
 		log.Warning("%s", err)
 	}
@@ -100,23 +53,14 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// 查询总的数据量
 	var totalCount int
-	sql = "SELECT COUNT(*) FROM mails "
-	if isDeleted == "1" {
-		sql += "WHERE `is_delete` = 1 "
-	} else {
-		if labelId > 0 {
-			sql += "WHERE `is_delete` != 1 AND `id` IN (SELECT `mid` FROM `mail_tags` WHERE `tid` = " + strconv.Itoa(labelId) + ")"
-		} else {
-			sql += "WHERE `is_delete` != 1 "
-		}
-	}
-	err = db.QueryRow(sql).Scan(&totalCount)
+	totalSql := params.BuildTotalSql()
+	err = db.QueryRow(totalSql).Scan(&totalCount)
 	if err != nil {
 		log.Warning("%s", err)
 	}
-	log.Info("%s, %d, %d, %d\n", sql, totalCount, skipCount, pageSize)
+	log.Info("%s, %d, %d, %d\n", totalSql, totalCount, params.SkipCount, params.PageSize)
 
-	lpr := base.NewListResponse("true", totalCount, pageNo, pageSize, emails)
+	lpr := base.NewListResponse("true", totalCount, params.PageNo, params.PageSize, emails)
 	s, _ := json.MarshalIndent(lpr, "", "    ")
 	w.Write(s)
 }
