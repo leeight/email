@@ -20,7 +20,7 @@ func (h MailReadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	sql := "SELECT " +
 		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
-		"`reply_to`, `subject`, `date`, `message` " +
+		"`reply_to`, `subject`, `date`, `message`, `is_sent` " +
 		"FROM mails " +
 		"WHERE `id` = ?"
 	log.Info(sql)
@@ -36,7 +36,8 @@ func (h MailReadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		&email.ReplyTo,
 		&email.Subject,
 		&email.Date,
-		&email.Message)
+		&email.Message,
+		&email.IsSent)
 
 	if err != nil {
 		log.Warning("%s", err)

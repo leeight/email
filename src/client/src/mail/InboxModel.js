@@ -100,8 +100,11 @@ define(function (require) {
     MailInboxModel.prototype.getExtraQuery = function () {
         var index = location.href.indexOf('#');
         var url = index === -1 ? '' : location.href.slice(index);
+
         if (url.indexOf('#/mail/deleted') === 0) {
             return { 'is_delete': 1 };
+        } else if (url.indexOf('#/mail/sent') === 0) {
+            return { 'is_sent': 1 };
         }
 
         return {};

@@ -16,6 +16,7 @@ CREATE TABLE mails (
   'msg_id' VARCHAR(512),              -- Message-Id的值
   'refs' text,                        -- References和In-Reply-To的值,逗号分割
   'status' INTEGER,                   -- 邮件的状态（程序里面去判断）
+  'is_sent' INTEGER,                  -- 是否是已发送邮件
   'is_read' INTEGER,                  -- 是否已经读过了
   'is_delete' INTEGER,                -- 是否已经删除
   'is_spam' INTEGER                   -- 是否是垃圾邮件

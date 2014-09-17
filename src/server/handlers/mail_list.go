@@ -46,6 +46,7 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	isDeleted := r.PostFormValue("is_delete")
+	isSent := r.PostFormValue("is_sent")
 
 	// 准备sql
 	sql := "SELECT " +
@@ -61,6 +62,13 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			sql += "WHERE `is_delete` != 1 "
 		}
 	}
+
+	if isSent == "1" {
+		sql += "AND `is_sent` = 1 "
+	} else {
+		sql += "AND `is_sent` != 1 "
+	}
+
 	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
 	log.Info(sql)
 

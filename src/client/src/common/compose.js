@@ -105,8 +105,8 @@ exports.handleClickAction = function(view) {
         }
 
         if (/^mailto:/.test(node.href)) {
-            var address = node.title;
-            var name = node.innerHTML;
+            var name = node.innerText;
+            var address = node.title || name;
             util.composeMail(view, null, {
                 to: [ {name: name, address: address} ]
             });

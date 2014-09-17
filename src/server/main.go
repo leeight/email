@@ -86,10 +86,7 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 				[]byte(raw), 0644)
 			log.Info("[ SAVE] %d -> %s/%s.txt\n", msg, config.RawDir(), uidl)
 
-			downloadDir := path.Join(config.DownloadDir(), uidl)
-			prefix := path.Join(path.Base(config.DownloadDir()), uidl)
-			os.MkdirAll(downloadDir, 0755)
-			email, err := base.NewMail([]byte(raw), downloadDir, prefix)
+			email, err := base.SaveMail([]byte(raw), string(uidl), config)
 			if err != nil {
 				log.Warning("%s", err)
 				continue
@@ -97,6 +94,7 @@ func receiveMail(config *base.ServerConfig) func(time.Time) {
 
 			// 保存到数据库
 			email.Uidl = string(uidl)
+			email.IsSent = 0
 			email.Id, err = email.Store(db)
 			if err != nil {
 				log.Warning("%s", err)

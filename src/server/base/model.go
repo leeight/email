@@ -34,6 +34,7 @@ type EMail struct {
 	Refs     string    `json:"refs"`   // References和In-Reply-To的值,逗号分割
 	Status   int       `json:"status"`
 	IsRead   int       `json:"is_read"`
+	IsSent   int       `json:"is_sent"`
 	IsDelete int       `json:"is_delete"`
 }
 
@@ -64,6 +65,7 @@ type EMailViewModel struct {
 	Labels      []*LabelType    `json:"labels"`
 	Status      int             `json:"status"`
 	IsRead      int             `json:"is_read"`
+	IsSent      int             `json:"is_sent"`
 	IsDelete    int             `json:"is_delete"`
 }
 
@@ -186,6 +188,7 @@ func (this *EMail) ToViewModel(downloadDir string, db *sql.DB) *EMailViewModel {
 	evm.Message = string(StripUnnecessaryTags([]byte(this.Message)))
 	evm.IsRead = this.IsRead
 	evm.IsDelete = this.IsDelete
+	evm.IsSent = this.IsSent
 	evm.From, _ = mail.ParseAddress(this.From)
 	evm.To, _ = mail.ParseAddressList(this.To)
 	evm.Cc, _ = mail.ParseAddressList(this.Cc)

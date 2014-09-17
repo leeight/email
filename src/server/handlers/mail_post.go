@@ -140,15 +140,38 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	raw.WriteString("\r\n")
 	raw.Write(body)
 
-	// ioutil.WriteFile("raw.txt", raw.Bytes(), 0644)
-	// return
+	// 已发送邮件的uidl
+	uidl = fmt.Sprintf("%d", time.Now().UnixNano())
 
 	// 开始发送邮件
-	go sendMail(ctx, from, to, cc, raw.Bytes())
+	go sendMail(ctx, from, to, cc, uidl, raw.Bytes())
+
+	// 保存邮件到数据库
+	go saveMail(ctx, uidl, raw.Bytes())
 
 	s, _ := json.MarshalIndent(
 		base.NewSimpleResponse("true"), "", "    ")
 	w.Write(s)
+}
+
+func saveMail(ctx web.Context, uidl string, raw []byte) {
+	log := ctx.GetLogger()
+	config := ctx.GetConfig()
+	db := ctx.GetDb()
+
+	email, err := base.SaveMail(raw, uidl, config)
+	if err != nil {
+		log.Warning("%s", err)
+	}
+
+	// 保存到数据库
+	email.Uidl = uidl
+	email.IsSent = 1
+	email.Date = time.Now()
+	email.Id, err = email.Store(db)
+	if err != nil {
+		log.Warning("%s", err)
+	}
 }
 
 // goroutine delivery email
@@ -157,6 +180,7 @@ func sendMail(
 	from *mail.Address,
 	to []*mail.Address,
 	cc []*mail.Address,
+	uidl string,
 	raw []byte) {
 
 	log := ctx.GetLogger()
@@ -173,7 +197,7 @@ func sendMail(
 	}
 
 	// 保存发送之后的邮件到本地
-	name := fmt.Sprintf("%d.txt", time.Now().UnixNano())
+	name := uidl + ".txt"
 	os.MkdirAll(path.Join(config.RawDir(), "sent"), 0755)
 	err = ioutil.WriteFile(path.Join(config.RawDir(), "sent", name), raw, 0644)
 	if err != nil {

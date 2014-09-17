@@ -112,6 +112,7 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	email.MsgId = regexp.MustCompile("[<>]").ReplaceAllString(
 		msg.Header.Get(kMessageId), "")
 	email.Refs = getReferences(msg)
+	email.IsSent = 0
 
 	// 有时候标题是有问题的，很奇怪的CASE
 	// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=2749&uidl=722275
@@ -178,6 +179,17 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	}
 
 	return &email, nil
+}
+
+func SaveMail(raw []byte, uidl string, config *ServerConfig) (*EMail, error) {
+	downloadDir := path.Join(config.DownloadDir(), uidl)
+	prefix := path.Join(path.Base(config.DownloadDir()), uidl)
+	os.MkdirAll(downloadDir, 0755)
+	email, err := NewMail(raw, downloadDir, prefix)
+	if err != nil {
+		return nil, err
+	}
+	return email, nil
 }
 
 // 根据References和In-Reply-To的组合，返回合适的email.refs字段的值
@@ -415,8 +427,8 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 		stmt, err = tx.Prepare(
 			"INSERT INTO mails " +
 				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, " +
-				"`subject`, `message`, `msg_id`, `refs`, `is_read`, `is_delete`) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)")
+				"`subject`, `message`, `msg_id`, `refs`, `is_sent`, `is_read`, `is_delete`) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)")
 	}
 
 	if err != nil {
@@ -433,7 +445,7 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 		// 插入
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
 			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message,
-			email.MsgId, email.Refs)
+			email.MsgId, email.Refs, email.IsSent)
 	}
 
 	if err != nil {

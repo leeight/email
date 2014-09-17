@@ -32,8 +32,12 @@ define(function (require) {
         compose.handleClickAction(this.view);
 
         var model = this.model;
-        $('.mail-view').click(function() {
-            var mail = $(this);
+        $('.mail-view .list-summary-table').click(function(evt) {
+            if (evt.target.nodeName === 'A') {
+                return;
+            }
+
+            var mail = $(this).parents('.mail-view');
             if (mail.hasClass('mail-view-collapse')) {
                 mail.removeClass('mail-view-collapse');
 
