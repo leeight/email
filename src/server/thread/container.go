@@ -6,6 +6,7 @@ import (
 )
 
 type Container struct {
+	ThreadId int64
 	message  *Message
 	parent   *Container
 	children []*Container

@@ -33,6 +33,7 @@ const (
 	kInReplyTo                      = "In-Reply-To"
 	kContentDisposition             = "Content-Disposition"
 	kContentTransferEncoding        = "Content-Transfer-Encoding"
+	kTimeLayout                     = "Mon, 2 Jan 2006 15:04:05 -0700"
 	kDefaultInterval                = 60
 	kDefaultDownloadDir             = "downloads"
 	kDefaultRawDir                  = "raw"

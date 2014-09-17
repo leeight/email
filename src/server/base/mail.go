@@ -96,9 +96,12 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 		}
 	}
 
-	// TODO(user) 这个日期格式需要改成可以配置的，否则解析会不正确的
-	date, _ := time.Parse("Mon, 2 Jan 2006 15:04:05 -0700",
-		msg.Header.Get(kDate))
+	// Date: Wed, 17 Sep 2014 07:34:46 +0100
+	// Date: Wed, 17 Sep 2014 14:31:06 +0800
+	date, err := time.Parse(kTimeLayout, msg.Header.Get(kDate))
+	if err != nil {
+		return nil, err
+	}
 
 	email := EMail{}
 	email.From = msg.Header.Get(kFrom)
@@ -108,11 +111,13 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	email.ReplyTo = msg.Header.Get(kReplyTo)
 	email.Date = date
 	email.Subject = RFC2047.Decode(msg.Header.Get(kSubject))
-	email.Status = 0
 	email.MsgId = regexp.MustCompile("[<>]").ReplaceAllString(
 		msg.Header.Get(kMessageId), "")
 	email.Refs = getReferences(msg)
+	email.Status = 0
 	email.IsSent = 0
+	email.IsRead = 0
+	email.IsDelete = 0
 
 	// 有时候标题是有问题的，很奇怪的CASE
 	// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=2749&uidl=722275
@@ -151,7 +156,8 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 		if _, ok := resources[fname]; ok {
 			// 如果存在的话，那么这个文件需要写入cid目录
 			os.MkdirAll(path.Join(downloadDir, "cid"), 0755)
-			ioutil.WriteFile(path.Join(downloadDir, "cid", fname), resources[fname].body, 0644)
+			ioutil.WriteFile(path.Join(downloadDir, "cid", fname),
+				resources[fname].body, 0644)
 
 			// 写完之后删除，最后剩下的就放到att目录即可
 			delete(resources, fname)
@@ -428,7 +434,7 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 			"INSERT INTO mails " +
 				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, " +
 				"`subject`, `message`, `msg_id`, `refs`, `is_sent`, `is_read`, `is_delete`) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)")
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	}
 
 	if err != nil {
@@ -445,7 +451,7 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 		// 插入
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
 			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message,
-			email.MsgId, email.Refs, email.IsSent)
+			email.MsgId, email.Refs, email.IsSent, email.IsRead, email.IsDelete)
 	}
 
 	if err != nil {

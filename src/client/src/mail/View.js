@@ -6,6 +6,7 @@
 define(function (require) {
     var BaseAction = require('bat-ria/mvc/BaseAction');
     var compose = require('common/compose');
+    var u = require('underscore');
 
     /**
      * Action构造函数

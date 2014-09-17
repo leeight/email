@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -65,53 +66,57 @@ func readAllMessages(db *sql.DB) []*thread.Message {
 	return messages
 }
 
-func addThread(db *sql.DB, subject string, mids []string) error {
+func addThread(db *sql.DB, subject string, mids []string) (int64, error) {
 	// 根据 mids 的内容查询最后一封邮件的内容
 	// date, from, is_read
 	var date time.Time
 	var from string
 	var is_read int
-	err := db.QueryRow("SELECT `date`, `from`, `is_read` FROM `mails` WHERE `uidl` = ?",
-		mids[len(mids)-1]).Scan(&date, &from, &is_read)
+
+	sql := fmt.Sprintf("SELECT `date`, `from`, `is_read` "+
+		"FROM `mails` WHERE `uidl` IN (0,%s) ORDER BY `date` DESC LIMIT 1",
+		strings.Join(mids, ","))
+
+	err := db.QueryRow(sql).Scan(&date, &from, &is_read)
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return 0, err
 	}
 
 	tx, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return 0, err
 	}
 
 	stmt, err := tx.Prepare("INSERT INTO threads (`from`, `date`, `subject`," +
 		"`mids`, `is_read`, `is_delete`, `is_spam`) VALUES (?, ?, ?, ?, ?, 0, 0)")
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return 0, err
 	}
 	defer stmt.Close()
 
 	result, err := stmt.Exec(from, date, subject, strings.Join(mids, ","), is_read)
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return 0, err
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return 0, err
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return 0, err
 	}
 	log.Printf("%d -> %v\n", id, mids)
 
-	return nil
+	return id, nil
 }
 
 func main() {
@@ -149,6 +154,9 @@ func main() {
 		for idx, msg := range messages {
 			mids[idx] = msg.Uidl
 		}
-		addThread(db, subject, mids)
+		tid, err := addThread(db, subject, mids)
+		if err == nil {
+			container.ThreadId = tid
+		}
 	}
 }

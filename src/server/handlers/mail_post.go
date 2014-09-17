@@ -62,6 +62,7 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	headers.Set("To", base.AddressToString(to))
 	headers.Set("Cc", base.AddressToString(cc))
 	headers.Set("Subject", RFC2047.Encode(subject))
+	headers.Set("Date", time.Now().Format("Mon, 2 Jan 2006 15:04:05 -0700"))
 
 	uidl := r.FormValue("uidl")
 	if uidl != "" {
@@ -162,11 +163,13 @@ func saveMail(ctx web.Context, uidl string, raw []byte) {
 	email, err := base.SaveMail(raw, uidl, config)
 	if err != nil {
 		log.Warning("%s", err)
+		return
 	}
 
 	// 保存到数据库
 	email.Uidl = uidl
 	email.IsSent = 1
+	email.IsRead = 1
 	email.Date = time.Now()
 	email.Id, err = email.Store(db)
 	if err != nil {
