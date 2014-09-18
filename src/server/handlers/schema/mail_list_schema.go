@@ -38,10 +38,14 @@ func (this *MailListSchema) BuildListSql() string {
 
 	if this.IsSent == 1 {
 		sql += "AND `is_sent` = 1 "
+	} else {
+		sql += "AND `is_sent` != 1 "
 	}
 
 	if this.IsCalendar == 1 {
 		sql += "AND `is_calendar` = 1 "
+	} else {
+		sql += "AND `is_calendar` != 1 "
 	}
 
 	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
@@ -66,10 +70,14 @@ func (this *MailListSchema) BuildTotalSql() string {
 
 	if this.IsSent == 1 {
 		sql += "AND `is_sent` = 1 "
+	} else {
+		sql += "AND `is_sent` != 1 "
 	}
 
 	if this.IsCalendar == 1 {
 		sql += "AND `is_calendar` = 1 "
+	} else {
+		sql += "AND `is_calendar` != 1 "
 	}
 
 	return sql

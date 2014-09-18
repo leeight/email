@@ -5,25 +5,26 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"../base"
 	"../web"
 )
 
-var indexerChannel = make(chan uint64, 20)
+var indexerChannel = make(chan *base.EMail, 20)
 
 func AddToIndexer(ctx web.Context) {
 	for {
-		id := <-indexerChannel
-		addToIndexerImpl(ctx, id)
+		email := <-indexerChannel
+		addToIndexerImpl(ctx, email)
 	}
 }
 
-func addToIndexerImpl(ctx web.Context, id uint64) {
+func addToIndexerImpl(ctx web.Context, email *base.EMail) {
 	config := ctx.GetConfig()
 	log := ctx.GetLogger()
 
 	// 构造请求地址
 	searcherUrl := fmt.Sprintf("http://localhost:%d/add_document?id=%d",
-		config.Service.Searcher.Port, id)
+		config.Service.Searcher.Port, email.Id)
 
 	// 发起请求
 	resp, err := http.Get(searcherUrl)

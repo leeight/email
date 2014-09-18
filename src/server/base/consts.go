@@ -6,6 +6,7 @@ const (
 	kActionDeleteMessage            = "DeleteMessage"
 	kActionLabel                    = "Label"
 	kActionMarkAsRead               = "MarkAsRead"
+	kActionMarkAsDelete             = "MarkAsDelete"
 	kActionChangeStatus             = "ChangeStatus"
 	kActionToDo                     = "ToDo"
 	kActionReply                    = "Reply"

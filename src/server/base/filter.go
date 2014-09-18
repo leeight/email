@@ -149,7 +149,7 @@ func (filter *Filter) TakeAction(email *EMail, db *sql.DB) error {
 		if action != nil {
 			err := action.Exec(email, v, db)
 			if err != nil {
-				log.Fatal(err)
+				log.Fatal("Action Name = (%s), Error = (%v)", k, err)
 				return err
 			}
 		}

@@ -102,6 +102,17 @@
                   </td>
                 </tr>
                 <!-- /if -->
+                <!-- if: ${email.is_calendar} && ${email.ical_message.METHOD} == "REQUEST" -->
+                <!-- var: vevent = ${email.ical_message.VEVENT} -->
+                <tr>
+                    <th>时间：</th>
+                    <td>${vevent.DTSTART} - ${vevent.DTEND}</td>
+                </tr>
+                <tr>
+                    <th>地点：</th>
+                    <td>${vevent.LOCATION|raw}</td>
+                </tr>
+                <!-- /if -->
             </table>
         </div>
     </div>
@@ -110,37 +121,8 @@
     <!-- else -->
     <div class="mail-body">
       <!-- if: ${email.is_calendar} -->
-          <!-- if: ${email.ical_message.METHOD} == "REQUEST" -->
-          <!-- var: vevent = ${email.ical_message.VEVENT} -->
-          <table class="mail-calendar">
-              <tr>
-                  <th>时间：</th>
-                  <td>${vevent.DTSTART} - ${vevent.DTEND}</td>
-              </tr>
-              <tr>
-                  <th>地点：</th>
-                  <td>${vevent.LOCATION|raw}</td>
-              </tr>
-              <tr>
-                  <th>组织者：</th>
-                  <td><a href="mailto:${vevent.ORGANIZER.email}">${vevent.ORGANIZER.name}</a></td>
-              </tr>
-              <tr>
-                  <th>参与人员：</th>
-                  <td>
-                      <!-- for: ${vevent.ATTENDEE} as ${attendee} -->
-                      <a href="mailto:${attendee.email}" title="${attendee.email}">${attendee.name}</a>&nbsp;
-                      <!-- /for -->
-                  </td>
-              </tr>
-              <tr>
-                  <td colspan="2"><pre>${vevent.DESCRIPTION|raw}</pre></td>
-              </tr>
-          </table>
-          <!-- else -->
-          暂不支持显示 ${email.ical_message.METHOD} 类型的日历。
-          <!-- /if -->
-      <!-- else -->
+      <pre>${vevent.DESCRIPTION|raw}</pre>
+      <!-- /if -->
       ${email.message|raw}
       <!-- /if -->
     </div>

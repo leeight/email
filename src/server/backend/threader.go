@@ -24,7 +24,7 @@ func AddToThread(ctx web.Context) {
 }
 
 func addToThreadImpl(ctx web.Context, email *base.EMail) {
-	// return
+	return
 	log := ctx.GetLogger()
 	db := ctx.GetDb()
 	defer db.Close()

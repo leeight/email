@@ -70,6 +70,8 @@ func NewAction(t string) Action {
 		return LabelAction{}
 	case kActionMarkAsRead:
 		return MarkAsReadAction{}
+	case kActionMarkAsDelete:
+		return MarkAsDeleteAction{}
 	}
 	return nil
 }
