@@ -134,6 +134,13 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 		}
 	}
 
+	if ical, ok := messages["text/calendar"]; ok {
+		email.IsCalendar = 1
+		email.IcalMessage = string(ical)
+	} else {
+		email.IsCalendar = 0
+	}
+
 	if _, ok := messages["text/html"]; ok {
 		email.Message = string(messages["text/html"])
 	} else if _, ok := messages["text/plain"]; ok {
@@ -427,14 +434,17 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 				"`uidl` = ?, `from` = ?, `to` = ?, `cc` = ?, `bcc` = ?, " +
 				"`reply_to` = ?, `date` = ?, `subject` = ?, `message` = ?, " +
 				"`msg_id` = ?, `refs` = ?, " +
+				"`is_calendar` = ?, `ical_message` = ?, " +
 				"`is_read` = ?, `is_delete` = ? " +
 				"WHERE `id` = ?")
 	} else {
 		stmt, err = tx.Prepare(
 			"INSERT INTO mails " +
 				"(`uidl`, `from`, `to`, `cc`, `bcc`, `reply_to`, `date`, " +
-				"`subject`, `message`, `msg_id`, `refs`, `is_sent`, `is_read`, `is_delete`) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+				"`subject`, `message`, `msg_id`, `refs`, " +
+				"`is_calendar`, `ical_message`, " +
+				"`is_sent`, `is_read`, `is_delete`) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	}
 
 	if err != nil {
@@ -446,12 +456,14 @@ func (email *EMail) Store(db *sql.DB) (uint64, error) {
 		// 更新
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
 			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message,
-			email.MsgId, email.Refs, email.IsRead, email.IsDelete, email.Id)
+			email.MsgId, email.Refs, email.IsCalendar, email.IcalMessage, email.IsRead,
+			email.IsDelete, email.Id)
 	} else {
 		// 插入
 		result, err = stmt.Exec(email.Uidl, email.From, email.To, email.Cc,
 			email.Bcc, email.ReplyTo, email.Date, email.Subject, email.Message,
-			email.MsgId, email.Refs, email.IsSent, email.IsRead, email.IsDelete)
+			email.MsgId, email.Refs, email.IsCalendar, email.IcalMessage,
+			email.IsSent, email.IsRead, email.IsDelete)
 	}
 
 	if err != nil {

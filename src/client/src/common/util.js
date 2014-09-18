@@ -154,14 +154,13 @@ exports.applyEMailPath = function(email) {
         };
     }
 
-    if (email.message.indexOf('BEGIN:VCALENDAR') != -1) {
+    if (email.is_calendar === 1) {
         try {
-            var calendar = ical.parse(email.message);
-            email.message = ical.format(calendar);
-            email.is_calendar = true;
+            var calendar = ical.parse(email.ical_message);
+            email.ical_message = ical.format(calendar);
         }
         catch(ex) {
-            email.message = '<pre><b>' + ex.toString() + '</b>\n' + email.message + '</pre>';
+            email.ical_message = '<pre><b>' + ex.toString() + '</b>\n' + email.ical_message + '</pre>';
         }
     } else {
         // FIXME(user) 修复了 http://gitlab.baidu.com/baidu/email/issues/20 之后应该就不需要了

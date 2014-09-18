@@ -30,6 +30,10 @@ define(function (require) {
         },
         {
             type: 'mail/Inbox',
+            path: '/calendar/list'
+        },
+        {
+            type: 'mail/Inbox',
             path: '/mail/deleted'
         }
     ];

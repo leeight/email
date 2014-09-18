@@ -8,12 +8,13 @@ import (
 )
 
 type MailListSchema struct {
-	PageSize  int `schema:"pageSize"`
-	PageNo    int `schema:"pageNo"`
-	LabelId   int `schema:"label"`
-	IsDelete  int `schema:"is_delete"`
-	IsSent    int `schema:"is_sent"`
-	SkipCount int `schema:"-"`
+	PageSize   int `schema:"pageSize"`
+	PageNo     int `schema:"pageNo"`
+	LabelId    int `schema:"label"`
+	IsDelete   int `schema:"is_delete"`
+	IsSent     int `schema:"is_sent"`
+	IsCalendar int `schema:"is_calendar"`
+	SkipCount  int `schema:"-"`
 }
 
 func (this *MailListSchema) BuildListSql() string {
@@ -37,8 +38,10 @@ func (this *MailListSchema) BuildListSql() string {
 
 	if this.IsSent == 1 {
 		sql += "AND `is_sent` = 1 "
-	} else {
-		sql += "AND `is_sent` != 1 "
+	}
+
+	if this.IsCalendar == 1 {
+		sql += "AND `is_calendar` = 1 "
 	}
 
 	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
@@ -63,8 +66,10 @@ func (this *MailListSchema) BuildTotalSql() string {
 
 	if this.IsSent == 1 {
 		sql += "AND `is_sent` = 1 "
-	} else {
-		sql += "AND `is_sent` != 1 "
+	}
+
+	if this.IsCalendar == 1 {
+		sql += "AND `is_calendar` = 1 "
 	}
 
 	return sql

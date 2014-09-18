@@ -47,6 +47,11 @@ define(function (require) {
                     active: false
                 },
                 {
+                    path: '#/calendar/list',
+                    name: 'All Calendar',
+                    active: false
+                },
+                {
                     path: '#/mail/sent',
                     name: 'Sent Mail',
                     active: false
@@ -105,6 +110,8 @@ define(function (require) {
             return { 'is_delete': 1 };
         } else if (url.indexOf('#/mail/sent') === 0) {
             return { 'is_sent': 1 };
+        } else if (url.indexOf('#/calendar/list') === 0) {
+            return { 'is_calendar': 1 };
         }
 
         return {};

@@ -54,10 +54,15 @@ func addToThreadImpl(ctx web.Context, email *base.EMail) {
 		var id int
 		rows.Scan(&id)
 
-		if threadId == 0 && id > 0 {
-			threadId = id
-		} else if threadId > 0 && id != threadId {
-			log.Warning("%d != %d", threadId, id)
+		if id > 0 {
+			if threadId == 0 {
+				threadId = id
+			} else if threadId > 0 && threadId != id {
+				log.Warning("%d != %d", threadId, id)
+				return
+			}
+		} else {
+			log.Warning("Invalid thread id [%d]", id)
 			return
 		}
 	}

@@ -18,6 +18,8 @@ CREATE TABLE mails (
   'refs' text,                        -- References和In-Reply-To的值,逗号分割
   'status' INTEGER,                   -- 邮件的状态（程序里面去判断）
   'thread_id' INTEGER,                -- Thread-Id
+  'is_calendar' INTEGER,              -- 是否是日历邀请类型的邮件
+  'ical_message' text,                -- 如果是日历邀请类型的邮件，那么这个字段保存的是 text/calendar 的内容
   'is_sent' INTEGER,                  -- 是否是已发送邮件
   'is_read' INTEGER,                  -- 是否已经读过了
   'is_delete' INTEGER,                -- 是否已经删除
@@ -48,3 +50,4 @@ CREATE INDEX 'index_uidl' ON 'mails' ('uidl');
 CREATE INDEX 'index_thread_id' ON 'mails' ('thread_id');
 CREATE INDEX 'index_is_read' ON 'mails' ('is_read');
 CREATE INDEX 'index_is_delete' ON 'mails' ('is_delete');
+CREATE INDEX 'index_is_calendar' ON 'mails' ('is_calendar');

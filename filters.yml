@@ -125,15 +125,6 @@
     Label: Cooder
 
 - filter:
-  name: Calendars
-  condition:
-    match: Any
-    rules:
-      - [Body, Contains, 'BEGIN:VCALENDAR']
-  action:
-    Label: Calendars
-
-- filter:
   name: 发给我的
   condition:
     match: Any

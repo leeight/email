@@ -20,22 +20,24 @@ type SearcherJsonRPCResponse struct {
 
 // 定义邮件类型，Database Model
 type EMail struct {
-	Id       uint64    `json:"id"`
-	Uidl     string    `json:"uidl"`
-	From     string    `json:"from"`
-	To       string    `json:"to"`
-	Cc       string    `json:"cc"`
-	Bcc      string    `json:"bcc"`
-	ReplyTo  string    `json:"reply_to"`
-	Date     time.Time `json:"date"`
-	Subject  string    `json:"subject"`
-	Message  string    `json:"message"`
-	MsgId    string    `json:"msg_id"` // Message-Id的值
-	Refs     string    `json:"refs"`   // References和In-Reply-To的值,逗号分割
-	Status   int       `json:"status"`
-	IsRead   int       `json:"is_read"`
-	IsSent   int       `json:"is_sent"`
-	IsDelete int       `json:"is_delete"`
+	Id          uint64    `json:"id"`
+	Uidl        string    `json:"uidl"`
+	From        string    `json:"from"`
+	To          string    `json:"to"`
+	Cc          string    `json:"cc"`
+	Bcc         string    `json:"bcc"`
+	ReplyTo     string    `json:"reply_to"`
+	Date        time.Time `json:"date"`
+	Subject     string    `json:"subject"`
+	Message     string    `json:"message"`
+	MsgId       string    `json:"msg_id"` // Message-Id的值
+	Refs        string    `json:"refs"`   // References和In-Reply-To的值,逗号分割
+	Status      int       `json:"status"`
+	IsRead      int       `json:"is_read"`
+	IsCalendar  int       `json:"is_calendar"`
+	IcalMessage string    `json:"ical_message"`
+	IsSent      int       `json:"is_sent"`
+	IsDelete    int       `json:"is_delete"`
 }
 
 type Thread struct {
@@ -65,6 +67,8 @@ type EMailViewModel struct {
 	Attachments []*Attachment   `json:"attachments"`
 	Labels      []*LabelType    `json:"labels"`
 	Status      int             `json:"status"`
+	IsCalendar  int             `json:"is_calendar"`
+	IcalMessage string          `json:"ical_message"`
 	IsRead      int             `json:"is_read"`
 	IsSent      int             `json:"is_sent"`
 	IsDelete    int             `json:"is_delete"`
@@ -190,6 +194,8 @@ func (this *EMail) ToViewModel(downloadDir string, db *sql.DB) *EMailViewModel {
 	evm.IsRead = this.IsRead
 	evm.IsDelete = this.IsDelete
 	evm.IsSent = this.IsSent
+	evm.IsCalendar = this.IsCalendar
+	evm.IcalMessage = this.IcalMessage
 	evm.From, _ = mail.ParseAddress(this.From)
 	evm.To, _ = mail.ParseAddressList(this.To)
 	evm.Cc, _ = mail.ParseAddressList(this.Cc)

@@ -110,8 +110,8 @@
     <!-- else -->
     <div class="mail-body">
       <!-- if: ${email.is_calendar} -->
-          <!-- if: ${email.message.METHOD} == "REQUEST" -->
-          <!-- var: vevent = ${email.message.VEVENT} -->
+          <!-- if: ${email.ical_message.METHOD} == "REQUEST" -->
+          <!-- var: vevent = ${email.ical_message.VEVENT} -->
           <table class="mail-calendar">
               <tr>
                   <th>时间：</th>
@@ -138,7 +138,7 @@
               </tr>
           </table>
           <!-- else -->
-          暂不支持显示 ${email.message.METHOD} 类型的日历。
+          暂不支持显示 ${email.ical_message.METHOD} 类型的日历。
           <!-- /if -->
       <!-- else -->
       ${email.message|raw}
