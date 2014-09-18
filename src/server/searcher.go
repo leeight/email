@@ -222,7 +222,7 @@ func main() {
 			IndexType: types.LocationsIndex,
 		},
 		UsePersistentStorage:    true,
-		PersistentStorageFolder: "db",
+		PersistentStorageFolder: "data/baidu.com/liyubei/db/searcher",
 	})
 
 	// 索引

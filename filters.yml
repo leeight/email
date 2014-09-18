@@ -44,6 +44,8 @@
       - [From, Contains, 'Spammail@baidu.com']
       - [From, Contains, 'icafeauto@baidu.com']
       - [From, Contains, 'dr-api@baidu.com']
+      - [From, Contains, 'jn-noreply@baidu.com']
+      - [From, Contains, 'hadoop-admin@baidu.com']
       - [SentTo, Contains, 'jp-video-rd@baidu.com']
       - [SentTo, Contains, 'tieba-ecom-rd@baidu.com']
       - [Subject, Contains, '一个月以上未活动版本统计']

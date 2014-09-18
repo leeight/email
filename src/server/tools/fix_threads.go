@@ -116,6 +116,15 @@ func addThread(db *sql.DB, subject string, mids []string) (int64, error) {
 	}
 	log.Printf("%d -> %v\n", id, mids)
 
+	sql = fmt.Sprintf("UPDATE `mails` SET `thread_id` = %d WHERE `uidl` IN (0,%s)",
+		id, strings.Join(mids, ","))
+	log.Printf("%s", sql)
+	_, err = db.Exec(sql)
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+
 	return id, nil
 }
 

@@ -72,15 +72,15 @@ func (this *MailListSchema) Init(r *http.Request) {
 
 func (this *MailListSchema) setDefault() {
 	if this.PageSize == 0 {
-		this.PageSize = 15
+		this.PageSize = kDefaultPageSize
 	}
 
 	if this.PageNo == 0 {
-		this.PageNo = 1
+		this.PageNo = kDefaultPageNo
 	}
 
 	if this.LabelId == 0 {
-		this.LabelId = -1
+		this.LabelId = kDefaultLabelNo
 	}
 
 	this.SkipCount = (this.PageNo - 1) * this.PageSize

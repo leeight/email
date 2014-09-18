@@ -12,7 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/op/go-logging"
 
-	"./base"
+	"../base"
 )
 
 var log = logging.MustGetLogger("rebuild")

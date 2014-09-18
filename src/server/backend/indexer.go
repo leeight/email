@@ -8,7 +8,16 @@ import (
 	"../web"
 )
 
-func AddToIndexer(ctx web.Context, id uint64) {
+var indexerChannel = make(chan uint64, 20)
+
+func AddToIndexer(ctx web.Context) {
+	for {
+		id := <-indexerChannel
+		addToIndexerImpl(ctx, id)
+	}
+}
+
+func addToIndexerImpl(ctx web.Context, id uint64) {
 	config := ctx.GetConfig()
 	log := ctx.GetLogger()
 

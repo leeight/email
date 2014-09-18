@@ -71,7 +71,7 @@ function getTableFields(linkBuilder) {
                     name: '未知来源',
                     address: '未知来源'
                 };
-                var size = item.mids ? item.mids.split(',').length : 1;
+                var size = item.mail_count || 1;
                 return '<span title="' + from.address + '">' +
                     lib.encodeHTML(from.name || from.address) +
                     ((size > 1) ? ' (' + size + ')' : '') +

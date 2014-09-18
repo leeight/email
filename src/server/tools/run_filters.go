@@ -9,7 +9,7 @@ import (
 	"database/sql"
 	"log"
 
-	"./base"
+	"../base"
 )
 
 func getTmpDB() *sql.DB {
@@ -18,19 +18,7 @@ func getTmpDB() *sql.DB {
 		log.Fatal(err)
 		return nil
 	}
-	db.Exec(`
-    DROP TABLE IF EXISTS tags;
-    DROP TABLE IF EXISTS mail_tags;
-    CREATE TABLE tags (
-      id INTEGER NOT NULL PRIMARY KEY,
-      name VARCHAR(512)
-    );
-    CREATE TABLE mail_tags (
-      id INTEGER NOT NULL PRIMARY KEY,
-      mid INTEGER,
-      tid INTEGER
-    );
-  `)
+	db.Exec(`DELETE FROM tags; DELETE FROM mail_tags;`)
 
 	return db
 }

@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS 'mails';
-DROP TABLE IF EXISTS tags;
-DROP TABLE IF EXISTS mail_tags;
+DROP TABLE IF EXISTS 'tags';
+DROP TABLE IF EXISTS 'mail_tags';
+DROP TABLE IF EXISTS 'threads';
 
 CREATE TABLE mails (
   'id' INTEGER NOT NULL PRIMARY KEY,  -- 自增的Id
@@ -16,21 +17,21 @@ CREATE TABLE mails (
   'msg_id' VARCHAR(512),              -- Message-Id的值
   'refs' text,                        -- References和In-Reply-To的值,逗号分割
   'status' INTEGER,                   -- 邮件的状态（程序里面去判断）
+  'thread_id' INTEGER,                -- Thread-Id
   'is_sent' INTEGER,                  -- 是否是已发送邮件
   'is_read' INTEGER,                  -- 是否已经读过了
   'is_delete' INTEGER,                -- 是否已经删除
   'is_spam' INTEGER                   -- 是否是垃圾邮件
 );
 CREATE TABLE tags (
-  id INTEGER NOT NULL PRIMARY KEY,
-  name VARCHAR(512)
+  'id' INTEGER NOT NULL PRIMARY KEY,
+  'name' VARCHAR(512)
 );
 CREATE TABLE mail_tags (
-  id INTEGER NOT NULL PRIMARY KEY,
-  mid INTEGER,
-  tid INTEGER
+  'id' INTEGER NOT NULL PRIMARY KEY,
+  'mid' INTEGER,
+  'tid' INTEGER
 );
-
 CREATE TABLE threads (
   'id' INTEGER NOT NULL PRIMARY KEY,  -- 自增的Id
   'from' VARCHAR(1024),               -- 最后一封邮件的发件人
@@ -41,3 +42,9 @@ CREATE TABLE threads (
   'is_delete' INTEGER,                -- 是否已经删除
   'is_spam' INTEGER                   -- 是否是垃圾邮件
 );
+
+CREATE INDEX 'index_msg_id' ON 'mails' ('msg_id');
+CREATE INDEX 'index_uidl' ON 'mails' ('uidl');
+CREATE INDEX 'index_thread_id' ON 'mails' ('thread_id');
+CREATE INDEX 'index_is_read' ON 'mails' ('is_read');
+CREATE INDEX 'index_is_delete' ON 'mails' ('is_delete');

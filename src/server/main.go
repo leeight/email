@@ -33,7 +33,8 @@ func main() {
 	executor(time.Now())
 
 	// 初始化邮件线索的信息
-	go backend.InitMailThreads(ctx)
+	go backend.AddToThread(ctx)
+	go backend.AddToIndexer(ctx)
 
 	// 定时器启动
 	interval := config.Pop3.GetInterval()
