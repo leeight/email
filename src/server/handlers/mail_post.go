@@ -170,7 +170,7 @@ func saveMail(ctx web.Context, uidl string, raw []byte) {
 	email.Uidl = uidl
 	email.IsSent = 1
 	email.IsRead = 1
-	email.Date = time.Now()
+	// email.Date = time.Now()
 	email.Id, err = email.Store(db)
 	if err != nil {
 		log.Warning("%s", err)

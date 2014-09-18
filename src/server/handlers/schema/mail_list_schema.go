@@ -48,16 +48,23 @@ func (this *MailListSchema) BuildListSql() string {
 
 func (this *MailListSchema) BuildTotalSql() string {
 	sql := "SELECT COUNT(*) FROM mails "
+
 	if this.IsDelete == 1 {
 		sql += "WHERE `is_delete` = 1 "
 	} else {
 		if this.LabelId > 0 {
 			sql += "WHERE `is_delete` != 1 AND `id` IN " +
 				"(SELECT `mid` FROM `mail_tags` WHERE `tid` = " +
-				strconv.Itoa(this.LabelId) + ")"
+				strconv.Itoa(this.LabelId) + ") "
 		} else {
 			sql += "WHERE `is_delete` != 1 "
 		}
+	}
+
+	if this.IsSent == 1 {
+		sql += "AND `is_sent` = 1 "
+	} else {
+		sql += "AND `is_sent` != 1 "
 	}
 
 	return sql
