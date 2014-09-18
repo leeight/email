@@ -54,6 +54,7 @@
   action:
     Label: 监控邮件
     MarkAsRead: true
+    MarkAsDelete: true
 
 - filter:
   name: Spam Filter
@@ -69,6 +70,7 @@
   action:
     Label: Spam
     MarkAsRead: true
+    MarkAsDelete: true
 
 - filter:
   name: HTTPs

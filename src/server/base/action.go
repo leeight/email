@@ -10,6 +10,7 @@ type Action interface {
 
 type LabelAction struct{}
 type MarkAsReadAction struct{}
+type MarkAsDeleteAction struct{}
 type ForwardAction struct{}
 type ReplyAction struct{}
 type MoveMessaeAction struct{}
@@ -51,6 +52,13 @@ func (this ChangeStatusAction) Exec(email *EMail, args ...interface{}) error {
 func (this MarkAsReadAction) Exec(email *EMail, args ...interface{}) error {
 	db := args[1].(*sql.DB)
 	email.IsRead = 1
+	_, err := email.Store(db)
+	return err
+}
+
+func (this MarkAsDeleteAction) Exec(email *EMail, args ...interface{}) error {
+	db := args[1].(*sql.DB)
+	email.IsDelete = 1
 	_, err := email.Store(db)
 	return err
 }
