@@ -10,7 +10,7 @@ type Thread struct {
 	roots        *Container
 }
 
-func (t *Thread) expandSubjectTable(children []*Container) {
+func (t *Thread) expandSubjectTable(children []*Container, f bool) {
 	for _, this := range children {
 		subject := normalizeSubject(this.getSubject())
 		if subject == "" {
@@ -25,6 +25,9 @@ func (t *Thread) expandSubjectTable(children []*Container) {
 				// 1. This one is an empty container and the old one is not:
 				// the empty one is more interesting as a root, so put it in the table instead.
 				t.subjectTable[subject] = this
+				if f {
+					this.addChild(old)
+				}
 			} else if isReplyOrForward(old.getSubject()) &&
 				!isReplyOrForward(this.getSubject()) {
 				// 2. The container in the table has a ``Re:'' version of this subject,
@@ -34,6 +37,19 @@ func (t *Thread) expandSubjectTable(children []*Container) {
 			}
 		}
 	}
+	// for _, c := range t.subjectTable {
+	// 	var msg *Message
+	// 	if c.IsEmpty() {
+	// 		if len(c.children) > 0 {
+	// 			msg = c.children[0].message
+	// 		}
+	// 	} else {
+	// 		msg = c.message
+	// 	}
+	// 	if msg != nil {
+	// 		fmt.Printf("%s: %v\n", msg.Uidl, c)
+	// 	}
+	// }
 }
 
 func (t *Thread) addMessage1(m *Message) *Container {
@@ -119,15 +135,13 @@ func (t *Thread) addMessage2(m *Message) *Container {
 		t.roots.addChild(candidate)
 	}
 
-	t.expandSubjectTable(rootCandidates)
+	t.expandSubjectTable(rootCandidates, true)
 	t.groupBySubject(rootCandidates)
 
 	return parentContainer
 }
 
 func (t *Thread) groupBySubject(children []*Container) map[string]*Container {
-	// t.expandSubjectTable(children)
-
 	l := len(children)
 	for i := l - 1; i >= 0; i-- {
 		if i >= len(children) {
@@ -202,13 +216,13 @@ func (t *Thread) groupBySubject(children []*Container) map[string]*Container {
 }
 
 func normalizeSubject(subject string) string {
-	re := regexp.MustCompile(`(?i)((Re|Fwd|Fw|回复|答复)(\[[\d+]\])?[:：](\s*)?)*(.*)`)
+	re := regexp.MustCompile(`(?i)((Re|Fwd|Fw|回复|答复|转发)(\[[\d+]\])?[:：](\s*)?)*(.*)`)
 	ss := re.FindStringSubmatch(subject)
 	return ss[5]
 }
 
 func isReplyOrForward(subject string) bool {
-	re := regexp.MustCompile(`^(?i)(Re|Fwd|Fw|回复|答复)\s*[:：]`)
+	re := regexp.MustCompile(`^(?i)(Re|Fwd|Fw|回复|答复|转发)\s*[:：]`)
 	return re.MatchString(subject)
 }
 

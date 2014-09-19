@@ -144,28 +144,28 @@ func main() {
 		log.Panic(err)
 	}
 	ioutil.WriteFile("messages.json", data, 0644)
-	// return
-	db.Exec("DELETE FROM threads")
+	return
+	// db.Exec("DELETE FROM threads")
 
-	t := thread.NewThread(messages)
-	roots := t.GetRoots()
+	// t := thread.NewThread(messages)
+	// roots := t.GetRoots()
 
-	for subject, container := range t.GroupBySubject(roots) {
-		messages := container.FlattenChildren()
-		if !container.IsEmpty() {
-			newmsg := make([]*thread.Message, len(messages)+1)
-			copy(newmsg[1:], messages[0:])
-			newmsg[0] = container.GetMessage()
-			messages = newmsg
-		}
+	// for subject, container := range t.GroupBySubject(roots) {
+	// 	messages := container.FlattenChildren()
+	// 	if !container.IsEmpty() {
+	// 		newmsg := make([]*thread.Message, len(messages)+1)
+	// 		copy(newmsg[1:], messages[0:])
+	// 		newmsg[0] = container.GetMessage()
+	// 		messages = newmsg
+	// 	}
 
-		mids := make([]string, len(messages))
-		for idx, msg := range messages {
-			mids[idx] = msg.Uidl
-		}
-		tid, err := addThread(db, subject, mids)
-		if err == nil {
-			container.ThreadId = tid
-		}
-	}
+	// 	mids := make([]string, len(messages))
+	// 	for idx, msg := range messages {
+	// 		mids[idx] = msg.Uidl
+	// 	}
+	// 	tid, err := addThread(db, subject, mids)
+	// 	if err == nil {
+	// 		container.ThreadId = tid
+	// 	}
+	// }
 }

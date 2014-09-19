@@ -67,8 +67,7 @@ func Debug() {
 				thrd.roots.addChild(container)
 			}
 		}
-		thrd.expandSubjectTable(thrd.roots.children)
-
+		thrd.expandSubjectTable(thrd.roots.children, false)
 		thrd.groupBySubject(thrd.roots.children)
 	} else {
 		// 已经自动调用过
@@ -76,7 +75,8 @@ func Debug() {
 		// 2. expandSubjectTable
 		// 3. groupBySubject
 	}
-	return
+
+	var allMailIds = make(map[string]bool)
 	for subject, container := range thrd.subjectTable {
 		messages := container.flattenChildren()
 		if !container.IsEmpty() {
@@ -89,8 +89,16 @@ func Debug() {
 		mids := make([]string, len(messages))
 		for idx, msg := range messages {
 			mids[idx] = msg.Uidl
+			allMailIds[msg.Uidl] = true
 		}
 		sort.Strings(mids)
 		fmt.Printf("%s => %s\n", subject, strings.Join(mids, ","))
 	}
+
+	// case1==1的时候，会丢掉几封邮件，这是无法接受的
+	// 2412 vs 2417
+	// 可以复现的CASE是
+	// go run tools/fix_threads2.go -uidls=715045,715067,715107 -case1=0
+	// go run tools/fix_threads2.go -uidls=715045,715067,715107 -case1=1
+	fmt.Printf("Size => %d\n", len(allMailIds))
 }
