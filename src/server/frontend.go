@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime/pprof"
 	"strconv"
 
 	"./base"
@@ -13,12 +14,22 @@ import (
 )
 
 func main() {
-	configPtr := flag.String("config", "config.yml", "The config file path")
+	var configfile = flag.String("config", "config.yml", "The config file path")
+	var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+
 	flag.Parse()
 
-	config, err := base.GetConfig(*configPtr)
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			panic(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
+	config, err := base.GetConfig(*configfile)
 	if err != nil {
-		// log.Warning("%s", err)
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 		return
