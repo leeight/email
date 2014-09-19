@@ -14,14 +14,54 @@ func TestAddMessage1(t *testing.T) {
 	}
 
 	thrd := NewThread(messages)
-	assert.Equal(t, 2, thrd.GetRoots().Size())
+	assert.Equal(t, 2, thrd.roots.Size())
 
 	c3 := thrd.AddMessage(&Message{"Subject 3", "msg-id-3", "msg-uidl-3", make([]string, 0)})
 	assert.Equal(t, (*Container)(nil), c3.parent)
 
 	thrd.AddMessage(&Message{"Subject 4", "msg-id-4", "msg-uidl-4", make([]string, 0)})
 	thrd.AddMessage(&Message{"Subject 5", "msg-id-5", "msg-uidl-5", make([]string, 0)})
-	assert.Equal(t, 5, thrd.GetRoots().Size())
+	assert.Equal(t, 5, thrd.roots.Size())
+}
+
+func TestAddMessage3(t *testing.T) {
+	m1 := &Message{
+		"转发: [Hackthon]善存双屏",
+		"35C4BCF2D250BC4C9EF4BF2D18BF90C1C16B4590@TC-MAIL-MB05.internal.baidu.com",
+		"715085",
+		make([]string, 0),
+	}
+	m2 := &Message{
+		"答复: 转发: [Hackthon] 善存双屏",
+		"35C4BCF2D250BC4C9EF4BF2D18BF90C1C16B45E2@TC-MAIL-MB05.internal.baidu.com",
+		"715100",
+		[]string{
+			"35C4BCF2D250BC4C9EF4BF2D18BF90C1C16B4590@TC-MAIL-MB05.internal.baidu.com",
+			"CFC4AD13.55B47%liyubei@baidu.com",
+		},
+	}
+	m3 := &Message{
+		"USER-FLOW. 答复: 转发: [Hackthon] 善存双屏",
+		"35C4BCF2D250BC4C9EF4BF2D18BF90C1C16B47B8@TC-MAIL-MB05.internal.baidu.com",
+		"715178",
+		[]string{
+			"35C4BCF2D250BC4C9EF4BF2D18BF90C1C16B4590@TC-MAIL-MB05.internal.baidu.com",
+			"CFC4AD13.55B47%liyubei@baidu.com",
+		},
+	}
+
+	thrd := NewThread(make([]*Message, 0))
+
+	c1 := thrd.AddMessage(m1)
+	assert.Equal(t, (*Container)(nil), c1.parent)
+
+	c2 := thrd.AddMessage(m2)
+	assert.NotEqual(t, (*Container)(nil), c2.parent)
+	fmt.Println(c2.parent.String())
+
+	c3 := thrd.AddMessage(m3)
+	assert.NotEqual(t, (*Container)(nil), c3.parent)
+	fmt.Println(c3.parent.String())
 }
 
 func TestAddMessage2(t *testing.T) {
@@ -52,10 +92,10 @@ func TestAddMessage2(t *testing.T) {
 	assert.NotEqual(t, (*Container)(nil), c5.parent)
 	fmt.Println(c5.parent.String())
 
-	r1 := thrd.GetRoots()
+	r1 := thrd.roots
 	assert.Equal(t, 1, r1.Size())
 
-	st1 := thrd.GroupBySubject(r1)
+	st1 := thrd.groupBySubject(r1.children)
 	assert.Equal(t, 1, len(st1))
 
 	// 下面判断是否可以产生新的Thread，在subjectTable里面
@@ -67,7 +107,7 @@ func TestAddMessage2(t *testing.T) {
 	r2 := &Container{message: nil}
 	r2.addChild(c6)
 
-	st2 := thrd.GroupBySubject(r2)
+	st2 := thrd.groupBySubject(r2.children)
 	assert.Equal(t, 2, len(st2))
 
 	assert.Equal(t, false, (st2["Subject 6"]).IsEmpty())

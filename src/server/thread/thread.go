@@ -1,23 +1,18 @@
 package thread
 
 import (
-	// "log"
-	"fmt"
 	"regexp"
 )
 
-type ContainerMap map[string]*Container
-
 type Thread struct {
-	idTable      ContainerMap
-	subjectTable ContainerMap
+	idTable      map[string]*Container
+	subjectTable map[string]*Container
 	roots        *Container
 }
 
-func (t *Thread) initSubjectTable(roots *Container) {
-	// 先构造一个初级的subjectTable
-	for _, this := range roots.children {
-		subject := normalizeSubject(this.GetSubject())
+func (t *Thread) expandSubjectTable(children []*Container) {
+	for _, this := range children {
+		subject := normalizeSubject(this.getSubject())
 		if subject == "" {
 			continue
 		}
@@ -25,26 +20,23 @@ func (t *Thread) initSubjectTable(roots *Container) {
 		if old, ok := t.subjectTable[subject]; !ok {
 			// There is no container in the table with this subject
 			t.subjectTable[subject] = this
-		} else {
-			// 1. This one is an empty container and the old one is not:
-			// the empty one is more interesting as a root, so put it in the table instead.
-			//
-			// 2. The container in the table has a ``Re:'' version of this subject,
-			// and this container has a non-``Re:'' version of this subject.
-			// The non-re version is the more interesting of the two.
-			if !old.IsEmpty() {
-				if this.IsEmpty() {
-					t.subjectTable[subject] = this
-				} else if isReplyOrForward(old.GetSubject()) &&
-					!isReplyOrForward(this.GetSubject()) {
-					t.subjectTable[subject] = this
-				}
+		} else if !old.IsEmpty() {
+			if this.IsEmpty() {
+				// 1. This one is an empty container and the old one is not:
+				// the empty one is more interesting as a root, so put it in the table instead.
+				t.subjectTable[subject] = this
+			} else if isReplyOrForward(old.getSubject()) &&
+				!isReplyOrForward(this.getSubject()) {
+				// 2. The container in the table has a ``Re:'' version of this subject,
+				// and this container has a non-``Re:'' version of this subject.
+				// The non-re version is the more interesting of the two.
+				t.subjectTable[subject] = this
 			}
 		}
 	}
 }
 
-func (t *Thread) AddMessage(m *Message) *Container {
+func (t *Thread) addMessage1(m *Message) *Container {
 	parentContainer, ok := t.idTable[m.Id]
 	if ok {
 		// 如果 id_table 包含这个 message-id 的话，检查一下是否是
@@ -105,17 +97,45 @@ func (t *Thread) AddMessage(m *Message) *Container {
 	return t.idTable[m.Id]
 }
 
-func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
-	t.initSubjectTable(roots)
+func (t *Thread) addMessage2(m *Message) *Container {
+	parentContainer := t.addMessage1(m)
 
-	l := len(roots.children)
+	// 当下次调用 AddMessage 的时候，如果执行了
+	// prev.addChild(parentContainer)，那么 parentContainer 会自动
+	// 从 t.roots 里面删除，这个是 addChild 的逻辑
+	// 但是删除之后，还需要更新 subjectTable，删除它里面的脏数据，然后再去调用
+	// expandSubjectTable
+	var rootCandidates = make([]*Container, 0)
+	if parentContainer.parent == nil {
+		rootCandidates = append(rootCandidates, parentContainer)
+	}
+	for _, ref := range m.References {
+		container, _ := t.idTable[ref]
+		if container.parent == nil {
+			rootCandidates = append(rootCandidates, container)
+		}
+	}
+	for _, candidate := range rootCandidates {
+		t.roots.addChild(candidate)
+	}
+
+	t.expandSubjectTable(rootCandidates)
+	t.groupBySubject(rootCandidates)
+
+	return parentContainer
+}
+
+func (t *Thread) groupBySubject(children []*Container) map[string]*Container {
+	// t.expandSubjectTable(children)
+
+	l := len(children)
 	for i := l - 1; i >= 0; i-- {
-		if i >= len(roots.children) {
-			i = len(roots.children) - 1
+		if i >= len(children) {
+			i = len(children) - 1
 		}
 
-		this := roots.children[i]
-		subject := normalizeSubject(this.GetSubject())
+		this := children[i]
+		subject := normalizeSubject(this.getSubject())
 
 		that := t.subjectTable[subject]
 		if that == nil || that == this {
@@ -147,8 +167,8 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 			t.subjectTable[subject] = this
 		} else {
 			// Both are not empty container
-			if isReplyOrForward(that.GetSubject()) &&
-				!isReplyOrForward(this.GetSubject()) {
+			if isReplyOrForward(that.getSubject()) &&
+				!isReplyOrForward(this.getSubject()) {
 				// If that container is a non-empty, and that message's subject begins with ``Re:'',
 				// but this message's subject does not, then make that be a child of this one --
 				// they were misordered. (This happens somewhat implicitly, since if there are two
@@ -157,8 +177,8 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 
 				this.addChild(that)
 				t.subjectTable[subject] = this
-			} else if !isReplyOrForward(that.GetSubject()) &&
-				isReplyOrForward(this.GetSubject()) {
+			} else if !isReplyOrForward(that.getSubject()) &&
+				isReplyOrForward(this.getSubject()) {
 				// If that container is a non-empty, and that message's
 				// subject does not begin with ``Re:'', but this message's
 				// subject does, then make this be a child of the other.
@@ -181,25 +201,6 @@ func (t *Thread) GroupBySubject(roots *Container) ContainerMap {
 	return t.subjectTable
 }
 
-func (t *Thread) GetRoots() *Container {
-	for _, child := range t.idTable {
-		if child.parent == nil {
-			t.roots.addChild(child)
-		}
-	}
-
-	t.roots.pruneEmpties()
-
-	return t.roots
-}
-
-func (t *Thread) String() {
-	for k, v := range t.idTable {
-		fmt.Printf("%s -> %s\n", k, v)
-	}
-	fmt.Println()
-}
-
 func normalizeSubject(subject string) string {
 	re := regexp.MustCompile(`(?i)((Re|Fwd|Fw|回复|答复)(\[[\d+]\])?[:：](\s*)?)*(.*)`)
 	ss := re.FindStringSubmatch(subject)
@@ -215,11 +216,11 @@ func NewThread(messages []*Message) *Thread {
 	thread := &Thread{}
 
 	thread.roots = &Container{message: nil}
-	thread.subjectTable = make(ContainerMap)
-	thread.idTable = make(ContainerMap)
+	thread.subjectTable = make(map[string]*Container)
+	thread.idTable = make(map[string]*Container)
 
 	for _, m := range messages {
-		thread.AddMessage(m)
+		thread.addMessage1(m)
 	}
 
 	return thread
