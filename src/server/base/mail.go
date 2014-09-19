@@ -39,6 +39,14 @@ type kvType map[string][]byte
 //
 // 发现了一种情况，即便有Content-Id，但是可能没有地方去引用它，此时就应该把它当做附件来处理了
 // 存储的时候用 name 这个字段
+
+// text/html影响了邮件的正文，需要识别出来
+// Content-Type: text/html; name="ATT00002.htm"
+// Content-Description: ATT00002.htm
+// Content-Disposition: attachment; filename="ATT00002.htm"; size=232;
+// 	creation-date="Fri, 19 Sep 2014 07:16:24 GMT";
+// 	modification-date="Fri, 19 Sep 2014 07:16:24 GMT"
+// Content-Transfer-Encoding: base64
 type inlineResourceType struct {
 	ct   string
 	cid  string
@@ -267,7 +275,7 @@ func decodeMultipartMessage(part *multipart.Part, messages kvType,
 
 	reader := getBodyReader(part, cte, true)
 
-	if strings.HasPrefix(mediaType, "text/") {
+	if strings.HasPrefix(mediaType, "text/") && part.FileName() == "" {
 		body, _ := fixMessageEncoding(reader, ct)
 		messages[mediaType] = body
 	} else if strings.HasPrefix(mediaType, "multipart/") {
