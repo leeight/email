@@ -41,11 +41,7 @@ func ReceiveRecentMails(ctx web.Context) func(time.Time) {
 		}
 
 		// 打开数据库
-		db, err := sql.Open("sqlite3", config.DbPath())
-		if err != nil {
-			log.Warning("%s", err)
-			return
-		}
+		db := ctx.GetMysqlDb()
 		defer db.Close()
 
 		// 开始拉数据

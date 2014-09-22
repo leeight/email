@@ -7,17 +7,20 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/op/go-logging"
 
 	"../base"
+	"../web"
 )
 
 var log = logging.MustGetLogger("rebuild")
 
-func rebuild(file string, db *sql.DB, config *base.ServerConfig, update bool) error {
+func rebuild(file string, db *sql.DB, rawDir string, config *base.ServerConfig, update bool) error {
 	ext := path.Ext(file)
 	baseName := strings.Replace(file, ext, "", 1)
 	uidl := baseName
@@ -39,7 +42,7 @@ func rebuild(file string, db *sql.DB, config *base.ServerConfig, update bool) er
 	}
 	// END
 
-	raw, err := ioutil.ReadFile(path.Join(config.RawDir(), file))
+	raw, err := ioutil.ReadFile(path.Join(rawDir, file))
 	if err != nil {
 		log.Warning("%s", err)
 		return err
@@ -57,7 +60,8 @@ func rebuild(file string, db *sql.DB, config *base.ServerConfig, update bool) er
 	// 保存到数据库
 	email.Uidl = uidl
 	email.Id = id
-	_, err = email.Store(db)
+	email.IsRead = 1
+	email.Id, err = email.Store(db)
 	if err != nil {
 		log.Warning("%s", err)
 		return err
@@ -71,8 +75,10 @@ func rebuild(file string, db *sql.DB, config *base.ServerConfig, update bool) er
 // 2. 附件的内容会被重新生成
 func main() {
 	// 参数解析
-	rawPtr := flag.String("raw", "", "The raw file path")
-	configPtr := flag.String("config", "config.yml", "The config file path")
+	var rawPtr = flag.String("raw", "", "The raw file path")
+	var configPtr = flag.String("config", "config.yml", "The config file path")
+	var dirptr = flag.String("dir", "", "The directory to check.")
+	var lastptr = flag.Int("last", 0, "The last success uidl.")
 	flag.Parse()
 
 	config, err := base.GetConfig(*configPtr)
@@ -82,25 +88,28 @@ func main() {
 		flag.PrintDefaults()
 	}
 
-	// 打开数据库
-	db, err := sql.Open("sqlite3", config.DbPath())
-	if err != nil {
-		log.Panic(err)
-		return
-	}
+	ctx := web.NewContext(config)
+	db := ctx.GetDb()
 	defer db.Close()
+
+	var rawDir string
+	if *dirptr != "" {
+		rawDir = *dirptr
+	} else {
+		rawDir = config.RawDir()
+	}
 
 	if *rawPtr != "" {
 		// 用户指定例如文件，例如
 		// rebuild -raw=raw/720375.txt
-		rebuild(path.Base(*rawPtr), db, config, true)
+		rebuild(path.Base(*rawPtr), db, rawDir, config, true)
 	} else {
-		_, err = db.Exec("DELETE FROM `mails`")
-		if err != nil {
-			log.Panic(err)
-		}
+		// _, err = db.Exec("DELETE FROM `mails`")
+		// if err != nil {
+		// 	log.Panic(err)
+		// }
 
-		fileInfos, err := ioutil.ReadDir(config.RawDir())
+		fileInfos, err := ioutil.ReadDir(rawDir)
 		if err != nil {
 			log.Panic(err)
 		}
@@ -109,7 +118,18 @@ func main() {
 			if item.IsDir() {
 				continue
 			}
-			rebuild(item.Name(), db, config, false)
+
+			if !strings.HasSuffix(item.Name(), ".txt") {
+				continue
+			}
+
+			uidl := strings.Replace(item.Name(), ".txt", "", -1)
+			id, _ := strconv.Atoi(uidl)
+			if *lastptr > 0 && id < *lastptr {
+				continue
+			}
+
+			rebuild(item.Name(), db, rawDir, config, false)
 		}
 	}
 }

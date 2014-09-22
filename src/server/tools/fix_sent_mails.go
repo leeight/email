@@ -3,11 +3,13 @@ package main
 import (
 	"bytes"
 	"database/sql"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 
 	"../base"
@@ -25,6 +27,10 @@ func fix(fname, modtime string) {
 }
 
 func main() {
+	var dirptr = flag.String("dir", "", "The directory to check.")
+	var lastptr = flag.Int("last", 0, "The last success uidl.")
+	flag.Parse()
+
 	config, err := base.GetConfig("config.yml")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -37,9 +43,14 @@ func main() {
 	}
 	defer db.Close()
 
-	db.Exec("DELETE FROM `mails` WHERE `is_sent` = 1")
+	// db.Exec("DELETE FROM `mails` WHERE `is_sent` = 1")
 
-	sentMailDir := path.Join(config.RawDir(), "sent")
+	var sentMailDir string
+	if *dirptr == "" {
+		sentMailDir = path.Join(config.RawDir(), "sent")
+	} else {
+		sentMailDir = *dirptr
+	}
 
 	fs, _ := ioutil.ReadDir(sentMailDir)
 	for _, item := range fs {
@@ -47,14 +58,19 @@ func main() {
 			continue
 		}
 
+		uidl := strings.Replace(item.Name(), ".txt", "", -1)
+		id, _ := strconv.Atoi(uidl)
+		if *lastptr > 0 && id < *lastptr {
+			continue
+		}
+
 		fname := path.Join(sentMailDir, item.Name())
 		fix(fname, item.ModTime().Format("Mon, 2 Jan 2006 15:04:05 -0700"))
 
-		uidl := strings.Replace(item.Name(), ".txt", "", -1)
 		raw, _ := ioutil.ReadFile(fname)
 		email, err := base.SaveMail(raw, uidl, config)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("%s => %v\n", item.Name(), err)
 			continue
 		}
 
@@ -65,7 +81,7 @@ func main() {
 		// email.Date = time.Now()
 		email.Id, err = email.Store(db)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("%s => %v\n", item.Name(), err)
 		}
 	}
 }

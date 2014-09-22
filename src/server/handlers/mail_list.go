@@ -16,7 +16,7 @@ type MailListHandler struct {
 func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := h.Context
 	log := ctx.GetLogger()
-	db := ctx.GetDb()
+	db := ctx.GetMysqlDb()
 	defer db.Close()
 
 	params := new(schema.MailListSchema)

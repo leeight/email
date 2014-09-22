@@ -56,7 +56,8 @@ function getTableFields(linkBuilder) {
     var tableFields = [
         {
             field: 'id',
-            width: 10,
+            width: 60,
+            stable: true,
             title: 'ID',
             content: function (item) {
                 return '<span title="' + item.uidl + '">#' + item.id + '</span>';
@@ -64,7 +65,8 @@ function getTableFields(linkBuilder) {
         },
         {
             field: 'from',
-            width: 100,
+            width: 120,
+            stable: true,
             title: '发件人',
             content: function (item) {
                 var from = item.from || {
@@ -81,7 +83,6 @@ function getTableFields(linkBuilder) {
         {
             field: 'subject',
             title: '标题',
-            width: 700,
             content: function (item) {
                 var extra = '';
                 if (item.attachments && item.attachments.length) {
@@ -103,7 +104,8 @@ function getTableFields(linkBuilder) {
         },
         {
             field: 'date',
-            width: 100,
+            width: 150,
+            stable: true,
             title: '发送日期',
             content: function(item) {
                 // return moment(item.date).format('YYYY-MM-DD HH:mm:ss')

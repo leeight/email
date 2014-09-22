@@ -16,4 +16,6 @@ func TestDecode(t *testing.T) {
 		RFC2047.Decode(input))
 	assert.Equal(t, "Re:che.baidu.com-百度统计趋势分析报告_20140904-20140904",
 		RFC2047.Decode("Re: "+input))
+	assert.Equal(t, "2013年春工作述职_周莲洁.pptx",
+		RFC2047.Decode("=?GB2312?B?MjAxM8TqtLq5pNf3yvbWsF/W3MGrveA=?=.pptx"))
 }

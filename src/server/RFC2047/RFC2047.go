@@ -47,14 +47,16 @@ func (qd qDecoder) Read(p []byte) (n int, err error) {
 	return 1, nil
 }
 
+// =?GB2312?B?MjAxM8TqtLq5pNf3yvbWsF/W3MGrveA=?=.pptx
 func decodeBuffer(s string) (string, []byte, error) {
 	fields := strings.Split(s, "?")
-	if len(fields) != 5 || fields[0] != "=" || fields[4] != "=" {
+	if len(fields) != 5 || fields[0] != "=" || !strings.HasPrefix(fields[4], "=") {
 		return "", nil, NotInvalidEncoding
 	}
 	charset, enc := strings.ToLower(fields[1]), strings.ToLower(fields[2])
 	if charset != "iso-8859-1" &&
 		charset != "utf-8" &&
+		charset != "iso-2022-jp" &&
 		charset != "gb18030" &&
 		charset != "gb2312" &&
 		charset != "gbk" {
@@ -76,6 +78,11 @@ func decodeBuffer(s string) (string, []byte, error) {
 	if err != nil {
 		return "", nil, err
 	}
+
+	if len(fields[4]) > 1 {
+		dec = append(dec, fields[4][1:]...)
+	}
+
 	return charset, dec, nil
 }
 
@@ -87,8 +94,8 @@ func decodeRFC2047Word(dec []byte, charset string) (string, error) {
 			b.WriteRune(rune(c))
 		}
 		return b.String(), nil
-	case "gb18030":
-		cd, err := iconv.Open("utf-8", "gb18030")
+	case "gb18030", "iso-2022-jp":
+		cd, err := iconv.Open("utf-8", charset)
 		if err != nil {
 			return "", err
 		}

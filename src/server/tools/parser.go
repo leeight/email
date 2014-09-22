@@ -10,7 +10,7 @@ import (
 
 	"github.com/saintfish/chardet"
 
-	"./base"
+	"../base"
 )
 
 var (

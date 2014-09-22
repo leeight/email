@@ -3,6 +3,7 @@ package web
 import (
 	"database/sql"
 
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/op/go-logging"
 
@@ -11,6 +12,7 @@ import (
 
 type Context interface {
 	GetDb() *sql.DB
+	GetMysqlDb() *sql.DB
 	GetConfig() *base.ServerConfig
 	GetLogger() *logging.Logger
 }
@@ -25,10 +27,26 @@ type webContext struct {
 }
 
 func (c webContext) GetDb() *sql.DB {
-	db, err := sql.Open("sqlite3", c.config.DbPath())
+	return c.GetMysqlDb()
+	// db, err := sql.Open("sqlite3", c.config.DbPath())
+	// if err != nil {
+	// 	c.GetLogger().Warning("%s", err)
+	// }
+	// return db
+}
+
+func (c webContext) GetMysqlDb() *sql.DB {
+	db, err := sql.Open("mysql", "root:@/foo?parseTime=true")
 	if err != nil {
 		c.GetLogger().Warning("%s", err)
+		panic(err)
 	}
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
 	return db
 }
 

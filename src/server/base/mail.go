@@ -315,7 +315,9 @@ func decodeMultipartMessage(part *multipart.Part, messages kvType,
 		if cdv != "" {
 			// 其次考虑 Content-Disposition
 			name = RFC2047.Decode(part.FileName())
-		} else if params["name"] != "" {
+		}
+
+		if name == "" && params["name"] != "" {
 			// 最后考虑 Content-Type: image/png; name="xxx.jpg"; boundary="--12313--"
 			name = RFC2047.Decode(params["name"])
 		}
