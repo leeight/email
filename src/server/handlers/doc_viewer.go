@@ -78,8 +78,14 @@ func (h DocViewerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         }
         </style>
         </head>`
-		raw = []byte(strings.Replace(string(raw), "</head>", style, -1))
+		title := `
+				<div style="position: absolute;top: 0;">
+						<h1 style="margin: 0;position: relative;left: -10px;">` + path.Base(name) + `</h1>
+				</div>
+				</body>`
 
+		raw = []byte(strings.Replace(string(raw), "</head>", style, 1))
+		raw = []byte(strings.Replace(string(raw), "</body>", title, 1))
 		ioutil.WriteFile(htmlabs, raw, 0644)
 
 		http.Redirect(w, r, "/downloads/"+htmlname, http.StatusMovedPermanently)

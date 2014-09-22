@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"regexp"
 
 	"github.com/saintfish/chardet"
@@ -19,19 +20,23 @@ var (
 )
 
 func main() {
-	// 参数解析
-	rawPtr := flag.String("raw", "raw.txt", "The raw file path")
+	var rawptr = flag.String("raw", "", "The raw file path")
 	flag.Parse()
 
-	if *rawPtr == "" {
+	if *rawptr == "" {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 		return
 	}
 
-	raw, err := ioutil.ReadFile(*rawPtr)
+	config, err := base.GetConfig("config.yml")
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
+	}
+
+	raw, err := ioutil.ReadFile(path.Join(config.RawDir(), *rawptr))
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	email, err := base.NewMail(raw, kDownloadDir, "test/downloads")
