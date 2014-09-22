@@ -62,11 +62,16 @@ type frontendType struct {
 type serviceType struct {
 	Doc      docServiceType
 	Searcher searcherServiceType
+	Soffice  sofficeServerType
 }
 
 type searcherServiceType struct {
 	Datadir string
 	Port    int
+}
+
+type sofficeServerType struct {
+	Exec string
 }
 
 type docServiceType struct {

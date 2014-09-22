@@ -11,8 +11,6 @@ import (
 	"../web"
 )
 
-const kCmd = "/Volumes/HDD/Users/leeight/Applications/LibreOffice.app/Contents/MacOS/soffice"
-
 type DocViewerHandler struct {
 	Context web.Context
 }
@@ -46,7 +44,7 @@ func (h DocViewerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	os.MkdirAll(path.Dir(htmlabs), 0755)
-	p := exec.Command(kCmd,
+	p := exec.Command(config.Service.Soffice.Exec,
 		"--headless",
 		"--convert-to", "html",
 		"--outdir", path.Dir(htmlabs),
