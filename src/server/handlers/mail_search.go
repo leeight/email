@@ -2,15 +2,42 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
-	"strings"
+	"time"
 
 	"../base"
 	"../web"
+	"./schema"
 )
+
+type messageType struct {
+	Id      int       `json:"id"`
+	Uidl    int       `json:"uidl"`
+	Subject string    `json:"subject"`
+	Date    time.Time `json:"date"`
+}
+
+type searchResultType struct {
+	Took     int  `json:"took"`
+	TimedOut bool `json:"timed_out"`
+	Shards   struct {
+		Total      int `json:"total"`
+		Successful int `json:"successful"`
+		Failed     int `json:"failed"`
+	} `json:"_shards"`
+	Hits struct {
+		Total    int     `json:"total"`
+		MaxScore float64 `json:"max_score"`
+		Hits     []struct {
+			Index  string      `json:"_index"`
+			Type   string      `json:"_type"`
+			Id     string      `json:"_id"`
+			Score  float64     `json:"_score"`
+			Source messageType `json:"_source"`
+		} `json:"hits"`
+	} `json:"hits"`
+}
 
 type MailSearchHandler struct {
 	Context web.Context
@@ -19,23 +46,16 @@ type MailSearchHandler struct {
 func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := h.Context
 	log := ctx.GetLogger()
-	config := ctx.GetConfig()
+	// config := ctx.GetConfig()
 	db := ctx.GetDb()
 	defer db.Close()
 
-	query := r.PostFormValue("keyword")
-	// query := r.URL.Query().Get("query")
-	if query == "" {
-		http.Error(w, "Invalid request.", http.StatusBadRequest)
-		return
-	}
-
-	// 构造请求地址
-	searcherUrl := fmt.Sprintf("http://localhost:%d/json?query=%s",
-		config.Service.Searcher.Port,
-		url.QueryEscape(query))
+	params := new(schema.MailSearchSchema)
+	params.Init(r)
 
 	// 发起请求
+	var searcherUrl = params.BuildSearcherUrl()
+	log.Info("%s", searcherUrl)
 	resp, err := http.Get(searcherUrl)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
@@ -49,53 +69,51 @@ func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 调用接口
-	rpcresp := base.SearcherJsonRPCResponse{}
-	err = json.Unmarshal(body, &rpcresp)
+	var result searchResultType
+	json.Unmarshal(body, &result)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
 
 	// 准备sql
-	sql := fmt.Sprintf("SELECT "+
-		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, "+
-		"`reply_to`, `subject`, `date`, `is_read` "+
-		"FROM mails WHERE `is_delete` != 1 AND `id` IN (%s)", strings.Join(rpcresp.Ids, ","))
+	var ids = make([]string, len(result.Hits.Hits))
+	for idx, item := range result.Hits.Hits {
+		ids[idx] = item.Id
+	}
+	sql := params.BuildListSql(ids)
 	log.Info(sql)
 
-	rows, err := db.Query(sql)
-	if err != nil {
-		log.Warning("%s", err)
-	}
-	defer rows.Close()
-
-	// 格式化数据
 	emails := make([]*base.EMailViewModel, 0)
-	for rows.Next() {
-		var email base.EMail
-		rows.Scan(
-			&email.Id,
-			&email.Uidl,
-			&email.From,
-			&email.To,
-			&email.Cc,
-			&email.Bcc,
-			&email.ReplyTo,
-			&email.Subject,
-			&email.Date,
-			&email.IsRead)
 
-		evm := email.ToViewModel(ctx.GetConfig().DownloadDir(), db)
-
-		// 标题高亮
-		for _, t := range rpcresp.Tokens {
-			evm.Subject = strings.Replace(evm.Subject, t, "<strong>"+t+"</strong>", -1)
+	if len(ids) > 0 {
+		rows, err := db.Query(sql)
+		if err != nil {
+			log.Warning("%s", err)
 		}
+		defer rows.Close()
 
-		emails = append(emails, evm)
+		// 格式化数据
+		for rows.Next() {
+			var email base.EMail
+			rows.Scan(
+				&email.Id,
+				&email.Uidl,
+				&email.From,
+				&email.To,
+				&email.Cc,
+				&email.Bcc,
+				&email.ReplyTo,
+				&email.Subject,
+				&email.Date,
+				&email.IsRead)
+
+			evm := email.ToViewModel(ctx.GetConfig().DownloadDir(), db)
+			emails = append(emails, evm)
+		}
 	}
 
-	lpr := base.NewListResponse("true", len(emails), 1, len(emails), emails)
+	lpr := base.NewListResponse("true", result.Hits.Total, params.PageNo, params.PageSize, emails)
 	s, _ := json.MarshalIndent(lpr, "", "    ")
 	w.Write(s)
 }
