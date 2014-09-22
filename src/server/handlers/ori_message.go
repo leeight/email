@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"regexp"
+	"strings"
 
 	"../web"
 )
@@ -39,6 +40,12 @@ func (h OriMessageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	html := regexp.MustCompile(`src="downloads/`).ReplaceAll(
 		[]byte(message), []byte(`src="/downloads/`))
+
+	// 从sqlite3导入数据到mysql之后，发生了转义的问题
+	// 如果全部修复，貌似也没啥意义，就这里用到的时候再处理一下吧
+	if strings.Index(string(html), "`Content-Type`") != -1 {
+		html = []byte(strings.Replace(string(html), "`", "'", -1))
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Write(html)
 }
