@@ -5,6 +5,7 @@ main
 parser
 sqlite3
 frontend
+searcher
 yml
 rebuild
 run_filters
