@@ -11,6 +11,7 @@ import (
 
 	"../base"
 	"../thread"
+	"../web"
 )
 
 func readAllMessages(db *sql.DB) []*thread.Message {
@@ -130,12 +131,8 @@ func addThread(db *sql.DB, subject string, mids []string) (int64, error) {
 
 func main() {
 	config, err := base.GetConfig("config.yml")
-
-	db, err := sql.Open("sqlite3", config.DbPath())
-	if err != nil {
-		log.Panic(err)
-		return
-	}
+	ctx := web.NewContext(config)
+	db := ctx.GetDb()
 	defer db.Close()
 
 	messages := readAllMessages(db)

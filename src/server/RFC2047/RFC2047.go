@@ -57,6 +57,7 @@ func decodeBuffer(s string) (string, []byte, error) {
 	if charset != "iso-8859-1" &&
 		charset != "utf-8" &&
 		charset != "iso-2022-jp" &&
+		charset != "big5" &&
 		charset != "gb18030" &&
 		charset != "gb2312" &&
 		charset != "gbk" {
@@ -94,7 +95,7 @@ func decodeRFC2047Word(dec []byte, charset string) (string, error) {
 			b.WriteRune(rune(c))
 		}
 		return b.String(), nil
-	case "gb18030", "iso-2022-jp":
+	case "gb18030", "big5", "iso-2022-jp":
 		cd, err := iconv.Open("utf-8", charset)
 		if err != nil {
 			return "", err
