@@ -1,0 +1,11 @@
+{
+    "LICENSE": "d466e2325ee60ace4f73f2fec651c171",
+    "README.md": "b8dfd6f3b63efb7040a7ae1c6f913451",
+    "demo/index.html": "575822680871c03eddf3226be9c82e3a",
+    "package.json": "dba223dd8928bef4453da0763bde1f99",
+    "src/defineAccessor.js": "7ea18564be96999119a953b1cc2ea0ca",
+    "src/main.js": "e9dedcc81417e1422485aaf483fbc56d",
+    "src/oo.js": "aeb2b35170680b668c3a03903a5aff6e",
+    "test/config.js": "c8474fe67fa2e7006013fbdc44f3b900",
+    "test/ooSpec.js": "cda6f19b829620293279e4c2b2b0854f"
+}

@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"time"
 
 	"../base"
 	"../web"
@@ -14,10 +13,10 @@ import (
 )
 
 type messageType struct {
-	Id      int       `json:"id"`
-	Uidl    int       `json:"uidl"`
-	Subject string    `json:"subject"`
-	Date    time.Time `json:"date"`
+	Id      int    `json:"id"`
+	Uidl    int    `json:"uidl"`
+	Subject string `json:"subject"`
+	Date    int64  `json:"date"`
 }
 
 type searchResultType struct {
@@ -85,7 +84,9 @@ func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var ids = make([]string, len(result.Hits.Hits))
 	for idx, item := range result.Hits.Hits {
 		ids[idx] = item.Id
-		smap[item.Id] = item.Highlight.Subject[0]
+		if len(item.Highlight.Subject) > 0 {
+			smap[item.Id] = item.Highlight.Subject[0]
+		}
 	}
 	sql := params.BuildListSql(ids)
 	log.Info(sql)

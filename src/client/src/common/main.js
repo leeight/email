@@ -20,6 +20,7 @@ define(
             require('../dev/config');
 
             require('ui/MailAddressInput');
+            require('ui/SimpleToggleButton');
         }
 
         requireConfigs();

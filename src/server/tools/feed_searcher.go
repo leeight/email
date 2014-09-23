@@ -17,10 +17,10 @@ import (
 // curl -X PUT http://localhost:9200/baidu/mails/3 -d '{"subject": "Re: 相互检查中间页日志"}'
 
 type messageType struct {
-	Id      int       `json:"id"`
-	Uidl    int       `json:"uidl"`
-	Subject string    `json:"subject"`
-	Date    time.Time `json:"date"`
+	Id      int    `json:"id"`
+	Uidl    int    `json:"uidl"`
+	Subject string `json:"subject"`
+	Date    int64  `json:"date"`
 }
 
 func doPut(msg *messageType) {
@@ -66,7 +66,9 @@ func main() {
 
 	for rows.Next() {
 		var msg messageType
-		err = rows.Scan(&msg.Id, &msg.Uidl, &msg.Subject, &msg.Date)
+		var date time.Time
+		err = rows.Scan(&msg.Id, &msg.Uidl, &msg.Subject, &date)
+		msg.Date = date.Unix()
 		if err != nil {
 			log.Fatal(err)
 		}

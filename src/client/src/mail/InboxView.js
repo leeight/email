@@ -31,17 +31,16 @@ define(function (require) {
      * @inheritDoc
      */
     MailInboxView.prototype.uiProperties = {
-        table: util.mailListConfiguration()
+        table: util.mailListConfiguration(),
+        'unread-only': {
+            'active': '@unreadOnly'
+        }
     };
 
     /**
      * @inheritDoc
      */
-    MailInboxView.prototype.uiEvents = {
-        'refresh:click': function() {
-            locator.reload();
-        }
-    };
+    MailInboxView.prototype.uiEvents = {};
 
     MailInboxView.prototype.enterDocument = function() {
         ListView.prototype.enterDocument.apply(this, arguments);

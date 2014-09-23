@@ -11,6 +11,7 @@ type MailListSchema struct {
 	PageSize   int `schema:"pageSize"`
 	PageNo     int `schema:"pageNo"`
 	LabelId    int `schema:"label"`
+	UnRead     int `schema:"unreadOnly"`
 	IsDelete   int `schema:"is_delete"`
 	IsSent     int `schema:"is_sent"`
 	IsCalendar int `schema:"is_calendar"`
@@ -34,6 +35,11 @@ func (this *MailListSchema) BuildListSql() string {
 		} else {
 			sql += "WHERE `is_delete` != 1 "
 		}
+	}
+
+	if this.UnRead == 1 {
+		// 如果有明确的标识说只看未读的邮件，才加上这个条件，否则返回未读和已读的
+		sql += "AND `is_read` != 1 "
 	}
 
 	if this.IsSent == 1 {
@@ -66,6 +72,11 @@ func (this *MailListSchema) BuildTotalSql() string {
 		} else {
 			sql += "WHERE `is_delete` != 1 "
 		}
+	}
+
+	if this.UnRead == 1 {
+		// 如果有明确的标识说只看未读的邮件，才加上这个条件，否则返回未读和已读的
+		sql += "AND `is_read` != 1 "
 	}
 
 	if this.IsSent == 1 {

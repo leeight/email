@@ -10,14 +10,13 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 )
 
 type messageType struct {
-	Id      int       `json:"id"`
-	Uidl    int       `json:"uidl"`
-	Subject string    `json:"subject"`
-	Date    time.Time `json:"date"`
+	Id      int    `json:"id"`
+	Uidl    int    `json:"uidl"`
+	Subject string `json:"subject"`
+	Date    int64  `json:"date"`
 }
 
 type searchResultType struct {

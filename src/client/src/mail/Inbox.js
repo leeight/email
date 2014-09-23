@@ -43,13 +43,25 @@ define(function (require) {
     MailInbox.prototype.initBehavior = function () {
         ListAction.prototype.initBehavior.apply(this, arguments);
 
-        // this.on('search', function(e) {
-        //     console.log(e);
-        //     e.preventDefault();
-        // });
-
         this.view.get('create').on('click',
             u.partial(util.composeMail, this.view, '撰写邮件', null));
+        this.view.get('refresh').on('click', this.reload, this);
+        this.view.get('unread-only').on('click', function() {
+            var url = this.context.url;
+            var path = url.getPath();
+            var query = url.getQuery();
+
+            var value = this.view.get('unread-only').getValue();
+            if (value === '1') {
+                query.unreadOnly = value;
+            } else {
+                query = u.omit(query, 'unreadOnly');
+            }
+            query = u.omit(query, 'pageNo');
+
+            var url = URL.withQuery(path, query);
+            this.redirect(url, { force: true });
+        }, this);
 
         document.title = '伊妹儿';
 

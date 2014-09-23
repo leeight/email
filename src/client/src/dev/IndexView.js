@@ -45,6 +45,11 @@ define(function (require) {
                 {title: 'bar', value: 'bar', checked: true},
                 {title: 'bar2', value: 'bar2', checked: true},
             ]
+        },
+        'toggle-button': {
+            datasource: [
+                {title: '只看未读', value: 'foo', checked: false}
+            ]
         }
     };
 
@@ -54,6 +59,9 @@ define(function (require) {
     DevIndexView.prototype.uiEvents = {
         'get:click': function() {
             console.log(this.get('mai').getValue());
+        },
+        'xyz:click': function() {
+            console.log(this.get('xyz').getValue());
         },
         'attachments:change': function() {
             console.log(this.get('attachments').getRawValue());
