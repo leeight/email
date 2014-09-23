@@ -12,11 +12,28 @@ var encoding = require('encoding/mail');
 
 var exports = {};
 
+function getQuotedMessage(email) {
+    var sel = window.getSelection();
+    if (!sel.rangeCount) {
+        return email.message;
+    }
+
+    if (sel && sel.toString()) {
+        var ran = sel.getRangeAt(0);
+        var df = ran.cloneContents();
+        var wrap = document.createElement('div');
+        wrap.appendChild(df);
+        return wrap.innerHTML;
+    } else {
+        return email.message
+    }
+}
+
 exports.reply = function(email, view) {
     var subject = email.subject;
     var message = '<br>' +
         'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
-        '<br><blockquote>\n' + email.message + '\n</blockquote>';
+        '<br><blockquote>\n' + getQuotedMessage(email) + '\n</blockquote>';
     var to = [ email.from ];
     var cc = [];
     u.each(email.to || [], function(item){
@@ -42,7 +59,7 @@ exports.replyAll = function(email, view) {
     var subject = email.subject;
     var message = '<br>' +
         'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
-        '<br><blockquote>\n' + email.message + '\n</blockquote>';
+        '<br><blockquote>\n' + getQuotedMessage(email) + '\n</blockquote>';
     var to = [ email.from ];
     var cc = [];
     u.each(email.to || [], function(item){
@@ -72,7 +89,7 @@ exports.forward = function(email, view) {
         'To: ' + encoding.dumpAddress(email.to) + '<br>\n' +
         'Subject: ' + subject + '<br>\n' +
         'Date: ' + email.date + '<br>\n' +
-        '<br><br>\n' + email.message + '';
+        '<br><br>\n' + getQuotedMessage(email) + '';
 
     if (!/^(Fwd|转发)[:：]/i.test(email.subject)) {
         subject = '转发: ' + subject;
