@@ -69,10 +69,10 @@ func main() {
 	db.Exec(`
   DROP TABLE IF EXISTS contacts;
   CREATE TABLE contacts (
-    'id' INTEGER NOT NULL PRIMARY KEY,
-    'name' VARCHAR(512),
-    'email' VARCHAR(1024),
-    'count' INTEGER
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(512),
+    email VARCHAR(1024),
+    count INTEGER
   );`)
 
 	tx, _ := db.Begin()

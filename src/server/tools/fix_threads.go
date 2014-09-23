@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"regexp"
 	"strings"
 	"time"
 
@@ -35,11 +36,12 @@ func readAllMessages(db *sql.DB) []*thread.Message {
 	log.Printf("%d", len(mids))
 
 	rows, err = db.Query("SELECT `id`, `subject`, `msg_id`, `uidl`, " +
-		"`refs` FROM `mails` WHERE `is_delete` != 1")
+		"`refs` FROM `mails` WHERE `is_delete` != 1 ORDER BY `date` ASC")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	msgids := make(map[string]bool)
 	for rows.Next() {
 		var mid string
 		var subject string
@@ -54,6 +56,17 @@ func readAllMessages(db *sql.DB) []*thread.Message {
 		if _, ok := mids[mid]; ok {
 			continue
 		}
+		if _, ok := msgids[msg_id]; ok {
+			continue
+		}
+		if subject == "" || msg_id == "" {
+			continue
+		}
+
+		if normalizeSubject(subject) == "" {
+			// 如果标题里面只有 Re：回复 之类的内容，按照现在的逻辑是无法正确的创建Thread的
+			continue
+		}
 
 		references := make([]string, 0)
 		if refs != "" {
@@ -62,9 +75,18 @@ func readAllMessages(db *sql.DB) []*thread.Message {
 		messages = append(messages, &thread.Message{
 			subject, msg_id, uidl, references,
 		})
+		msgids[msg_id] = true
 	}
 
+	fmt.Printf("Message Count =[%d]\n", len(messages))
+
 	return messages
+}
+
+func normalizeSubject(subject string) string {
+	re := regexp.MustCompile(`(?i)((Re|Fwd|Fw|回复|答复|转发)(\[[\d+]\])?[:：](\s*)?)*(.*)`)
+	ss := re.FindStringSubmatch(subject)
+	return ss[5]
 }
 
 func addThread(db *sql.DB, subject string, mids []string) (int64, error) {

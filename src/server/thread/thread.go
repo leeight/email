@@ -1,6 +1,7 @@
 package thread
 
 import (
+	// "fmt"
 	"regexp"
 )
 
@@ -34,22 +35,12 @@ func (t *Thread) expandSubjectTable(children []*Container, f bool) {
 				// and this container has a non-``Re:'' version of this subject.
 				// The non-re version is the more interesting of the two.
 				t.subjectTable[subject] = this
+				if f {
+					this.addChild(old)
+				}
 			}
 		}
 	}
-	// for _, c := range t.subjectTable {
-	// 	var msg *Message
-	// 	if c.IsEmpty() {
-	// 		if len(c.children) > 0 {
-	// 			msg = c.children[0].message
-	// 		}
-	// 	} else {
-	// 		msg = c.message
-	// 	}
-	// 	if msg != nil {
-	// 		fmt.Printf("%s: %v\n", msg.Uidl, c)
-	// 	}
-	// }
 }
 
 func (t *Thread) addMessage1(m *Message) *Container {
@@ -88,6 +79,8 @@ func (t *Thread) addMessage1(m *Message) *Container {
 			// A to see if B is reachable. If either is already reachable as
 			// a child of the other, don't add the link.
 			!container.hasDescendant(prev) {
+
+			// TODO(user) 检查subjectTable
 			prev.addChild(container)
 		}
 
@@ -107,6 +100,7 @@ func (t *Thread) addMessage1(m *Message) *Container {
 	// Note that at all times, the various ``parent'' and ``child'' fields must be
 	// kept inter-consistent.
 	if prev != nil && !parentContainer.hasDescendant(prev) {
+		// TODO(user) 检查subjectTable
 		prev.addChild(parentContainer)
 	}
 
@@ -131,12 +125,24 @@ func (t *Thread) addMessage2(m *Message) *Container {
 			rootCandidates = append(rootCandidates, container)
 		}
 	}
-	for _, candidate := range rootCandidates {
-		t.roots.addChild(candidate)
-	}
 
-	t.expandSubjectTable(rootCandidates, true)
-	t.groupBySubject(rootCandidates)
+	if len(rootCandidates) > 0 {
+		for _, candidate := range rootCandidates {
+			t.roots.addChild(candidate)
+		}
+
+		t.expandSubjectTable(rootCandidates, true)
+		t.groupBySubject(rootCandidates)
+
+		// for k, c := range t.idTable {
+		// 	fmt.Printf("%s -> %v\n", k, c)
+		// }
+		// for k, c := range t.subjectTable {
+		// 	fmt.Printf("%s -> %v\n", k, c)
+		// }
+		// fmt.Printf("Msg = %v\nContainer=%v\nParent=%v\nTable Size = [%d]\nRoot Size = [%d]\n\n",
+		// 	m, parentContainer, parentContainer.parent, len(t.idTable), len(rootCandidates))
+	}
 
 	return parentContainer
 }

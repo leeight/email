@@ -67,6 +67,7 @@ func Debug() {
 				thrd.roots.addChild(container)
 			}
 		}
+		// thrd.roots.pruneEmpties()
 		thrd.expandSubjectTable(thrd.roots.children, false)
 		thrd.groupBySubject(thrd.roots.children)
 	} else {
@@ -93,6 +94,7 @@ func Debug() {
 		}
 		sort.Strings(mids)
 		fmt.Printf("%s => %s\n", subject, strings.Join(mids, ","))
+		// fmt.Printf("%s\n", strings.Join(mids, ","))
 	}
 
 	// case1==1的时候，会丢掉几封邮件，这是无法接受的

@@ -132,7 +132,10 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 	// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=2749&uidl=722275
 	detector := chardet.NewTextDetector()
 	if email.Subject != "" {
-		result, err := detector.DetectBest([]byte(email.Subject))
+		result, err := detector.DetectBest(
+			// 重复几次，准确率更高一些
+			append([]byte(email.Subject + email.Subject + email.Subject)),
+		)
 		if err == nil && result.Charset == "GB-18030" {
 			decodedSubject, err := fixMessageEncoding(
 				bytes.NewBufferString(email.Subject),
