@@ -39,6 +39,21 @@ define(function (require) {
                     path: '#/mail/sent',
                     name: 'Search Mail',
                     active: true
+                },
+                {
+                    path: '#/calendar/list',
+                    name: 'All Calendar',
+                    active: false
+                },
+                {
+                    path: '#/mail/sent',
+                    name: 'Sent Mail',
+                    active: false
+                },
+                {
+                    path: '#/mail/deleted',
+                    name: 'Deleted Mail',
+                    active: false
                 }
             ];
 

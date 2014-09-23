@@ -3,15 +3,13 @@ package main
 // curl http://localhost:9200/baidu/mails/_search\?q\=subject:%E7%99%BE%E7%A7%91\&pretty
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
-	"strings"
-	// "strings"
 	"time"
 )
 
@@ -43,6 +41,21 @@ type searchResultType struct {
 	} `json:"hits"`
 }
 
+type searchRequestType struct {
+	Query struct {
+		Match struct {
+			Subject string `json:"subject"`
+		} `json:"match"`
+	} `json:"query"`
+	Highlight struct {
+		Fields struct {
+			Subject struct{} `json:"subject"`
+		} `json:"fields"`
+	} `json:"highlight"`
+	From int `json:"from"`
+	Size int `json:"size"`
+}
+
 func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -51,8 +64,8 @@ func checkError(err error) {
 
 func main() {
 	var queryptr = flag.String("query", "", "The query to search")
-	// var fromptr = flag.Int("from", 0, "The from value")
-	// var sizeptr = flag.Int("size", 10, "The limit value")
+	var fromptr = flag.Int("from", 0, "The from value")
+	var sizeptr = flag.Int("size", 10, "The limit value")
 
 	flag.Parse()
 
@@ -60,18 +73,15 @@ func main() {
 		return
 	}
 
-	var query = url.QueryEscape(*queryptr)
-	var host = "http://localhost:9200/baidu/mails/_search"
-	// var searchUrl = fmt.Sprintf("%s?q=subject:%s&pretty&from=%d&size=%d",
-	// 	host, query, *fromptr, *sizeptr)
+	var host = "http://localhost:9200/baidu/mails/_search?pretty"
 
-	resp, err := http.Post(host, "application/json", strings.NewReader(`{
-    "query" : {
-        "term" : { "subject" : "`+query+`" }
-    }
-	}`))
+	var params searchRequestType
+	params.Query.Match.Subject = *queryptr
+	params.From = *fromptr
+	params.Size = *sizeptr
+	raw, _ := json.Marshal(params)
 
-	// resp, err := http.Get(searchUrl)
+	resp, err := http.Post(host, "", bytes.NewReader(raw))
 	checkError(err)
 
 	defer resp.Body.Close()

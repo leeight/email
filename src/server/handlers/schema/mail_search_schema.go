@@ -1,9 +1,9 @@
 package schema
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/gorilla/schema"
@@ -15,11 +15,52 @@ type MailSearchSchema struct {
 	Keyword  string `schema:"keyword"`
 }
 
+type searchRequestType struct {
+	Query struct {
+		Match struct {
+			Subject string `json:"subject"`
+			// Analyzer string `json:"analyzer"`
+		} `json:"match"`
+	} `json:"query"`
+	Highlight struct {
+		Fields struct {
+			Subject struct{} `json:"subject"`
+		} `json:"fields"`
+	} `json:"highlight"`
+	Sort []interface{} `json:"sort"`
+	From int           `json:"from"`
+	Size int           `json:"size"`
+}
+
+type sortFieldType struct {
+	Date struct {
+		Order string `json:"order"`
+	} `json:"date"`
+}
+
 func (this *MailSearchSchema) BuildSearcherUrl() string {
 	var host = "http://localhost:9200/baidu/mails/_search"
+	return host
+}
 
-	return fmt.Sprintf("%s?q=subject:%s&pretty&from=%d&size=%d&track_scores=true&sort=date:desc&&sort=_score",
-		host, url.QueryEscape(this.Keyword), (this.PageNo-1)*this.PageSize, this.PageSize)
+func (this *MailSearchSchema) BuildSearcherBody() []byte {
+	var params searchRequestType
+	params.Query.Match.Subject = this.Keyword
+	// params.Query.Match.Analyzer = "smartcn"
+	params.From = (this.PageNo - 1) * this.PageSize
+	params.Size = this.PageSize
+	params.Sort = make([]interface{}, 0)
+
+	var sortByDate sortFieldType
+	sortByDate.Date.Order = "desc"
+	params.Sort = append(params.Sort, "_score")
+	params.Sort = append(params.Sort, sortByDate)
+
+	raw, _ := json.Marshal(params)
+
+	fmt.Printf("%s\n", string(raw))
+
+	return raw
 }
 
 func (this *MailSearchSchema) BuildListSql(ids []string) string {

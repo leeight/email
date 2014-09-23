@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"../base"
@@ -30,11 +32,14 @@ type searchResultType struct {
 		Total    int     `json:"total"`
 		MaxScore float64 `json:"max_score"`
 		Hits     []struct {
-			Index  string      `json:"_index"`
-			Type   string      `json:"_type"`
-			Id     string      `json:"_id"`
-			Score  float64     `json:"_score"`
-			Source messageType `json:"_source"`
+			Index     string      `json:"_index"`
+			Type      string      `json:"_type"`
+			Id        string      `json:"_id"`
+			Score     float64     `json:"_score"`
+			Source    messageType `json:"_source"`
+			Highlight struct {
+				Subject []string `json:"subject"`
+			} `json:"highlight"`
 		} `json:"hits"`
 	} `json:"hits"`
 }
@@ -46,7 +51,6 @@ type MailSearchHandler struct {
 func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := h.Context
 	log := ctx.GetLogger()
-	// config := ctx.GetConfig()
 	db := ctx.GetDb()
 	defer db.Close()
 
@@ -56,7 +60,7 @@ func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 发起请求
 	var searcherUrl = params.BuildSearcherUrl()
 	log.Info("%s", searcherUrl)
-	resp, err := http.Get(searcherUrl)
+	resp, err := http.Post(searcherUrl, "", bytes.NewReader(params.BuildSearcherBody()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
@@ -77,9 +81,11 @@ func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 准备sql
+	var smap = make(map[string]string)
 	var ids = make([]string, len(result.Hits.Hits))
 	for idx, item := range result.Hits.Hits {
 		ids[idx] = item.Id
+		smap[item.Id] = item.Highlight.Subject[0]
 	}
 	sql := params.BuildListSql(ids)
 	log.Info(sql)
@@ -108,6 +114,10 @@ func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				&email.Date,
 				&email.IsRead)
 
+			if _, ok := smap[strconv.FormatUint(email.Id, 10)]; ok {
+				// smap里面的标题是高亮的
+				email.Subject = smap[strconv.FormatUint(email.Id, 10)]
+			}
 			evm := email.ToViewModel(ctx.GetConfig().DownloadDir(), db)
 			emails = append(emails, evm)
 		}

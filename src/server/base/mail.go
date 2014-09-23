@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -16,7 +17,7 @@ import (
 
 	"github.com/alexcesaro/mail/quotedprintable"
 	"github.com/qiniu/iconv"
-	// "github.com/saintfish/chardet"
+	"github.com/saintfish/chardet"
 
 	"../RFC2047"
 	"../net/mail"
@@ -129,18 +130,18 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 
 	// 有时候标题是有问题的，很奇怪的CASE
 	// 例如：http://127.0.0.1:8848/index.html?ed=#/mail/view~id=2749&uidl=722275
-	// detector := chardet.NewTextDetector()
-	// if email.Subject != "" {
-	// 	result, err := detector.DetectBest([]byte(email.Subject))
-	// 	if err == nil && result.Charset == "GB-18030" {
-	// 		decodedSubject, err := fixMessageEncoding(
-	// 			bytes.NewBufferString(email.Subject),
-	// 			"text/html; charset=\"GB18030\"")
-	// 		if err == nil {
-	// 			email.Subject = string(decodedSubject)
-	// 		}
-	// 	}
-	// }
+	detector := chardet.NewTextDetector()
+	if email.Subject != "" {
+		result, err := detector.DetectBest([]byte(email.Subject))
+		if err == nil && result.Charset == "GB-18030" {
+			decodedSubject, err := fixMessageEncoding(
+				bytes.NewBufferString(email.Subject),
+				"text/html; charset=\"GB18030\"")
+			if err == nil {
+				email.Subject = string(decodedSubject)
+			}
+		}
+	}
 
 	if ical, ok := messages["text/calendar"]; ok {
 		email.IsCalendar = 1
@@ -351,15 +352,35 @@ func fixMessageEncoding(r io.Reader, c string) ([]byte, error) {
 
 	ct, params, err := mime.ParseMediaType(c)
 	if err != nil {
-		return []byte(""), err
+		return body, err
 	}
 
-	if charset, ok := params["charset"]; ok {
-		charset = strings.ToLower(strings.Replace(charset, "\"", "", -1))
-		if charset == "gb2312" || charset == "gbk" {
+	var charset string
+	if _, ok := params["charset"]; ok {
+		charset = strings.ToLower(strings.Replace(params["charset"], "\"", "", -1))
+		if charset == "gb2312" || charset == "gbk" || charset == "windows-1252" {
 			charset = "gb18030"
 		}
-		cd, _ := iconv.Open("utf-8", charset)
+	} else {
+		// 没有charset的声明，只有一个  Content-Type: text/html，此时
+		// 需要用chardet来检测一下
+		detector := chardet.NewTextDetector()
+		result, err := detector.DetectBest(body)
+		if err == nil {
+			charset = result.Charset
+			if charset == "GB-18030" {
+				charset = "gb18030"
+			}
+		}
+	}
+
+	if charset != "" {
+		cd, err := iconv.Open("utf-8", charset)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Invalid charset = %s, content-type = %s\n",
+				charset, ct)
+			return body, nil
+		}
 		defer cd.Close()
 
 		var outbuf [512]byte
