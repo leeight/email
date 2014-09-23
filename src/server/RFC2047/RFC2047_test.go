@@ -27,6 +27,10 @@ func TestDecode(t *testing.T) {
 		RFC2047.Decode2("=?Big5?B?tarOYA==?=: Please tell me about VideoSearch UU(cookie) yesterday on LSP."))
 	assert.Equal(t, "Re: 锦囊Localbuild近期 规划",
 		RFC2047.Decode2("=?utf-8?Q?Re=3A_=E9=94=A6=E5=9B=8ALocalbuild=E8=BF=91=E6=9C=9F?= =?utf-8?Q?=E8=A7=84=E5=88=92?="))
+	assert.Equal(t, "[����][LOG.BAIDU.COM][WARN]������ʱ������",
+		RFC2047.Decode2("[����][LOG.BAIDU.COM][WARN]������ʱ������"))
+	assert.Equal(t, "Re: 答复:  短信文案修改",
+		RFC2047.Decode2("Re: =?Big5?B?tarOYA==?=: =?Big5?B?ILV1q0ik5a7Xrden7w==?="))
 }
 
 func TestDecode2(t *testing.T) {

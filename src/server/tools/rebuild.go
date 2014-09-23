@@ -75,7 +75,7 @@ func rebuild(file string, db *sql.DB, rawDir string, config *base.ServerConfig, 
 // 2. 附件的内容会被重新生成
 func main() {
 	// 参数解析
-	var rawPtr = flag.String("raw", "", "The raw file path")
+	var rawPtr = flag.String("raw", "", "The raw file path, comma sperated multi files")
 	var configPtr = flag.String("config", "config.yml", "The config file path")
 	var dirptr = flag.String("dir", "", "The directory to check.")
 	var lastptr = flag.Int("last", 0, "The last success uidl.")
@@ -101,8 +101,10 @@ func main() {
 
 	if *rawPtr != "" {
 		// 用户指定例如文件，例如
-		// rebuild -raw=raw/720375.txt
-		rebuild(path.Base(*rawPtr), db, rawDir, config, true)
+		// rebuild -raw=720375.txt,12.txt
+		for _, f := range strings.Split(*rawPtr, ",") {
+			rebuild(path.Base(f), db, rawDir, config, true)
+		}
 	} else {
 		// _, err = db.Exec("DELETE FROM `mails`")
 		// if err != nil {
