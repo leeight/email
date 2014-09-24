@@ -60,6 +60,9 @@ func main() {
 	http.Handle("/doc/viewer/", handlers.DocViewerHandler{context})
 	http.Handle("/ori/message/", handlers.OriMessageHandler{context})
 
+	// 文件和图片上传的功能
+	http.Handle("/api/upload/controller", handlers.UploadControllerHandler{context})
+
 	// 其它请求走静态文件
 	http.Handle("/", http.FileServer(http.Dir(config.Dirs.Base)))
 	context.GetLogger().Info("Server started http://localhost:" + strconv.Itoa(config.Http.Port))
