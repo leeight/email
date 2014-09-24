@@ -35,19 +35,26 @@ func (h DocViewerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	parts := strings.Split(name, "/")
-	htmlname := parts[0] + "/doc/" + strings.Replace(parts[2], path.Ext(parts[2]), ".html", 1)
-	htmlabs := path.Join(config.DownloadDir(), htmlname)
-	if _, err := os.Stat(htmlabs); err == nil {
-		log.Info("htmlabs = [%s]", htmlabs)
-		http.Redirect(w, r, "/downloads/"+htmlname, http.StatusMovedPermanently)
+	ext := path.Ext(parts[2])
+
+	previewExt := ".html"
+	if ext == ".pptx" || ext == ".ppt" {
+		previewExt = ".pdf"
+	}
+
+	previewName := parts[0] + "/doc/" + strings.Replace(parts[2], ext, previewExt, 1)
+	previewAbs := path.Join(config.DownloadDir(), previewName)
+	if _, err := os.Stat(previewAbs); err == nil {
+		log.Info("previewAbs = [%s]", previewAbs)
+		http.Redirect(w, r, "/downloads/"+previewName, http.StatusMovedPermanently)
 		return
 	}
 
-	os.MkdirAll(path.Dir(htmlabs), 0755)
+	os.MkdirAll(path.Dir(previewAbs), 0755)
 	p := exec.Command(config.Service.Soffice.Exec,
 		"--headless",
-		"--convert-to", "html",
-		"--outdir", path.Dir(htmlabs),
+		"--convert-to", previewExt[1:],
+		"--outdir", path.Dir(previewAbs),
 		abs)
 
 	err := p.Start()
@@ -62,11 +69,12 @@ func (h DocViewerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := os.Stat(htmlabs); err == nil {
-		log.Info("htmlabs = [%s]", htmlabs)
-		// 添加自定义的样式，美化一下效果
-		raw, _ := ioutil.ReadFile(htmlabs)
-		style := `
+	if _, err := os.Stat(previewAbs); err == nil {
+		log.Info("previewAbs = [%s]", previewAbs)
+		if previewExt == ".html" {
+			// 添加自定义的样式，美化一下效果
+			raw, _ := ioutil.ReadFile(previewAbs)
+			style := `
         <style type="text/css">
         html{ background: #ebebeb}
         body{
@@ -78,17 +86,18 @@ func (h DocViewerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         }
         </style>
         </head>`
-		title := `
+			title := `
 				<div style="position: absolute;top: 0;">
 						<h1 style="margin: 0;position: relative;left: -10px;">` + path.Base(name) + `</h1>
 				</div>
 				</body>`
 
-		raw = []byte(strings.Replace(string(raw), "</head>", style, 1))
-		raw = []byte(strings.Replace(string(raw), "</body>", title, 1))
-		ioutil.WriteFile(htmlabs, raw, 0644)
-
-		http.Redirect(w, r, "/downloads/"+htmlname, http.StatusMovedPermanently)
-		return
+			raw = []byte(strings.Replace(string(raw), "</head>", style, 1))
+			raw = []byte(strings.Replace(string(raw), "</body>", title, 1))
+			ioutil.WriteFile(previewAbs, raw, 0644)
+		}
+		http.Redirect(w, r, "/downloads/"+previewName, http.StatusMovedPermanently)
+	} else {
+		http.Error(w, "Converted document failed", http.StatusInternalServerError)
 	}
 }

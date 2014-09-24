@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"../base"
 	"../web"
@@ -15,10 +14,10 @@ import (
 var indexerChannel = make(chan *base.EMail, 20)
 
 type messageType struct {
-	Id      uint64    `json:"id"`
-	Uidl    string    `json:"uidl"`
-	Subject string    `json:"subject"`
-	Date    time.Time `json:"date"`
+	Id      uint64 `json:"id"`
+	Uidl    string `json:"uidl"`
+	Subject string `json:"subject"`
+	Date    int64  `json:"date"`
 }
 
 func AddToIndexer(ctx web.Context) {
@@ -32,7 +31,7 @@ func doPut(ctx web.Context, email *base.EMail) {
 	log := ctx.GetLogger()
 
 	var msg = messageType{
-		email.Id, email.Uidl, email.Subject, email.Date,
+		email.Id, email.Uidl, email.Subject, email.Date.Unix(),
 	}
 
 	url := fmt.Sprintf("http://localhost:9200/baidu/mails/%d",
