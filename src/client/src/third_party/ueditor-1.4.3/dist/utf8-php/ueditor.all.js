@@ -23753,7 +23753,7 @@ UE.plugin.register('autoupload', function (){
         }
         /* 判断文件格式是否超出允许 */
         var fileext = file.name ? file.name.substr(file.name.lastIndexOf('.')):'';
-        if ((fileext && filetype != 'image') || (allowFiles && (allowFiles.join('') + '.').indexOf(fileext.toLowerCase() + '.') == -1)) {
+        if (!fileext || (allowFiles && (allowFiles.join('') + '.').indexOf(fileext.toLowerCase() + '.') == -1)) {
             errorHandler(me.getLang('autoupload.exceedTypeError'));
             return;
         }
@@ -23853,6 +23853,8 @@ UE.plugin.register('autoupload', function (){
 
 // plugins/autosave.js
 UE.plugin.register('autosave', function (){
+    // 不想要这个功能
+    return;
 
     var me = this,
         //无限循环保护
