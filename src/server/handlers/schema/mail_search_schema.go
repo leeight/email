@@ -32,10 +32,16 @@ type searchRequestType struct {
 	Size int           `json:"size"`
 }
 
-type sortFieldType struct {
+type dateSortFieldType struct {
 	Date struct {
 		Order string `json:"order"`
 	} `json:"date"`
+}
+
+type scoreSortFieldType struct {
+	Score struct {
+		Order string `json:"order"`
+	} `json:"_score"`
 }
 
 func (this *MailSearchSchema) BuildSearcherUrl() string {
@@ -51,9 +57,11 @@ func (this *MailSearchSchema) BuildSearcherBody() []byte {
 	params.Size = this.PageSize
 	params.Sort = make([]interface{}, 0)
 
-	var sortByDate sortFieldType
+	var sortByDate dateSortFieldType
 	sortByDate.Date.Order = "desc"
-	params.Sort = append(params.Sort, "_score")
+	var sortByScore scoreSortFieldType
+	sortByScore.Score.Order = "desc"
+	params.Sort = append(params.Sort, sortByScore)
 	params.Sort = append(params.Sort, sortByDate)
 
 	raw, _ := json.Marshal(params)
