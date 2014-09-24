@@ -16,7 +16,7 @@ import (
 )
 
 func readAllMessages(db *sql.DB) []*thread.Message {
-	messages := make([]*thread.Message, 0)
+	var messages []*thread.Message
 
 	// 忽略某些特定标签的邮件
 	mids := make(map[string]bool)
@@ -68,7 +68,7 @@ func readAllMessages(db *sql.DB) []*thread.Message {
 			continue
 		}
 
-		references := make([]string, 0)
+		var references []string
 		if refs != "" {
 			references = strings.Split(refs, ",")
 		}

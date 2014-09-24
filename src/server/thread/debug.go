@@ -14,7 +14,7 @@ import (
 )
 
 func readAllMessages() []*Message {
-	messages := make([]*Message, 0)
+	var messages []*Message
 
 	raw, _ := ioutil.ReadFile("messages.json")
 	json.Unmarshal(raw, &messages)
@@ -22,6 +22,7 @@ func readAllMessages() []*Message {
 	return messages
 }
 
+// Debug 用来开放给别的地方调用的
 func Debug() {
 	var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 	var case1 = flag.Int("case1", 0, "switch the branch")

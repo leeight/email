@@ -159,7 +159,7 @@ func (filter *Filter) TakeAction(email *EMail, db *sql.DB) error {
 
 // 针对一封邮件，运行一边所有的Filter
 func RunFilter(email *EMail, filters []Filter, rawDir string, db *sql.DB) error {
-	names := make([]string, 0)
+	var names []string
 	for _, filter := range filters {
 		if filter.Disable {
 			continue

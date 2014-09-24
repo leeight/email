@@ -15,7 +15,7 @@ import (
 
 // 根据邮件的发送时间，重新修改邮件的名字
 
-var kNames = map[string]bool{
+var names = map[string]bool{
 	"1404283793.txt": true,
 	"1392370724.txt": true,
 	"1390718021.txt": true,
@@ -126,7 +126,7 @@ func main() {
 			continue
 		}
 
-		if _, ok := kNames[item.Name()]; ok {
+		if _, ok := names[item.Name()]; ok {
 			os.Rename(
 				path.Join(dir, item.Name()),
 				path.Join(dir, strings.Replace(item.Name(), ".txt", fmt.Sprintf("-%d.txt", item.Size()), -1)),

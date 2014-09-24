@@ -258,7 +258,7 @@ func attachOriginalHeaders(
 }
 
 func getAddressList(value string) []*mail.Address {
-	list := make([]*mail.Address, 0)
+	var list []*mail.Address
 	for _, item := range strings.Split(value, "; ") {
 		v, err := mail.ParseAddress(item)
 		if err == nil {

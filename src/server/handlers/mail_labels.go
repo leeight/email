@@ -23,7 +23,7 @@ func (h MailLabelsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Warning("%s", err)
 	}
 
-	labels := make([]*base.LabelType, 0)
+	var labels []*base.LabelType
 	for rows.Next() {
 		var label base.LabelType
 		err = rows.Scan(&label.Id, &label.Name)

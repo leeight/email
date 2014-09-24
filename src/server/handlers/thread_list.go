@@ -36,7 +36,7 @@ func (h ThreadListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	// 格式化数据
-	threads := make([]*base.Thread, 0)
+	var threads []*base.Thread
 	for rows.Next() {
 		var from string
 		var thread base.Thread

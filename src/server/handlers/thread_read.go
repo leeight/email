@@ -32,7 +32,7 @@ func (h ThreadReadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	emails := make([]*base.EMailViewModel, 0)
+	var emails []*base.EMailViewModel
 	for rows.Next() {
 		var email base.EMail
 		rows.Scan(

@@ -40,7 +40,7 @@ const (
 	kDefaultRawDir                  = "raw"
 	kDefaultDbName                  = "foo.db"
 	kDefaultPop3Port                = 995
-	kDefautlSmtpPort                = 25
+	kDefautlSMTPPort                = 25
 	kDefaultContentType             = "text/html; charset=\"utf-8\""
 	kDefaultContentTransferEncoding = "base64"
 	kOpIs                           = "Is"

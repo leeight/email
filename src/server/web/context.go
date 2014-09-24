@@ -3,13 +3,16 @@ package web
 import (
 	"database/sql"
 
+	// 支持mysql
 	_ "github.com/go-sql-driver/mysql"
+	// 支持sqllite
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/op/go-logging"
 
 	"../base"
 )
 
+// Context 来封装必要的运行时上下文信息
 type Context interface {
 	GetDb() *sql.DB
 	GetMysqlDb() *sql.DB
@@ -17,6 +20,7 @@ type Context interface {
 	GetLogger() *logging.Logger
 }
 
+// NewContext 创建一个Context，现在只有webContext类型
 func NewContext(config *base.ServerConfig) Context {
 	return webContext{config: config}
 }

@@ -49,6 +49,8 @@
       - [SentTo, Contains, 'jp-video-rd@baidu.com']
       - [SentTo, Contains, 'tieba-ecom-rd@baidu.com']
       - [Subject, Contains, '一个月以上未活动版本统计']
+      - [Subject, Contains, 'FS系统的linkinfo文件分发稳定性统计报表']
+      - [Subject, Contains, 'FS数据库-每日服务排查报告']
       - [Subject, Contains, '[LOG.BAIDU.JP][WARN]']
       - [Subject, Contains, '[LOG.BAIDU.COM][WARN]']
       - [Subject, Contains, 'THIS IS SPAM']

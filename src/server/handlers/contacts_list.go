@@ -59,7 +59,7 @@ func (h ContactsListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	contacts := make([]*base.Contact, 0)
+	var contacts []*base.Contact
 	for rows.Next() {
 		var c base.Contact
 		rows.Scan(&c.Id, &c.Name, &c.EMail, &c.Count)

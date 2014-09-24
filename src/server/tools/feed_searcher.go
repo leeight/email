@@ -17,7 +17,7 @@ import (
 // curl -X PUT http://localhost:9200/baidu/mails/3 -d '{"subject": "Re: 相互检查中间页日志"}'
 
 type messageType struct {
-	Id      int    `json:"id"`
+	ID      int    `json:"id"`
 	Uidl    int    `json:"uidl"`
 	Subject string `json:"subject"`
 	Date    int64  `json:"date"`
@@ -25,7 +25,7 @@ type messageType struct {
 
 func doPut(msg *messageType) {
 	url := fmt.Sprintf("http://localhost:9200/baidu/mails/%d",
-		msg.Id)
+		msg.ID)
 	client := &http.Client{}
 	data, _ := json.Marshal(msg)
 	request, err := http.NewRequest("PUT", url, bytes.NewReader(data))
@@ -67,7 +67,7 @@ func main() {
 	for rows.Next() {
 		var msg messageType
 		var date time.Time
-		err = rows.Scan(&msg.Id, &msg.Uidl, &msg.Subject, &date)
+		err = rows.Scan(&msg.ID, &msg.Uidl, &msg.Subject, &date)
 		msg.Date = date.Unix()
 		if err != nil {
 			log.Fatal(err)

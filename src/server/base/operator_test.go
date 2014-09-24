@@ -1,9 +1,8 @@
-package base_test
+package base
 
 import (
 	"testing"
 
-	"../base"
 	"../net/mail"
 )
 
@@ -33,7 +32,7 @@ func TestNewOperator(t *testing.T) {
 	}
 
 	for _, item := range tests {
-		o := base.NewOperator(item.t)
+		o := NewOperator(item.t)
 		x := o.Exec(item.a, item.b)
 		if x != item.expected {
 			t.Error("For", item, "expected", item.expected, "get", x)

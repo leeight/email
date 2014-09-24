@@ -13,7 +13,7 @@ import (
 )
 
 type messageType struct {
-	Id      int    `json:"id"`
+	ID      int    `json:"id"`
 	Uidl    int    `json:"uidl"`
 	Subject string `json:"subject"`
 	Date    int64  `json:"date"`
@@ -33,7 +33,7 @@ type searchResultType struct {
 		Hits     []struct {
 			Index  string      `json:"_index"`
 			Type   string      `json:"_type"`
-			Id     string      `json:"_id"`
+			ID     string      `json:"_id"`
 			Score  float64     `json:"_score"`
 			Source messageType `json:"_source"`
 		} `json:"hits"`

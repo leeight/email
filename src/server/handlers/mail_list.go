@@ -32,7 +32,7 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	// 格式化数据
-	emails := make([]*base.EMailViewModel, 0)
+	var emails []*base.EMailViewModel
 	for rows.Next() {
 		var email base.EMail
 		rows.Scan(

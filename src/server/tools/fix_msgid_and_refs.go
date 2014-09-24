@@ -16,8 +16,8 @@ import (
 )
 
 func getReferences(msg *mail.Message) string {
+	var references []string
 	re := regexp.MustCompile("[<>]")
-	references := make([]string, 0)
 	for _, ref := range regexp.MustCompile(`[\s,]+`).Split(msg.Header.Get("References"), -1) {
 		ref = re.ReplaceAllString(ref, "")
 		if ref != "" {
@@ -44,7 +44,7 @@ func getReferences(msg *mail.Message) string {
 }
 
 type simpleHeader struct {
-	MsgId string
+	MsgID string
 	Refs  string
 }
 
@@ -113,11 +113,11 @@ func main() {
 	defer stmt.Close()
 
 	for uidl, hdr := range headers {
-		_, err = stmt.Exec(hdr.MsgId, hdr.Refs, uidl)
+		_, err = stmt.Exec(hdr.MsgID, hdr.Refs, uidl)
 		if err != nil {
 			log.Panic(err)
 		}
-		fmt.Printf("%s => %s %s\n", uidl, hdr.MsgId, hdr.Refs)
+		fmt.Printf("%s => %s %s\n", uidl, hdr.MsgID, hdr.Refs)
 	}
 
 	err = tx.Commit()

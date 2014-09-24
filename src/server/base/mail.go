@@ -220,7 +220,7 @@ func SaveMail(raw []byte, uidl string, config *ServerConfig) (*EMail, error) {
 // 根据References和In-Reply-To的组合，返回合适的email.refs字段的值
 func getReferences(msg *mail.Message) string {
 	re := regexp.MustCompile("[<>]")
-	references := make([]string, 0)
+	var references []string
 	for _, ref := range regexp.MustCompile(`[\s,]+`).Split(msg.Header.Get(kReferences), -1) {
 		ref = re.ReplaceAllString(ref, "")
 		if ref != "" {

@@ -3,19 +3,17 @@ package main
 // 读取数据库中mails的数据，修复contacts表的数据
 
 import (
-	// "fmt"
-
 	"../base"
 	"../net/mail"
 	"../web"
 )
 
-type Contact struct {
+type contact struct {
 	Count int
 	Email *mail.Address
 }
 
-type ContactMap map[string]*Contact
+type contactMap map[string]*contact
 
 func main() {
 	config, _ := base.GetConfig("config.yml")
@@ -25,7 +23,7 @@ func main() {
 	db := context.GetDb()
 	defer db.Close()
 
-	contacts := make(ContactMap)
+	contacts := make(contactMap)
 
 	rows, _ := db.Query("SELECT `from`, `to`, `cc` FROM mails")
 	for rows.Next() {
@@ -37,9 +35,9 @@ func main() {
 		c, err := mail.ParseAddress(from)
 		if err == nil {
 			if item, ok := contacts[c.Address]; !ok {
-				contacts[c.Address] = &Contact{1, c}
+				contacts[c.Address] = &contact{1, c}
 			} else {
-				item.Count += 1
+				item.Count++
 			}
 		}
 
@@ -49,7 +47,7 @@ func main() {
 				if item, ok := contacts[c.Address]; !ok {
 					contacts[c.Address] = &Contact{1, c}
 				} else {
-					item.Count += 1
+					item.Count++
 				}
 			}
 		}
@@ -60,7 +58,7 @@ func main() {
 				if item, ok := contacts[c.Address]; !ok {
 					contacts[c.Address] = &Contact{1, c}
 				} else {
-					item.Count += 1
+					item.Count++
 				}
 			}
 		}

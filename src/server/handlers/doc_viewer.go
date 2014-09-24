@@ -11,6 +11,8 @@ import (
 	"../web"
 )
 
+// DocViewerHandler 用来处理文档预览的功能
+// 通过调用 soffice 来把MS Office文档转化为合适的格式来在浏览器里面查看
 type DocViewerHandler struct {
 	Context web.Context
 }

@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
-)
 
-const kCmd = "/Volumes/HDD/Users/leeight/Applications/LibreOffice.app/Contents/MacOS/soffice"
+	"../base"
+)
 
 func main() {
 	var fileptr = flag.String("file", "", "The file will be convert to preview html")
@@ -18,6 +18,8 @@ func main() {
 		return
 	}
 
+	config, _ := base.GetConfig("config.yml")
+
 	// /Volumes/HDD/Users/leeight/Applications/LibreOffice.app/Contents/MacOS/soffice \
 	// --headless \
 	// --convert-to html \
@@ -25,7 +27,11 @@ func main() {
 	// --help
 	var out bytes.Buffer
 
-	p := exec.Command(kCmd, "--headless", "--convert-to", "html", "--outdir", "tmp", *fileptr)
+	p := exec.Command(config.Service.Soffice.Exec,
+		"--headless",
+		"--convert-to", "html",
+		"--outdir", "tmp",
+		*fileptr)
 	p.Stdout = &out
 	err := p.Start()
 	if err != nil {

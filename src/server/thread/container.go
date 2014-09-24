@@ -1,5 +1,6 @@
 package thread
 
+// Container 用来包装一下Message的内容
 type Container struct {
 	message  *Message
 	parent   *Container
@@ -12,11 +13,11 @@ func (c *Container) getSubject() string {
 			return c.children[0].getSubject()
 		}
 		return ""
-	} else {
-		return c.message.Subject
 	}
+	return c.message.Subject
 }
 
+// IsEmpty 判断Container是否是空，也就是Message是nil
 func (c *Container) IsEmpty() bool {
 	return c.message == nil
 }
@@ -68,7 +69,7 @@ func (c *Container) removeChild(container *Container) {
 // }
 
 func (c *Container) getConversation(msgid string) []*Message {
-	messages := make([]*Message, 0)
+	var messages []*Message
 	container := c.getSpecificChild(msgid)
 	if container == nil {
 		return messages
@@ -113,9 +114,8 @@ func (c *Container) threadParent() *Container {
 		if next != nil {
 			if next.IsEmpty() {
 				return top
-			} else {
-				top = next
 			}
+			top = next
 		}
 	}
 
@@ -123,7 +123,7 @@ func (c *Container) threadParent() *Container {
 }
 
 func (c *Container) flattenChildren() []*Message {
-	messages := make([]*Message, 0)
+	var messages []*Message
 	for _, child := range c.children {
 		if !child.IsEmpty() {
 			messages = append(messages, child.message)

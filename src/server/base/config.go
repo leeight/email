@@ -51,7 +51,7 @@ type smtpType struct {
 }
 
 func (this smtpType) GetHostName() string {
-	return fixHostname(this.Host, this.Port, kDefautlSmtpPort)
+	return fixHostname(this.Host, this.Port, kDefautlSMTPPort)
 }
 
 type frontendType struct {
