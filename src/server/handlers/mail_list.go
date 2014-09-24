@@ -32,7 +32,7 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	// 格式化数据
-	var emails []*base.EMailViewModel
+	emails := make([]*base.EMailViewModel, 0)
 	for rows.Next() {
 		var email base.EMail
 		rows.Scan(
@@ -60,7 +60,9 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Info("%s, %d, %d, %d\n", totalSql, totalCount, params.SkipCount, params.PageSize)
 
-	lpr := base.NewListResponse("true", totalCount, params.PageNo, params.PageSize, emails)
+	lpr := base.NewListResponse("true", totalCount,
+		params.PageNo, params.PageSize,
+		emails)
 	s, _ := json.MarshalIndent(lpr, "", "    ")
 	w.Write(s)
 }

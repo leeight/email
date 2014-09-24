@@ -46,7 +46,7 @@ define(
             //     require('bat-ria/ui/navigator').init(nav.navId, nav.tabs);
             // }
             require('er/events').on('error', function (e) {
-                console.error(e.error);
+                console.error(e.error.stack);
             });
 
             //拦截全局错误，做相应的跳转
