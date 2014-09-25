@@ -7,6 +7,7 @@ var moment = require('moment');
 var lib = require('esui/lib');
 var u = require('underscore');
 var ical = require('common/ical');
+var URL = require('er/URL');
 
 var exports = {};
 
@@ -126,7 +127,9 @@ var tableRows = {
 }
 
 function defaultLinkBuilder(item) {
-    return '#/mail/view~id=' + item.id + '&uidl=' + item.uidl;
+    var label = URL.parse(location.href).getQuery('label');
+    return '#/mail/view~id=' + item.id +
+        '&uidl=' + item.uidl + (label ? '&label=' + label : '');
 }
 
 /**

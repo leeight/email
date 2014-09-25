@@ -7,6 +7,7 @@ define(function (require) {
     var BaseModel = require('bat-ria/mvc/BaseModel');
     var api = require('common/config').api;
     var util = require('common/util');
+    var u = require('underscore');
 
     /**
      * [Please Input Model Description]
@@ -22,6 +23,59 @@ define(function (require) {
      * @inheritDoc
      */
     MailViewModel.prototype.datasource = {
+        labels: function(model) {
+            return api.labelList({});
+        },
+        navigators: function(model) {
+            var navigators = [
+                {
+                    path: '#/mail/inbox',
+                    name: 'All Mail',
+                    active: false
+                },
+                {
+                    path: '#/thread/list',
+                    name: 'All Thread',
+                    active: false
+                },
+                {
+                    path: '#/calendar/list',
+                    name: 'All Calendar',
+                    active: false
+                },
+                {
+                    path: '#/mail/sent',
+                    name: 'Sent Mail',
+                    active: false
+                },
+                {
+                    path: '#/mail/deleted',
+                    name: 'Deleted Mail',
+                    active: false
+                }
+            ];
+
+
+            var referrer = model.get('referrer');
+            var label = model.get('label');
+            if (!label && referrer) {
+                var url = '#' + referrer.getPath();
+                var found = false;
+                u.each(navigators, function(item) {
+                    item.active = url.indexOf(item.path) === 0;
+                    if (item.active) {
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    navigators[0].active = true;
+                }
+            } else if (!referrer) {
+                navigators[0].active = true;
+            }
+
+            return navigators;
+        },
         hostname: function(model) {
             return location.hostname;
         },

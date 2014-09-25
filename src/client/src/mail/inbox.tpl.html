@@ -1,70 +1,74 @@
 <!-- target: TPL_mail_inbox -->
 <div class="mail-inbox">
-    <div class="est-sidebar">
-        <ul>
-            <!-- for: ${navigators} as ${item} -->
-            <!-- if: ${item.active} -->
-            <li class="active"><a href="${item.path}">${item.name}</a></li>
-            <!-- else -->
-            <li><a href="${item.path}">${item.name}</a></li>
-            <!-- /if-->
-            <!-- /for -->
-            <br/>
-            <!-- for: ${labels} as ${item} -->
-            <!-- if: ${item.id} == ${label} -->
-            <li class="active">
-            <!-- else -->
-            <li>
-            <!-- /if -->
-                <!-- if: ${item.unread_count} > 0 -->
-                <a href="#/mail/inbox~label=${item.id}"><b>${item.name} (${item.unread_count})</b></a>
-                <!-- else -->
-                <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
-                <!-- /if-->
-            </li>
-            <!-- /for -->
-        </ul>
-    </div>
-    <div class="est-main">
-        <div class="list-header">
-            <div class="list-batch">
-                <div data-ui-type="Button" data-ui-id="create" data-ui-skin="spring-add">新建</div>
-                <div data-ui-type="Button" data-ui-id="refresh">刷新</div>
-                <div data-ui-type="SimpleToggleButton" data-ui-id="unread-only" >只看未读</div>
-                <!-- &nbsp;|&nbsp; -->
-                <div data-ui-type="Button"
-                     data-ui-extension-data-type="CustomData"
-                     data-ui-data-type="archive"
-                     data-ui-id="archive"
-                     data-ui-group="batch">归档</div>
-                <div data-ui-type="Button"
-                     data-ui-id="markAsRead"
-                     data-ui-extension-data-type="CustomData"
-                     data-ui-data-type="markAsRead"
-                     data-ui-group="batch">标记已读</div>
-                <div data-ui-type="Button"
-                     data-ui-id="addLabel"
-                     data-ui-extension-data-type="CustomData"
-                     data-ui-data-type="addLabel"
-                     data-ui-group="batch">添加标签</div>
-                <div data-ui-type="Button"
-                     data-ui-id="delete"
-                     data-ui-extension-data-type="CustomData"
-                     data-ui-data-type="delete"
-                     data-ui-group="batch">删除</div>
-            </div>
-            <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
-                <input data-ui-id="keyword"
-                       data-ui-type="TextBox"
-                       data-ui-required="required"
-                       data-ui-width="300"
-                       placeholder="请输入关键词"
-                       name="keyword" />
-                <!-- <div data-ui-type="Button" data-ui-id="search"
-                    data-ui-extension-submit-type="AutoSubmit">搜索</div> -->
-            </form>
-        </div>
-        <!-- import: listTable -->
-        <!-- import: listPager -->
-    </div>
+    <!-- import: TPL_mail_inbox_main -->
 </div>
+
+<!-- target: TPL_mail_inbox_main(master=TPL_master) -->
+<!-- block: sidebar -->
+<ul>
+    <!-- for: ${navigators} as ${item} -->
+    <!-- if: ${item.active} -->
+    <li class="active"><a href="${item.path}">${item.name}</a></li>
+    <!-- else -->
+    <li><a href="${item.path}">${item.name}</a></li>
+    <!-- /if-->
+    <!-- /for -->
+    <br/>
+    <!-- for: ${labels} as ${item} -->
+    <!-- if: ${item.id} == ${label} -->
+    <li class="active">
+    <!-- else -->
+    <li>
+    <!-- /if -->
+        <!-- if: ${item.unread_count} > 0 -->
+        <a href="#/mail/inbox~label=${item.id}"><b>${item.name} (${item.unread_count})</b></a>
+        <!-- else -->
+        <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+        <!-- /if-->
+    </li>
+    <!-- /for -->
+</ul>
+<!-- /block -->
+
+<!-- block: main -->
+<div class="list-header">
+    <div class="list-batch">
+        <div data-ui-type="Button" data-ui-id="create" data-ui-skin="spring-add">新建</div>
+        <div data-ui-type="Button" data-ui-id="refresh">刷新</div>
+        <div data-ui-type="SimpleToggleButton" data-ui-id="unread-only" >只看未读</div>
+        <!-- &nbsp;|&nbsp; -->
+        <div data-ui-type="Button"
+             data-ui-extension-data-type="CustomData"
+             data-ui-data-type="archive"
+             data-ui-id="archive"
+             data-ui-group="batch">归档</div>
+        <div data-ui-type="Button"
+             data-ui-id="markAsRead"
+             data-ui-extension-data-type="CustomData"
+             data-ui-data-type="markAsRead"
+             data-ui-group="batch">标记已读</div>
+        <div data-ui-type="Button"
+             data-ui-id="addLabel"
+             data-ui-extension-data-type="CustomData"
+             data-ui-data-type="addLabel"
+             data-ui-group="batch">添加标签</div>
+        <div data-ui-type="Button"
+             data-ui-id="delete"
+             data-ui-extension-data-type="CustomData"
+             data-ui-data-type="delete"
+             data-ui-group="batch">删除</div>
+    </div>
+    <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
+        <input data-ui-id="keyword"
+               data-ui-type="TextBox"
+               data-ui-required="required"
+               data-ui-width="300"
+               placeholder="请输入关键词"
+               name="keyword" />
+        <!-- <div data-ui-type="Button" data-ui-id="search"
+            data-ui-extension-submit-type="AutoSubmit">搜索</div> -->
+    </form>
+</div>
+<!-- import: listTable -->
+<!-- import: listPager -->
+<!-- /block -->

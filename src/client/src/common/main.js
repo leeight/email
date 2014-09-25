@@ -5,6 +5,8 @@
 
 define(
     function (require) {
+        require('bat-ria/tpl!./master.tpl.html');
+
         var config = require('common/config');
         var etpl = require('etpl');
 

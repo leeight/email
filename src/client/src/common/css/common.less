@@ -1,6 +1,33 @@
 /**
  * 全局变量及样式
  */
+.mail-layout {
+    .est-layout-sidebar(left, 150px);
+
+    .est-sidebar {
+        font-size: 13px;
+        padding-top: 20px;
+
+        li {
+            padding: 5px 0;
+            padding-left: 10px;
+            &:hover {
+                background-color: rgba(243,243,243,.85);
+            }
+            b {
+                color: #333;
+            }
+        }
+        li.active {
+            font-weight: bold;
+            background: #e7f1fb;
+        }
+        a {
+            color: #000;
+            text-decoration: none;
+        }
+    }
+}
 
 /* 状态颜色 */
 // .my-status-active {

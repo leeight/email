@@ -1,130 +1,169 @@
 <!-- target: TPL_mail_view -->
+
 <!-- if: ${email.collapse} -->
 <div class="mail-view mail-view-collapse" data-id="${email.uidl}">
 <!-- else -->
 <div class="mail-view" data-id="${email.uidl}">
 <!-- /if -->
-    <!-- if: !${email.hide_subject} -->
-    <div class="mail-subject">
-        <!-- if: ${email.subject} -->
-        <h2>${email.subject}</h2>
-        <!-- else -->
-        <h2>(no subject)</h2>
-        <!-- /if -->
-        <a href="#/mail/inbox">Inbox</a>
-        <!-- if: ${email.labels} -->
-            <!-- for: ${email.labels} as ${item} -->
-            <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
-            <!-- /for -->
-        <!-- /if -->
-    </div>
-    <!-- /if -->
+<!-- import: TPL_mail_view_main -->
+</div>
 
-    <div class="list-header">
-        <div class="list-summary">
-            <table class="list-summary-table">
-                <tr>
-                    <th>发件人：</th>
-                    <td>
-                        <span class="mail-body-summary">
-                            <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
-                            ${email.message|summary|raw}
-                        </span>
-                        <span class="view-actions">
-                            <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
-                            &nbsp;|&nbsp;
-                            <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
-                            &nbsp;|&nbsp;
-                            <a data-ui-type="Link" data-ui-id="replyAll" href="javascript:void(0)">全部回复</a>
-                            <!-- if: ${email.attachments.length} -->
-                            &nbsp;|&nbsp;
-                            <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="replyWithAttachments" href="javascript:void(0)">带附件回复</a>
-                            <!-- /if -->
-                            &nbsp;|&nbsp;
-                            <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
-                            &nbsp;|&nbsp;
-                            <a data-ui-type="Link" data-ui-id="delete" href="javascript:void(0)">删除</a>
-                            &nbsp;|&nbsp;
-                            <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
-                        </span>
-                        <time>${email.date}</time>
-                    </td>
-                </tr>
-                <!-- if: ${email.to} -->
-                <tr>
-                  <th>收件人：</th>
-                  <td>
-                    <!-- for: ${email.to} as ${item}, ${index} -->
-                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
-                    <!-- /for -->
-                  </td>
-                </tr>
-                <!-- /if -->
-                <!-- if: ${email.cc} -->
-                <tr>
-                  <th>抄送：</th>
-                  <td>
-                    <!-- for: ${email.cc} as ${item}, ${index} -->
-                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
-                    <!-- /for -->
-                  </td>
-                </tr>
-                <!-- /if -->
-                <!-- if: ${email.bcc} -->
-                <tr>
-                  <th>密送：</th>
-                  <td>
-                    <!-- for: ${email.bcc} as ${item}, ${index} -->
-                    <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
-                    <!-- /for -->
-                  </td>
-                </tr>
-                <!-- /if -->
-                <tr>
-                  <th>源文件：</th>
-                  <td>
-                    <!-- if: ${email.is_sent} == 1 -->
-                    <a href="http://${hostname}:8765/raw/sent/${email.uidl}.txt" target="_blank">查看</a>
-                    <!-- else -->
-                    <a href="http://${hostname}:8765/raw/${email.uidl}.txt" target="_blank">查看</a>
-                    <!-- /if -->
-                    &nbsp;|&nbsp;
-                    <a href="http://${hostname}:8765/ori/message/${email.uidl}.html" target="_blank">未过滤内容的邮件</a>
-                  </td>
-                </tr>
-                <!-- if: ${email.attachments.length} -->
-                <tr>
-                  <th>附件：</th>
-                  <td>
-                      <!-- for: ${email.attachments} as ${item}, ${index} -->
-                      <a href="${item.preview_url}" target="_blank">${item.name} (${item.size})</a>&nbsp;&nbsp;
-                      <!-- /for -->
-                  </td>
-                </tr>
-                <!-- /if -->
-                <!-- if: ${email.is_calendar} && ${email.ical_message.METHOD} == "REQUEST" -->
-                <!-- var: vevent = ${email.ical_message.VEVENT} -->
-                <tr>
-                    <th>时间：</th>
-                    <td>${vevent.DTSTART} - ${vevent.DTEND}</td>
-                </tr>
-                <tr>
-                    <th>地点：</th>
-                    <td>${vevent.LOCATION|raw}</td>
-                </tr>
-                <!-- /if -->
-            </table>
+<!-- target: TPL_mail_view_main(master=TPL_master) -->
+<!-- block: sidebar -->
+<ul>
+    <!-- for: ${navigators} as ${item} -->
+    <!-- if: ${item.active} -->
+    <li class="active"><a href="${item.path}">${item.name}</a></li>
+    <!-- else -->
+    <li><a href="${item.path}">${item.name}</a></li>
+    <!-- /if-->
+    <!-- /for -->
+    <br/>
+    <!-- for: ${labels} as ${item} -->
+    <!-- if: ${item.id} == ${label} -->
+    <li class="active">
+    <!-- else -->
+    <li>
+    <!-- /if -->
+        <!-- if: ${item.unread_count} > 0 -->
+        <a href="#/mail/inbox~label=${item.id}"><b>${item.name} (${item.unread_count})</b></a>
+        <!-- else -->
+        <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+        <!-- /if-->
+    </li>
+    <!-- /for -->
+</ul>
+<!-- /block -->
+
+<!-- block: main -->
+<!-- if: !${email.hide_subject} -->
+<div class="list-header">
+    <div class="list-batch">
+        <div class="mail-subject">
+            <!-- if: ${email.subject} -->
+            <h2>${email.subject}</h2>
+            <!-- else -->
+            <h2>(no subject)</h2>
+            <!-- /if -->
+            <a href="#/mail/inbox">Inbox</a>
+            <!-- if: ${email.labels} -->
+                <!-- for: ${email.labels} as ${item} -->
+                <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+                <!-- /for -->
+            <!-- /if -->
         </div>
     </div>
-    <!-- if: ${email.collapse} -->
-    <div class="mail-body">加载中...</div>
-    <!-- else -->
-    <div class="mail-body">
-      <!-- if: ${email.is_calendar} -->
-      <pre>${vevent.DESCRIPTION|raw}</pre>
-      <!-- /if -->
-      ${email.message|raw}
-      <!-- /if -->
-    </div>
-    <!-- /if -->
 </div>
+<!-- /if -->
+
+
+<div class="list-header">
+    <div class="list-summary">
+        <table class="list-summary-table">
+            <tr>
+                <th>发件人：</th>
+                <td>
+                    <span class="mail-body-summary">
+                        <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
+                        ${email.message|summary|raw}
+                    </span>
+                    <span class="view-actions">
+                        <a href="mailto:${email.from.address}" title="${email.from.address}"><!-- if: ${email.from.name} -->${email.from.name}<!-- else -->${email.from.address}<!-- /if --></a>
+                        &nbsp;|&nbsp;
+                        <a data-ui-type="Link" data-ui-id="reply" href="javascript:void(0)">回复</a>
+                        &nbsp;|&nbsp;
+                        <a data-ui-type="Link" data-ui-id="replyAll" href="javascript:void(0)">全部回复</a>
+                        <!-- if: ${email.attachments.length} -->
+                        &nbsp;|&nbsp;
+                        <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="replyWithAttachments" href="javascript:void(0)">带附件回复</a>
+                        <!-- /if -->
+                        &nbsp;|&nbsp;
+                        <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
+                        &nbsp;|&nbsp;
+                        <a data-ui-type="Link" data-ui-id="delete" href="javascript:void(0)">删除</a>
+                        &nbsp;|&nbsp;
+                        <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
+                    </span>
+                    <time>${email.date}</time>
+                </td>
+            </tr>
+            <!-- if: ${email.to} -->
+            <tr>
+              <th>收件人：</th>
+              <td>
+                <!-- for: ${email.to} as ${item}, ${index} -->
+                <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                <!-- /for -->
+              </td>
+            </tr>
+            <!-- /if -->
+            <!-- if: ${email.cc} -->
+            <tr>
+              <th>抄送：</th>
+              <td>
+                <!-- for: ${email.cc} as ${item}, ${index} -->
+                <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                <!-- /for -->
+              </td>
+            </tr>
+            <!-- /if -->
+            <!-- if: ${email.bcc} -->
+            <tr>
+              <th>密送：</th>
+              <td>
+                <!-- for: ${email.bcc} as ${item}, ${index} -->
+                <a href="mailto:${item.address}" title="${item.address}"><!-- if: ${item.name} -->${item.name}<!-- else -->${item.address}<!-- /if --></a>;&nbsp;
+                <!-- /for -->
+              </td>
+            </tr>
+            <!-- /if -->
+            <tr>
+              <th>源文件：</th>
+              <td>
+                <!-- if: ${email.is_sent} == 1 -->
+                <a href="http://${hostname}:8765/raw/sent/${email.uidl}.txt" target="_blank">查看</a>
+                <!-- else -->
+                <a href="http://${hostname}:8765/raw/${email.uidl}.txt" target="_blank">查看</a>
+                <!-- /if -->
+                &nbsp;|&nbsp;
+                <a href="http://${hostname}:8765/ori/message/${email.uidl}.html" target="_blank">未过滤内容的邮件</a>
+              </td>
+            </tr>
+            <!-- if: ${email.attachments.length} -->
+            <tr>
+              <th>附件：</th>
+              <td>
+                  <!-- for: ${email.attachments} as ${item}, ${index} -->
+                  <a href="${item.preview_url}" target="_blank">${item.name} (${item.size})</a>&nbsp;&nbsp;
+                  <!-- /for -->
+              </td>
+            </tr>
+            <!-- /if -->
+            <!-- if: ${email.is_calendar} && ${email.ical_message.METHOD} == "REQUEST" -->
+            <!-- var: vevent = ${email.ical_message.VEVENT} -->
+            <tr>
+                <th>时间：</th>
+                <td>${vevent.DTSTART} - ${vevent.DTEND}</td>
+            </tr>
+            <tr>
+                <th>地点：</th>
+                <td>${vevent.LOCATION|raw}</td>
+            </tr>
+            <!-- /if -->
+        </table>
+    </div>
+</div>
+
+<!-- if: ${email.collapse} -->
+<div class="mail-body">加载中...</div>
+<!-- else -->
+<div class="mail-body">
+  <!-- if: ${email.is_calendar} -->
+  <pre>${vevent.DESCRIPTION|raw}</pre>
+  <!-- /if -->
+  ${email.message|raw}
+  <!-- /if -->
+</div>
+<!-- /if -->
+<!-- /block -->
+
