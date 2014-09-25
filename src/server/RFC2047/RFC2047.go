@@ -103,5 +103,7 @@ func Decode2(s string) string {
 }
 
 func Decode(s string) string {
+	// ?=\s=? 替换一下?
+	s = regexp.MustCompile(`\?=\s+=\?`).ReplaceAllString(s, `?==?`)
 	return strings.TrimSpace(Decode2(s))
 }

@@ -91,7 +91,7 @@ func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sql := params.BuildListSql(ids)
 	log.Info(sql)
 
-	var emails []*base.EMailViewModel
+	emails := make([]*base.EMailViewModel, 0)
 
 	if len(ids) > 0 {
 		rows, err := db.Query(sql)
