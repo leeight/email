@@ -36,28 +36,22 @@
 <!-- /block -->
 
 <!-- block: main -->
-<!-- if: !${email.hide_subject} -->
 <div class="list-header">
-    <div class="list-batch">
-        <div class="mail-subject">
-            <!-- if: ${email.subject} -->
-            <h2>${email.subject}</h2>
-            <!-- else -->
-            <h2>(no subject)</h2>
-            <!-- /if -->
-            <a href="#/mail/inbox">Inbox</a>
-            <!-- if: ${email.labels} -->
-                <!-- for: ${email.labels} as ${item} -->
-                <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
-                <!-- /for -->
-            <!-- /if -->
-        </div>
+    <!-- if: !${email.hide_subject} -->
+    <div class="mail-subject">
+        <!-- if: ${email.subject} -->
+        <h2>${email.subject}</h2>
+        <!-- else -->
+        <h2>(no subject)</h2>
+        <!-- /if -->
+        <a href="#/mail/inbox">Inbox</a>
+        <!-- if: ${email.labels} -->
+            <!-- for: ${email.labels} as ${item} -->
+            <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+            <!-- /for -->
+        <!-- /if -->
     </div>
-</div>
-<!-- /if -->
-
-
-<div class="list-header">
+    <!-- /if -->
     <div class="list-summary">
         <table class="list-summary-table">
             <tr>
@@ -84,7 +78,6 @@
                         &nbsp;|&nbsp;
                         <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
                     </span>
-                    <time>${email.date}</time>
                 </td>
             </tr>
             <!-- if: ${email.to} -->
@@ -151,6 +144,7 @@
             </tr>
             <!-- /if -->
         </table>
+        <time>${email.date}</time>
     </div>
 </div>
 

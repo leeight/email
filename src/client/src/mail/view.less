@@ -7,7 +7,8 @@
     .mail-subject {
         h2 {
             font-size: 18px;
-            margin: 5px 0;
+            padding-top: 10px;
+            padding-left: 10px;
             display: inline-block;
         }
 
@@ -24,14 +25,16 @@
             white-space: normal;
             width: 100%;
         }
-
-        time {
-            float: right;
-        }
     }
 
     .list-summary {
         border-bottom: 1px solid #bad5f1;
+
+        time {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+        }
     }
 
     .mail-body {
@@ -39,6 +42,7 @@
         border: 1px solid #bad5f1;
         border-top: none;
         font-size: 120%;
+        position: relative;
         pre {
             font-family: monospace;
             word-wrap: break-word;

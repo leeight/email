@@ -70,7 +70,7 @@ define(function (require) {
                 if (!found) {
                     navigators[0].active = true;
                 }
-            } else if (!referrer) {
+            } else if (!label && !referrer) {
                 navigators[0].active = true;
             }
 
