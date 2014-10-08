@@ -30,6 +30,7 @@ type pop3Type struct {
 	Port                     int
 	Tls                      bool
 	Interval                 time.Duration
+	Delete_older_mails       int // 单位（天），早于这些天之前的邮件会从服务器中删除
 }
 
 func (this pop3Type) GetInterval() time.Duration {
@@ -155,6 +156,7 @@ func GetConfig(file string) (*ServerConfig, error) {
 	os.MkdirAll(path.Dir(config.DbPath()), 0755)
 
 	log.Printf("Config: %s\n", abs)
+	log.Printf("Config.Pop3.DeleteOlderMails: %d\n", config.Pop3.Delete_older_mails)
 	log.Printf("Dirs.Base: %s\n", config.Dirs.Base)
 	log.Printf("Dirs.Download: %s\n", config.DownloadDir())
 	log.Printf("Dirs.Raw: %s\n", config.RawDir())

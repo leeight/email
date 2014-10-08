@@ -1,20 +1,14 @@
 [
     {
       "name": "backend",
-      "script": "./bin/",
+      "script": "/dev/null",
       "exec_interpreter": "./bin/main",
       "exec_mode": "fork_mode"
     },
     {
       "name": "frontend",
-      "script": "./bin/",
+      "script": "/dev/null",
       "exec_interpreter": "./bin/frontend",
-      "exec_mode": "fork_mode"
-    },
-    {
-      "name": "searcher",
-      "script": "./bin/",
-      "exec_interpreter": "./bin/searcher",
       "exec_mode": "fork_mode"
     }
 ]
