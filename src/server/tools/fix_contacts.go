@@ -8,12 +8,12 @@ import (
 	"../web"
 )
 
-type contact struct {
+type Contact struct {
 	Count int
 	Email *mail.Address
 }
 
-type contactMap map[string]*contact
+type contactMap map[string]*Contact
 
 func main() {
 	config, _ := base.GetConfig("config.yml")
@@ -35,7 +35,7 @@ func main() {
 		c, err := mail.ParseAddress(from)
 		if err == nil {
 			if item, ok := contacts[c.Address]; !ok {
-				contacts[c.Address] = &contact{1, c}
+				contacts[c.Address] = &Contact{1, c}
 			} else {
 				item.Count++
 			}
