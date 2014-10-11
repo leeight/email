@@ -9,7 +9,7 @@ define(function (require) {
 
     var FormView = require('bat-ria/mvc/FormView');
     var u = require('underscore');
-    var ueditorInstance = null;
+    // var ueditorInstance = null;
 
     /**
      * [Please Input View Description]
@@ -27,17 +27,22 @@ define(function (require) {
 
     MailComposeView.prototype.enterDocument = function() {
         FormView.prototype.enterDocument.apply(this, arguments);
-
-        if (ueditorInstance) {
-            ueditorInstance.destroy();
-        }
-        ueditorInstance = UE.getEditor('email-body-editor');
+        CKEDITOR.replace('email-body-editor', {
+            removePlugins: 'elementspath',
+            contentsCss: require.toUrl('common/css/ckeditor.less')
+        });
+        // return;
+        // if (ueditorInstance) {
+        //     ueditorInstance.destroy();
+        // }
+        // ueditorInstance = UE.getEditor('email-body-editor');
         var message = this.model.get('message');
         if (message) {
-            ueditorInstance.ready(function(editor) {
-                ueditorInstance.setContent(message);
-                ueditorInstance.focus();
-            });
+            CKEDITOR.instances['email-body-editor'].setData(message);
+            // ueditorInstance.ready(function(editor) {
+            //     ueditorInstance.setContent(message);
+            //     ueditorInstance.focus();
+            // });
         } else {
             var to = this.get('to');
             var input = to.getFocusTarget();
@@ -49,7 +54,7 @@ define(function (require) {
 
     MailComposeView.prototype.getExtraFormData = function() {
         return {
-            message: ueditorInstance.getContent()
+            message: CKEDITOR.instances['email-body-editor'].getData()
         }
     };
 

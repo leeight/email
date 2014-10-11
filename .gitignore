@@ -35,3 +35,5 @@ config.yml
 /src/server/messages.json
 /src/server/orm_test.db
 /src/server/threads.txt
+
+ckeditor

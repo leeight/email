@@ -33,7 +33,7 @@ exports.reply = function(email, view) {
     var subject = email.subject;
     var message = '<br>' +
         'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
-        '<br><blockquote>\n' + getQuotedMessage(email) + '\n</blockquote>';
+        '<blockquote>\n' + getQuotedMessage(email) + '\n</blockquote>';
     var to = [ email.from ];
     var cc = [];
     u.each(email.to || [], function(item){
@@ -59,7 +59,7 @@ exports.replyAll = function(email, view) {
     var subject = email.subject;
     var message = '<br>' +
         'On ' + email.date + ', &lt;' + email.from.address + '&gt; wrote:' +
-        '<br><blockquote>\n' + getQuotedMessage(email) + '\n</blockquote>';
+        '<blockquote>\n' + getQuotedMessage(email) + '\n</blockquote>';
     var to = [ email.from ];
     var cc = [];
     u.each(email.to || [], function(item){
@@ -89,7 +89,7 @@ exports.forward = function(email, view) {
         'To: ' + encoding.dumpAddress(email.to) + '<br>\n' +
         'Subject: ' + subject + '<br>\n' +
         'Date: ' + email.date + '<br>\n' +
-        '<br><br>\n' + getQuotedMessage(email) + '';
+        '\n' + getQuotedMessage(email) + '';
 
     if (!/^(Fwd|转发)[:：]/i.test(email.subject)) {
         subject = '转发: ' + subject;

@@ -7,6 +7,7 @@ define(function (require) {
     var BaseAction = require('bat-ria/mvc/BaseAction');
     var compose = require('common/compose');
     var u = require('underscore');
+    var util = require('common/util');
 
     /**
      * Action构造函数
@@ -32,6 +33,8 @@ define(function (require) {
         // 处理邮件正文内部链接的点击行为
         compose.handleClickAction(this.view);
 
+        this.view.get('create').on('click',
+            u.partial(util.composeMail, this.view, '撰写邮件', null));
         this.view.get('reply').on('click', this._replyMail, this);
         this.view.get('replyAll').on('click', this._replyAllMail, this);
         this.view.get('forward').on('click', this._forwardMail, this);
