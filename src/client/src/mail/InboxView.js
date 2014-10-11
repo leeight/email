@@ -36,11 +36,11 @@ define(function (require) {
             displayText: '选择邮件',
             datasource: [
                 { text: 'All' },
-                { text: 'None', handler: function() { console.log('b'); } },
-                { text: 'Read', handler: function() { console.log('c'); } },
-                { text: 'Unread', handler: function() {  } },
-                { text: 'Starred', handler: function() {   } },
-                { text: 'Unstarred', handler: function() {   } }
+                { text: 'None' },
+                { text: 'Read' },
+                { text: 'Unread' },
+                { text: 'Starred' },
+                { text: 'Unstarred' }
             ]
         },
         actions: {
@@ -60,7 +60,40 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    MailInboxView.prototype.uiEvents = {};
+    MailInboxView.prototype.uiEvents = {
+        'cm:select': function(e) {
+            var table = this.get('table');
+            var action = e.item.text;
+            switch(e.item.text) {
+                case 'All':
+                    table.setAllRowSelected(true);
+                    break;
+                case 'None':
+                    table.setAllRowSelected(false);
+                    break;
+                case 'Read':
+                    u.each(table.datasource, function(x, i) {
+                        table.setRowSelected(i, !!x.is_read);
+                    });
+                    break;
+                case 'Unread':
+                    u.each(table.datasource, function(x, i) {
+                        table.setRowSelected(i, !x.is_read);
+                    });
+                    break;
+                case 'Starred':
+                    u.each(table.datasource, function(x, i) {
+                        table.setRowSelected(i, !!x.is_star);
+                    });
+                    break;
+                case 'Unstarred':
+                    u.each(table.datasource, function(x, i) {
+                        table.setRowSelected(i, !x.is_star);
+                    });
+                    break;
+            }
+        }
+    };
 
     MailInboxView.prototype.enterDocument = function() {
         ListView.prototype.enterDocument.apply(this, arguments);
