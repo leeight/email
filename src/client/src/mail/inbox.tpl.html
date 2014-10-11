@@ -33,11 +33,22 @@
 <!-- block: main -->
 <div class="list-header">
     <div class="list-batch">
-        <div data-ui-type="Button" data-ui-id="create" data-ui-skin="spring-add">新建</div>
+        <div data-ui-type="CommandMenu"
+             data-ui-width="60"
+             data-ui-id="cm"></div>
+
         <div data-ui-type="Button" data-ui-id="refresh">刷新</div>
+
         <div data-ui-type="SimpleToggleButton" data-ui-id="unread-only" >只看未读</div>
+
+        <div data-ui-type="CommandMenu"
+             data-ui-width="60"
+             data-ui-id="actions"
+             data-ui-group="batch"></div>
+
         <!-- &nbsp;|&nbsp; -->
-        <div data-ui-type="Button"
+
+        <!-- <div data-ui-type="Button"
              data-ui-extension-data-type="CustomData"
              data-ui-data-type="archive"
              data-ui-id="archive"
@@ -56,7 +67,7 @@
              data-ui-id="delete"
              data-ui-extension-data-type="CustomData"
              data-ui-data-type="delete"
-             data-ui-group="batch">删除</div>
+             data-ui-group="batch">删除</div> -->
     </div>
     <form data-ui-type="Form" data-ui-id="filter" class="list-filter">
         <input data-ui-id="keyword"

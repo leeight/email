@@ -29,14 +29,22 @@
     }
 }
 
-/* 状态颜色 */
-// .my-status-active {
-//     color: @bat-success-color;
-// }
+.x-icon-star4,
+.x-icon-star-lit4 {
+    width: 19px;
+    height: 19px;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    top: 3px;
+}
 
-// .my-status-denied {
-//     color: @bat-warning-color;
-// }
+.x-icon-star4 {
+    background: url(../img/star4.png) no-repeat scroll 0 0 transparent;
+}
+.x-icon-star-lit4 {
+    background: url(../img/star-lit4.png) no-repeat scroll 0 0 transparent;
+}
 
 .x-icon-attchments {
     background: url(../img/general_black.png) no-repeat scroll 0px -254px transparent;
@@ -60,6 +68,10 @@
     }
 }
 
+.ui-table-body {
+    border-top: 1px solid #ddd;
+}
+
 .ui-table-row {
     background: rgba(243,243,243,.85);
     color: #222;
@@ -79,4 +91,13 @@
 .ui-table-select-all,
 .ui-table-multi-select {
     margin: 0 auto;
+}
+
+.btns {
+    margin-bottom: 15px;
+    text-align: left;
+    .skin-spring-add-button {
+        background: -webkit-linear-gradient(top, #6cbb4c, #519c30);
+        padding: 0 13px 0 13px;
+    }
 }

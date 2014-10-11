@@ -55,13 +55,23 @@ exports.composeMail = function(view, opt_title, opt_actionOptions) {
 
 function getTableFields(linkBuilder) {
     var tableFields = [
+        // {
+        //     field: 'id',
+        //     width: 60,
+        //     stable: true,
+        //     title: 'ID',
+        //     content: function (item) {
+        //         return '<span title="' + item.uidl + '">#' + item.id + '</span>';
+        //     }
+        // },
         {
-            field: 'id',
-            width: 60,
+            field: 'star',
+            width: 35,
             stable: true,
-            title: 'ID',
+            title: '',
             content: function (item) {
-                return '<span title="' + item.uidl + '">#' + item.id + '</span>';
+                return '<ins title="' + item.uidl + '" class="' +
+                    (item.is_star ? 'x-icon-star-lit4' : 'x-icon-star4') + '"></ins>';
             }
         },
         {
@@ -144,7 +154,8 @@ exports.mailListConfiguration = function(opt_linkBuilder) {
         rows: tableRows,
         sortable: false,
         columnResizable: true,
-        select: 'multi'
+        select: 'multi',
+        noHead: true
     };
 };
 

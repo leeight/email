@@ -32,6 +32,26 @@ define(function (require) {
      */
     MailInboxView.prototype.uiProperties = {
         table: util.mailListConfiguration(),
+        cm: {
+            displayText: '选择邮件',
+            datasource: [
+                { text: 'All' },
+                { text: 'None', handler: function() { console.log('b'); } },
+                { text: 'Read', handler: function() { console.log('c'); } },
+                { text: 'Unread', handler: function() {  } },
+                { text: 'Starred', handler: function() {   } },
+                { text: 'Unstarred', handler: function() {   } }
+            ]
+        },
+        actions: {
+            displayText: '操作',
+            datasource: [
+                { text: '归档', action: 'archive' },
+                { text: '标记已读', action: 'markAsRead' },
+                { text: '添加标签', action: 'addLabel' },
+                { text: '删除', action: 'delete' }
+            ]
+        },
         'unread-only': {
             'active': '@unreadOnly'
         }
@@ -44,17 +64,6 @@ define(function (require) {
 
     MailInboxView.prototype.enterDocument = function() {
         ListView.prototype.enterDocument.apply(this, arguments);
-
-        // 提示新邮件
-        // var subjects = [];
-        // u.each(this.model.get('tableData'), function(email) {
-        //     if (email.is_read === 0) {
-        //         subjects.push(email.subject);
-        //     }
-        // });
-        // if (subjects.length) {
-        //     notification.show('新邮件', subjects.join('\n'));
-        // }
     };
 
     require('er/util').inherits(MailInboxView, ListView);

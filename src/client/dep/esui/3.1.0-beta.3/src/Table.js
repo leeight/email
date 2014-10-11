@@ -2128,7 +2128,6 @@ define(
          * @private
          */
         function resetMutilSelectedStatus(table) {
-            var selectAll = getHeadCheckbox(table);
             var inputs = findSelectBox(table, 'checkbox');
             var allChecked = true;
             var selected = [];
@@ -2150,7 +2149,10 @@ define(
             setSelectedIndex(table, selected);
             table.fire('select', {selectedIndex: selected});
 
-            selectAll.checked = allChecked;
+            var selectAll = getHeadCheckbox(table);
+            if (selectAll) {
+                selectAll.checked = allChecked;
+            }
         }
 
         /**

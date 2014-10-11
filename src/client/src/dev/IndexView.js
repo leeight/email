@@ -50,6 +50,15 @@ define(function (require) {
             datasource: [
                 {title: '只看未读', value: 'foo', checked: false}
             ]
+        },
+        cm: {
+            displayText: '我是个命令菜单',
+            datasource: [
+                { text: 'a' },
+                { text: 'b', handler: function () { console.log('b'); } },
+                { text: 'c', handler: function () { console.log('c'); } },
+                { text: 'd', handler: function () { this.hide(); } }
+            ]
         }
     };
 

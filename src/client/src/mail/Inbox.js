@@ -65,18 +65,35 @@ define(function (require) {
 
         document.title = '伊妹儿';
 
-        this.view.on('batchmodify', function(e) {
-            var ids = u.map(e.selectedItems, function(item) {
+
+        var table = this.view.get('table');
+        var model = this.model;
+        // this.view.on('batchmodify', function(e) {
+        //     var ids = u.map(table.getSelectedItems(), function(item) {
+        //         return item.id;
+        //     });
+
+        //     var action = e.action;
+        //     if (action === 'delete') {
+        //         model.deleteMails(ids).then(function(){
+        //             locator.reload();
+        //         });
+        //     }
+        // });
+
+        this.view.get('actions').on('select', function(e) {
+            var ids = u.map(table.getSelectedItems(), function(item) {
                 return item.id;
             });
 
-            var action = e.action;
+            var action = e.item.action;
             if (action === 'markAsRead') {
-                this.model.markAsRead(ids).then(function(){
+                model.markAsRead(ids).then(function(){
                     locator.reload();
                 });
-            } else if (action === 'delete') {
-                this.model.deleteMails(ids).then(function(){
+            }
+            else if (action === 'delete') {
+                model.deleteMails(ids).then(function(){
                     locator.reload();
                 });
             }
