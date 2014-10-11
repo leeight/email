@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -387,9 +388,9 @@ func fixMessageEncoding(r io.Reader, c string) ([]byte, error) {
 		defer cd.Close()
 
 		var outbuf [512]byte
-		html, _, err := cd.Conv(body, outbuf[:])
+		x, _, err := cd.Conv(body, outbuf[:])
 		if err == nil {
-			body = html
+			body = []byte(html.EscapeString(string(x)))
 		}
 	}
 
