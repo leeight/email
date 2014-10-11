@@ -254,12 +254,12 @@ button.skin-spring-button {
   *height: 32px;
 }
 .skin-spring-add-button {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif) no-repeat scroll 9px center #65b445;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#6cbb4c), to(#519c30));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -webkit-linear-gradient(top, #6cbb4c, #519c30);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -moz-linear-gradient(top, #6cbb4c, #519c30);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -ms-linear-gradient(top, #6cbb4c, #519c30);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -o-linear-gradient(top, #6cbb4c, #519c30);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif) no-repeat scroll 9px center #65b445;
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#6cbb4c), to(#519c30));
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -webkit-linear-gradient(top, #6cbb4c, #519c30);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -moz-linear-gradient(top, #6cbb4c, #519c30);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -ms-linear-gradient(top, #6cbb4c, #519c30);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -o-linear-gradient(top, #6cbb4c, #519c30);
   background-repeat: no-repeat, no-repeat;
   background-position: 9px center, 0 0;
   padding: 0 13px 0 27px;
@@ -277,12 +277,12 @@ button.skin-spring-button {
   background: -o-linear-gradient(top, #519c30, #6cbb4c);
 }
 .skin-spring-add-button:active {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif) no-repeat scroll 9px center #65b445;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#519c30), to(#6cbb4c));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -webkit-linear-gradient(top, #519c30, #6cbb4c);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -moz-linear-gradient(top, #519c30, #6cbb4c);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -ms-linear-gradient(top, #519c30, #6cbb4c);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -o-linear-gradient(top, #519c30, #6cbb4c);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif) no-repeat scroll 9px center #65b445;
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#519c30), to(#6cbb4c));
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -webkit-linear-gradient(top, #519c30, #6cbb4c);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -moz-linear-gradient(top, #519c30, #6cbb4c);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -ms-linear-gradient(top, #519c30, #6cbb4c);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -o-linear-gradient(top, #519c30, #6cbb4c);
   background-repeat: no-repeat, no-repeat;
   background-position: 9px center, 0 0;
 }
@@ -292,30 +292,30 @@ button.skin-spring-button {
 }
 /** 下载系列 */
 .skin-download-button {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png) no-repeat scroll 40px center #65b445;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png) no-repeat scroll 40px center #65b445;
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: 40px center, 0 0;
   padding-left: 12px;
   padding-right: 25px;
 }
 .skin-download-button:active {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png) no-repeat scroll 40px center #65b445;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png) no-repeat scroll 40px center #65b445;
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
   background-repeat: no-repeat, no-repeat;
   background-position: 40px center, 0 0;
 }
 /** 关闭layer按钮 */
 .skin-layerClose-button {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background-image: url(../../../dep/esui/src/img/esui.png);
   background-repeat: repeat;
   background-position: -37px -88px;
   background-color: transparent;
@@ -329,7 +329,7 @@ button.skin-spring-button {
   padding: 0;
 }
 .skin-layerClose-button:active {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background-image: url(../../../dep/esui/src/img/esui.png);
   background-repeat: repeat;
   background-position: -37px -88px;
   background-color: transparent;
@@ -409,12 +409,12 @@ button.skin-link-button:hover {
   height: 16px;
   margin-top: 3px;
   width: 16px;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-cal.png) no-repeat scroll left 0px #f3f3f3;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-cal.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-cal.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-cal.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-cal.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-cal.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-cal.png) no-repeat scroll left 0px #f3f3f3;
+  background: url(../../../dep/esui/src/img/esui-cal.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-cal.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-cal.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-cal.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-cal.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: left 0px, 0 0;
 }
@@ -441,7 +441,7 @@ button.skin-link-button:hover {
   margin-top: 5px;
 }
 .ui-calendar-validity-label-invalid {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-icon-alert.png);
+  background-image: url(../../../dep/esui/src/img/esui-icon-alert.png);
   background-repeat: no-repeat;
   background-position: 15px center;
   background-color: #fedbdc;
@@ -457,12 +457,12 @@ button.skin-link-button:hover {
  * @author dbear
  */
 .ui-commandmenu {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #ffffff;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #ffffff;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -6px, 0 0;
   border: 1px solid #D8D8D8;
@@ -480,34 +480,34 @@ button.skin-link-button:hover {
 }
 .ui-commandmenu:hover,
 .ui-commandmenu:focus {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #f3f3f3;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #f3f3f3;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -36px, 0 0;
 }
 .ui-commandmenu:active {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #f3f3f3;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #f3f3f3;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
   background-repeat: no-repeat, no-repeat;
   background-position: right -36px, 0 0;
 }
 .ui-commandmenu-active,
 .ui-commandmenu-active:hover,
 .ui-commandmenu-active:focus {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -69px #f3f3f3;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -69px #f3f3f3;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -69px, 0 0;
 }
@@ -557,12 +557,12 @@ button.skin-link-button:hover {
 .ui-commandmenu-disabled:hover,
 .ui-commandmenu-disabled:focus,
 .ui-commandmenu-disabled:active {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #ffffff;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #ffffff;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -6px, 0 0;
 }
@@ -602,7 +602,7 @@ button.skin-link-button:hover {
   z-index: 1203;
 }
 .ui-dialog-head {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-dialog-head-bg.png);
+  background-image: url(../../../dep/esui/src/img/esui-dialog-head-bg.png);
   background-repeat: repeat;
   background-position: 0 0;
   background-color: transparent;
@@ -620,7 +620,7 @@ button.skin-link-button:hover {
   user-select: none;
 }
 .ui-dialog-close-icon {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-dialog-head-close.png);
+  background-image: url(../../../dep/esui/src/img/esui-dialog-head-close.png);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
@@ -701,7 +701,7 @@ button.skin-link-button:hover {
 }
 .skin-alert-dialog .ui-dialog-icon-warning,
 .skin-confirm-dialog .ui-dialog-icon-warning {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-dialog-notice.png);
+  background-image: url(../../../dep/esui/src/img/esui-dialog-notice.png);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
@@ -714,7 +714,7 @@ button.skin-link-button:hover {
 }
 .skin-alert-dialog .ui-dialog-icon-confirm,
 .skin-confirm-dialog .ui-dialog-icon-confirm {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-dialog-question.png);
+  background-image: url(../../../dep/esui/src/img/esui-dialog-question.png);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
@@ -763,7 +763,7 @@ button.skin-link-button:hover {
 }
 .ui-monthview-head .ui-monthview-month-forward,
 .ui-monthview-head .ui-monthview-month-back {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background-image: url(../../../dep/esui/src/img/esui.png);
   background-repeat: repeat;
   background-position: 0px -200px;
   background-color: transparent;
@@ -775,7 +775,7 @@ button.skin-link-button:hover {
 }
 .ui-monthview-head .ui-monthview-month-forward:active,
 .ui-monthview-head .ui-monthview-month-back:active {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background-image: url(../../../dep/esui/src/img/esui.png);
   background-repeat: repeat;
   background-position: 0px -200px;
   background-color: transparent;
@@ -883,7 +883,7 @@ button.skin-link-button:hover {
 }
 .ui-monthview-disabled .ui-monthview-month-forward:active,
 .ui-monthview-disabled .ui-monthview-month-back:active {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background-image: url(../../../dep/esui/src/img/esui.png);
   background-repeat: repeat;
   background-position: 0px -240px;
   background-color: transparent;
@@ -1090,12 +1090,12 @@ button.skin-link-button:hover {
   margin-top: 3px;
   margin-right: 5px;
   width: 16px;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll left -9px #f3f3f3;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll left -9px #f3f3f3;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: left -9px, 0 0;
 }
@@ -1196,7 +1196,7 @@ button.skin-link-button:hover {
   margin-top: 5px;
 }
 .ui-rangecalendar-validity-label-invalid {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-icon-alert.png);
+  background-image: url(../../../dep/esui/src/img/esui-icon-alert.png);
   background-repeat: no-repeat;
   background-position: 15px center;
   background-color: #fedbdc;
@@ -1398,7 +1398,7 @@ button.skin-link-button:hover {
   margin-top: 5px;
 }
 .ui-region-validity-label-invalid {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-icon-alert.png);
+  background-image: url(../../../dep/esui/src/img/esui-icon-alert.png);
   background-repeat: no-repeat;
   background-position: 15px center;
   background-color: #fedbdc;
@@ -1638,12 +1638,12 @@ button.skin-link-button:hover {
  * @author dbear
  */
 .ui-select {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #ffffff;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #ffffff;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -6px, 0 0;
   overflow: hidden;
@@ -1663,34 +1663,34 @@ button.skin-link-button:hover {
 }
 .ui-select:hover,
 .ui-select:focus {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #ffffff;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #ffffff;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -36px, 0 0;
 }
 .ui-select:active {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #ffffff;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -36px #ffffff;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
   background-repeat: no-repeat, no-repeat;
   background-position: right -36px, 0 0;
 }
 .ui-select-active,
 .ui-select-active:hover,
 .ui-select-active:focus {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -67px #ffffff;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -67px #ffffff;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -67px, 0 0;
 }
@@ -1751,12 +1751,12 @@ button.skin-link-button:hover {
 .ui-select-read-only:hover,
 .ui-select-disabled:focus,
 .ui-select-read-only:focus {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #f3f3f3;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png) no-repeat scroll right -6px #f3f3f3;
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-combo-arrow.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: right -6px, 0 0;
 }
@@ -1769,7 +1769,7 @@ button.skin-link-button:hover {
   margin-top: 5px;
 }
 .ui-select-validity-label-invalid {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-icon-alert.png);
+  background-image: url(../../../dep/esui/src/img/esui-icon-alert.png);
   background-repeat: no-repeat;
   background-position: 15px center;
   background-color: #fedbdc;
@@ -1833,21 +1833,21 @@ button.skin-link-button:hover {
   width: 5px;
   height: 9px;
   font-size: 0;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png) -54px -88px;
+  background: url(../../../dep/esui/src/img/esui.png) -54px -88px;
   position: absolute;
   bottom: 50%;
   _bottom: 5px;
   left: 50%;
 }
 .ui-sidebar-minibar-hover .ui-sidebar-minibar-arrow {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png) -64px -88px;
+  background: url(../../../dep/esui/src/img/esui.png) -64px -88px;
 }
 .ui-sidebar-minibar-hover .ui-sidebar-minibar-text {
   color: #03c;
 }
 .ui-sidebar-head {
   border-bottom: 1px solid #ccc;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png) 0 -260px;
+  background: url(../../../dep/esui/src/img/esui.png) 0 -260px;
   line-height: 34px;
   padding-left: 8px;
   -moz-border-radius: 5px 5px 0 0;
@@ -1867,7 +1867,7 @@ button.skin-link-button:hover {
 .skin-fixed-button {
   height: 13px !important;
   width: 14px;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background: url(../../../dep/esui/src/img/esui.png);
   font-size: 0;
   border: 1px solid #aeaeae;
   position: absolute;
@@ -1929,35 +1929,35 @@ button.skin-link-button:hover {
   border: 0;
   padding: 0;
   text-indent: -5000px;
-  background: transparent url(../../../dep/esui/3.1.0-beta.3/src/img/search.png) no-repeat center -25px;
+  background: transparent url(../../../dep/esui/src/img/search.png) no-repeat center -25px;
 }
 .ui-searchbox .ui-button:active {
   border: 0;
-  background: transparent url(../../../dep/esui/3.1.0-beta.3/src/img/search.png) no-repeat center 0;
+  background: transparent url(../../../dep/esui/src/img/search.png) no-repeat center 0;
 }
 .ui-searchbox .ui-button-disabled:hover {
   cursor: default;
 }
 .ui-searchbox .ui-button-disabled:active {
-  background: transparent url(../../../dep/esui/3.1.0-beta.3/src/img/search.png) no-repeat center 0;
+  background: transparent url(../../../dep/esui/src/img/search.png) no-repeat center 0;
 }
 .ui-searchbox-fit-width .ui-textbox {
   width: 100% !important;
 }
 .ui-searchbox-focus .ui-button {
-  background: transparent url(../../../dep/esui/3.1.0-beta.3/src/img/search.png) no-repeat center 0;
+  background: transparent url(../../../dep/esui/src/img/search.png) no-repeat center 0;
 }
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .ui-searchbox .ui-button {
-    background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/search@2x.png);
+    background-image: url(../../../dep/esui/src/img/search@2x.png);
     background-size: 15px 50px;
   }
   .ui-searchbox .ui-button:active {
-    background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/search@2x.png);
+    background-image: url(../../../dep/esui/src/img/search@2x.png);
     background-size: 15px 50px;
   }
   .ui-searchbox-focus .ui-button {
-    background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/search@2x.png);
+    background-image: url(../../../dep/esui/src/img/search@2x.png);
     background-size: 15px 50px;
   }
 }
@@ -2140,7 +2140,7 @@ button.skin-link-button:hover {
 }
 /* 表头单元格排序标识 */
 .ui-table-hsort {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png) -40px -250px;
+  background: url(../../../dep/esui/src/img/esui.png) -40px -250px;
   margin: 2px 0 0 2px;
   height: 10px;
   width: 7px;
@@ -2260,7 +2260,7 @@ button.skin-link-button:hover {
   right: 2px;
   cursor: pointer;
   position: absolute;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png) -116px -90px;
+  background: url(../../../dep/esui/src/img/esui.png) -116px -90px;
 }
 .ui-table-cell-align-right .ui-table-cell-editentry {
   left: 2px;
@@ -2277,7 +2277,7 @@ button.skin-link-button:hover {
   width: 11px;
   height: 11px;
   margin: 0 auto;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background-image: url(../../../dep/esui/src/img/esui.png);
   background-repeat: no-repeat;
   border: 1px solid #a8adb6;
   cursor: pointer;
@@ -2484,7 +2484,7 @@ button.skin-link-button:hover {
   margin-top: 5px;
 }
 .ui-textline-validity-label-invalid {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-icon-alert.png);
+  background-image: url(../../../dep/esui/src/img/esui-icon-alert.png);
   background-repeat: no-repeat;
   background-position: 15px center;
   background-color: #fedbdc;
@@ -2529,7 +2529,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-tl .ui-tip-arrow-1 {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -24px -12px;
   background-color: transparent;
@@ -2540,7 +2540,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-tr {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -36px -12px;
   background-color: transparent;
@@ -2551,7 +2551,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-bl {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -12px -12px;
   background-color: transparent;
@@ -2562,7 +2562,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-br {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: 0px -12px;
   background-color: transparent;
@@ -2573,7 +2573,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-lt {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -26px 0px;
   background-color: transparent;
@@ -2584,7 +2584,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-lb {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -39px 0;
   background-color: transparent;
@@ -2595,7 +2595,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-rt {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
@@ -2606,7 +2606,7 @@ ui .-tip-title {
 }
 .ui-tip-arrow-rb {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -13px 0;
   background-color: transparent;
@@ -2618,7 +2618,7 @@ ui .-tip-title {
 .ui-tip {
   width: 14px;
   height: 14px;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui.png);
+  background-image: url(../../../dep/esui/src/img/esui.png);
   background-repeat: no-repeat;
   background-position: -101px -89px;
   background-color: transparent;
@@ -2673,7 +2673,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-tl {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -24px -12px;
   background-color: transparent;
@@ -2684,7 +2684,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-tr {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -36px -12px;
   background-color: transparent;
@@ -2695,7 +2695,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-bl {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -12px -12px;
   background-color: transparent;
@@ -2706,7 +2706,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-br {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: 0px -12px;
   background-color: transparent;
@@ -2717,7 +2717,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-lt {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -26px 0px;
   background-color: transparent;
@@ -2728,7 +2728,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-lb {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -39px 0;
   background-color: transparent;
@@ -2739,7 +2739,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-rt {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
@@ -2750,7 +2750,7 @@ ui .-tip-title {
 }
 .ui-tiplayer-arrow-rb {
   display: block;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui_transparent.gif);
+  background-image: url(../../../dep/esui/src/img/esui_transparent.gif);
   background-repeat: no-repeat;
   background-position: -13px 0;
   background-color: transparent;
@@ -2906,13 +2906,13 @@ ui .-tip-title {
   width: 14px;
   height: 14px;
   overflow: hidden;
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-open-icon.png);
+  background-image: url(../../../dep/esui/src/img/esui-open-icon.png);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
 }
 .ui-tree-node-indicator-expanded {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-close-icon.png);
+  background-image: url(../../../dep/esui/src/img/esui-close-icon.png);
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
@@ -2948,7 +2948,7 @@ ui .-tip-title {
   display: block;
 }
 .skin-folder-tree-node-indicator {
-  background-image: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-folder.png);
+  background-image: url(../../../dep/esui/src/img/esui-folder.png);
   background-repeat: no-repeat;
   background-position: 0 -6px;
   background-color: transparent;
@@ -3655,7 +3655,7 @@ hr {
   right: 10px;
   bottom: 0;
   left: 10px;
-  background: url(../../../dep/bat-ria/0.2.0/src/img/menu.png) repeat-x 0 -81px;
+  background: url(../../../dep/bat-ria/src/img/menu.png) repeat-x 0 -81px;
 }
 .nav .nav-item a {
   position: relative;
@@ -3667,7 +3667,7 @@ hr {
   top: 0;
   bottom: 0;
   width: 38px;
-  background: url(../../../dep/bat-ria/0.2.0/src/img/menu.png) no-repeat 0 -27px;
+  background: url(../../../dep/bat-ria/src/img/menu.png) no-repeat 0 -27px;
 }
 .nav .nav-item a:before {
   left: 0;
@@ -3900,35 +3900,35 @@ button.skin-link-button:hover {
 .skin-spring-add-disabled,
 .skin-spring-add-disabled:hover,
 .skin-spring-add-disabled:active {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif) no-repeat scroll 9px center #a9d796;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#a9d796), to(#a9d796));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -webkit-linear-gradient(top, #a9d796, #a9d796);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -moz-linear-gradient(top, #a9d796, #a9d796);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -ms-linear-gradient(top, #a9d796, #a9d796);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-button-plus.gif), -o-linear-gradient(top, #a9d796, #a9d796);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif) no-repeat scroll 9px center #a9d796;
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#a9d796), to(#a9d796));
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -webkit-linear-gradient(top, #a9d796, #a9d796);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -moz-linear-gradient(top, #a9d796, #a9d796);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -ms-linear-gradient(top, #a9d796, #a9d796);
+  background: url(../../../dep/esui/src/img/esui-button-plus.gif), -o-linear-gradient(top, #a9d796, #a9d796);
   background-repeat: no-repeat, no-repeat;
   background-position: 9px center, 0 0;
   border-color: #8ac971;
 }
 .skin-download-button {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png) no-repeat scroll 9px center #ffffff;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png) no-repeat scroll 9px center #ffffff;
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#f6f6f6));
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -moz-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -ms-linear-gradient(top, #ffffff, #f6f6f6);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -o-linear-gradient(top, #ffffff, #f6f6f6);
   background-repeat: no-repeat, no-repeat;
   background-position: 9px center, 0 0;
   padding-right: 13px;
   padding-left: 27px;
 }
 .skin-download-button:active {
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png) no-repeat scroll 9px center #f6f6f6;
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
-  background: url(../../../dep/esui/3.1.0-beta.3/src/img/esui-btn-download.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png) no-repeat scroll 9px center #f6f6f6;
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6f6f6), to(#ffffff));
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -webkit-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -moz-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -ms-linear-gradient(top, #f6f6f6, #ffffff);
+  background: url(../../../dep/esui/src/img/esui-btn-download.png), -o-linear-gradient(top, #f6f6f6, #ffffff);
   background-repeat: no-repeat, no-repeat;
   background-position: 9px center, 0 0;
 }
@@ -4261,7 +4261,7 @@ button.skin-link-button:hover {
   display: none;
 }
 .ui-uploader-busy .ui-uploader-indicator {
-  background: url('../../../dep/bat-ria/0.2.0/src/ui/img/upload-progress.gif') no-repeat 0 3px;
+  background: url('../../../dep/bat-ria/src/ui/img/upload-progress.gif') no-repeat 0 3px;
   display: block;
 }
 .ui-uploader-droppable .ui-uploader-button,
@@ -4294,7 +4294,7 @@ button.skin-link-button:hover {
 }
 .ui-uploader-uploaded .ui-uploader-label {
   padding-left: 28px;
-  background: url(../../../dep/bat-ria/0.2.0/src/ui/img/upload-success.png) no-repeat;
+  background: url(../../../dep/bat-ria/src/ui/img/upload-success.png) no-repeat;
 }
 .ui-uploader-validity-label {
   float: left;
@@ -4337,7 +4337,7 @@ button.skin-link-button:hover {
   text-shadow: none;
   background-color: transparent;
   border: 0;
-  background: transparent url(../../../dep/bat-ria/0.2.0/src/ui/img/search.png) no-repeat 0 -4px;
+  background: transparent url(../../../dep/bat-ria/src/ui/img/search.png) no-repeat 0 -4px;
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -4536,7 +4536,7 @@ button.skin-link-button:hover {
   display: none;
 }
 .ui-table-richselector.ui-richselector-add .ui-richselector-row-action-icon {
-  background: url("../../../dep/bat-ria/0.2.0/src/ui/img/treeselector-arrow.png");
+  background: url("../../../dep/bat-ria/src/ui/img/treeselector-arrow.png");
   height: 14px;
   margin-top: -1px;
   width: 17px;
@@ -4552,7 +4552,7 @@ button.skin-link-button:hover {
   display: block;
 }
 .ui-table-richselector.ui-richselector-del .ui-richselector-row-action-icon {
-  background: url("../../../dep/bat-ria/0.2.0/src/ui/img/treeselector-del.png");
+  background: url("../../../dep/bat-ria/src/ui/img/treeselector-del.png");
   height: 18px;
   width: 18px;
   display: none;
@@ -4635,7 +4635,7 @@ button.skin-link-button:hover {
   margin-top: 5px;
 }
 .ui-richselector-validity-label-invalid {
-  background: url('../../../dep/bat-ria/0.2.0/src/ui/img/icon-alert.png') no-repeat scroll 15px center #fedbdc;
+  background: url('../../../dep/bat-ria/src/ui/img/icon-alert.png') no-repeat scroll 15px center #fedbdc;
   border: 1px solid #F0CCCC;
   color: #dd6767;
   padding: 5px 0 5px 50px;
@@ -4794,7 +4794,7 @@ button.skin-link-button:hover {
   box-shadow: 0 2px 10px 0 #999;
   border: 2px solid #D6E7F2;
   padding: 0 12px 0 36px;
-  background: url(../../../dep/bat-ria/0.2.0/src/ui/img/loading.gif) no-repeat 10px center #fcfcfc;
+  background: url(../../../dep/bat-ria/src/ui/img/loading.gif) no-repeat 10px center #fcfcfc;
   line-height: 44px;
   color: #3377AA;
   font-weight: 700;
