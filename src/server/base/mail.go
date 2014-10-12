@@ -390,16 +390,13 @@ func fixMessageEncoding(r io.Reader, c string) ([]byte, error) {
 		var outbuf [512]byte
 		x, _, err := cd.Conv(body, outbuf[:])
 		if err == nil {
-			body = []byte(html.EscapeString(string(x)))
+			body = x
 		}
 	}
 
 	if ct == "text/plain" {
-		body = bytes.Join([][]byte{
-			[]byte("<pre>"),
-			body,
-			[]byte("</pre>"),
-		}, []byte(""))
+		body = []byte(fmt.Sprintf("<pre>%s</pre>",
+			html.EscapeString(string(body))))
 	}
 
 	return body, nil

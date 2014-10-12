@@ -70,7 +70,7 @@ function getTableFields(linkBuilder) {
             stable: true,
             title: '',
             content: function (item) {
-                return '<ins title="' + item.uidl + '" class="' +
+                return '<ins data-id="' + item.id + '" title="' + item.uidl + '" class="' +
                     (item.is_star ? 'x-icon-star-lit4' : 'x-icon-star4') + '"></ins>';
             }
         },

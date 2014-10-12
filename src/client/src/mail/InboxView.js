@@ -10,7 +10,7 @@ define(function (require) {
     var u = require('underscore');
     var notification = require('common/notification');
     var util = require('common/util');
-
+    var lib = require('esui/lib');
     var ListView = require('bat-ria/mvc/ListView');
 
     /**
@@ -34,6 +34,7 @@ define(function (require) {
         table: util.mailListConfiguration(),
         cm: {
             displayText: '选择邮件',
+            // displayHtml: '<input data-ui-type="CheckBox" />选择邮件',
             datasource: [
                 { text: 'All' },
                 { text: 'None' },
@@ -49,6 +50,7 @@ define(function (require) {
                 { text: '归档', action: 'archive' },
                 { text: '标记已读', action: 'markAsRead' },
                 { text: '添加标签', action: 'addLabel' },
+                { text: '添加星标', action: 'addStar' },
                 { text: '删除', action: 'delete' }
             ]
         },
@@ -97,6 +99,22 @@ define(function (require) {
 
     MailInboxView.prototype.enterDocument = function() {
         ListView.prototype.enterDocument.apply(this, arguments);
+
+        var view = this;
+        view.get('table').addHandlers('click', {
+            handler: function(element, e) {
+                if (lib.hasClass(element, 'x-icon-star4')) {
+                    view.fire('addStar', element);
+                }
+                else {
+                    view.fire('removeStar', element);
+                }
+            },
+            matchFn: function(element) {
+                return lib.hasClass(element, 'x-icon-star4') ||
+                lib.hasClass(element, 'x-icon-star-lit4')
+            }
+        });
     };
 
     require('er/util').inherits(MailInboxView, ListView);

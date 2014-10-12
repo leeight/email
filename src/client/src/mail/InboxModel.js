@@ -89,6 +89,20 @@ define(function (require) {
     };
 
     /**
+     * @param {Array.<string>} ids 把ids的邮件添加星标
+     */
+    MailInboxModel.prototype.addStar = function(ids) {
+        return api.addStar({ids: ids});
+    };
+
+    /**
+     * @param {Array.<string>} ids 把ids的邮件删除星标
+     */
+    MailInboxModel.prototype.removeStar = function(ids) {
+        return api.removeStar({ids: ids});
+    };
+
+    /**
      * @inheritDoc
      */
     // MailInboxModel.prototype.defaultTimeRange = batUtil.getTimeRange();

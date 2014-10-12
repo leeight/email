@@ -9,7 +9,6 @@ define(function (require) {
 
     var FormView = require('bat-ria/mvc/FormView');
     var u = require('underscore');
-    // var ueditorInstance = null;
 
     /**
      * [Please Input View Description]
@@ -31,19 +30,12 @@ define(function (require) {
             removePlugins: 'elementspath',
             contentsCss: require.toUrl('common/css/ckeditor.less')
         });
-        // return;
-        // if (ueditorInstance) {
-        //     ueditorInstance.destroy();
-        // }
-        // ueditorInstance = UE.getEditor('email-body-editor');
+
         var message = this.model.get('message');
         if (message) {
             CKEDITOR.instances['email-body-editor'].setData(message);
-            // ueditorInstance.ready(function(editor) {
-            //     ueditorInstance.setContent(message);
-            //     ueditorInstance.focus();
-            // });
-        } else {
+        }
+        else {
             var to = this.get('to');
             var input = to.getFocusTarget();
             if (input) {

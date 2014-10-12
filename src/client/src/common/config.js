@@ -16,6 +16,8 @@ define(function (require) {
         mailPost: '/api/mail/post',
         mailSearch: '/api/mail/search',
         markAsRead: '/api/mail/mark_as_read',
+        addStar: '/api/mail/add_star',
+        removeStar: '/api/mail/remove_star',
         deleteMails: '/api/mail/delete',
         labelList: '/api/labels',
         threadList: '/api/thread/list',

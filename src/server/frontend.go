@@ -42,6 +42,8 @@ func main() {
 	http.Handle("/api/mail/read", handlers.MailReadHandler{context})
 	http.Handle("/api/mail/search", handlers.MailSearchHandler{context})
 	http.Handle("/api/mail/mark_as_read", handlers.MarkAsReadHandler{context})
+	http.Handle("/api/mail/add_star", handlers.AddStarHandler{context})
+	http.Handle("/api/mail/remove_star", handlers.RemoveStarHandler{context})
 	http.Handle("/api/mail/delete", handlers.MailDeleteHandler{context})
 	http.Handle("/api/mail/post", handlers.MailPostHandler{context})
 

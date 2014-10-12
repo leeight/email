@@ -68,18 +68,24 @@ define(function (require) {
 
         var table = this.view.get('table');
         var model = this.model;
-        // this.view.on('batchmodify', function(e) {
-        //     var ids = u.map(table.getSelectedItems(), function(item) {
-        //         return item.id;
-        //     });
 
-        //     var action = e.action;
-        //     if (action === 'delete') {
-        //         model.deleteMails(ids).then(function(){
-        //             locator.reload();
-        //         });
-        //     }
-        // });
+        this.view.on('addStar', function(evt) {
+            var element = evt.data;
+            var id = element.getAttribute('data-id');
+
+            model.addStar([id]).then(function() {
+                element.className = 'x-icon-star-lit4';
+            });
+        });
+
+        this.view.on('removeStar', function(evt) {
+            var element = evt.data;
+            var id = element.getAttribute('data-id');
+
+            model.removeStar([id]).then(function() {
+                element.className = 'x-icon-star4';
+            });
+        });
 
         this.view.get('actions').on('select', function(e) {
             var ids = u.map(table.getSelectedItems(), function(item) {
@@ -88,14 +94,13 @@ define(function (require) {
 
             var action = e.item.action;
             if (action === 'markAsRead') {
-                model.markAsRead(ids).then(function(){
-                    locator.reload();
-                });
+                model.markAsRead(ids).then(locator.reload);
+            }
+            else if (action === 'addStar') {
+                model.addStar(ids).then(locator.reload);
             }
             else if (action === 'delete') {
-                model.deleteMails(ids).then(function(){
-                    locator.reload();
-                });
+                model.deleteMails(ids).then(locator.reload);
             }
         });
     };

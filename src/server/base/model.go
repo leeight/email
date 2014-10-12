@@ -37,6 +37,7 @@ type EMail struct {
 	IsCalendar  int       `json:"is_calendar"`
 	IcalMessage string    `json:"ical_message"`
 	IsSent      int       `json:"is_sent"`
+	IsStar      int       `json:"is_star"`
 	IsDelete    int       `json:"is_delete"`
 }
 
@@ -71,6 +72,7 @@ type EMailViewModel struct {
 	IcalMessage string          `json:"ical_message"`
 	IsRead      int             `json:"is_read"`
 	IsSent      int             `json:"is_sent"`
+	IsStar      int             `json:"is_star"`
 	IsDelete    int             `json:"is_delete"`
 }
 
@@ -194,6 +196,7 @@ func (this *EMail) ToViewModel(downloadDir string, db *sql.DB) *EMailViewModel {
 	evm.IsRead = this.IsRead
 	evm.IsDelete = this.IsDelete
 	evm.IsSent = this.IsSent
+	evm.IsStar = this.IsStar
 	evm.IsCalendar = this.IsCalendar
 	evm.IcalMessage = this.IcalMessage
 	evm.From, _ = mail.ParseAddress(this.From)

@@ -22,7 +22,7 @@ func (this *MailListSchema) BuildListSql() string {
 	// 准备sql
 	sql := "SELECT " +
 		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
-		"`reply_to`, `subject`, `date`, `is_read` " +
+		"`reply_to`, `subject`, `date`, `is_read`, `is_star` " +
 		"FROM mails "
 
 	if this.IsDelete == 1 {

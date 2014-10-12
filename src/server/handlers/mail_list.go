@@ -45,7 +45,8 @@ func (h MailListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			&email.ReplyTo,
 			&email.Subject,
 			&email.Date,
-			&email.IsRead)
+			&email.IsRead,
+			&email.IsStar)
 
 		evm := email.ToViewModel(ctx.GetConfig().DownloadDir(), db)
 		emails = append(emails, evm)
