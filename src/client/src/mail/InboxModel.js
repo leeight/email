@@ -42,6 +42,11 @@ define(function (require) {
                     active: false
                 },
                 {
+                    path: '#/mail/starred',
+                    name: 'Starred Mail',
+                    active: false
+                },
+                {
                     path: '#/thread/list',
                     name: 'All Thread',
                     active: false
@@ -126,6 +131,8 @@ define(function (require) {
             return { 'is_sent': 1 };
         } else if (url.indexOf('#/calendar/list') === 0) {
             return { 'is_calendar': 1 };
+        } else if (url.indexOf('#/mail/starred') === 0) {
+            return { 'is_star': 1 };
         }
 
         return {};

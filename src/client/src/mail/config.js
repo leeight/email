@@ -26,6 +26,10 @@ define(function (require) {
         },
         {
             type: 'mail/Inbox',
+            path: '/mail/starred'
+        },
+        {
+            type: 'mail/Inbox',
             path: '/mail/sent'
         },
         {

@@ -13,9 +13,49 @@ type MailListSchema struct {
 	LabelId    int `schema:"label"`
 	UnRead     int `schema:"unreadOnly"`
 	IsDelete   int `schema:"is_delete"`
+	IsStar     int `schema:"is_star"`
 	IsSent     int `schema:"is_sent"`
 	IsCalendar int `schema:"is_calendar"`
 	SkipCount  int `schema:"-"`
+}
+
+func (this *MailListSchema) getSearchCriteria() string {
+	var sql string
+
+	if this.IsDelete == 1 {
+		sql += "WHERE `is_delete` = 1 "
+	} else if this.IsStar == 1 {
+		sql += "WHERE `is_star` = 1 "
+	} else {
+		if this.LabelId > 0 {
+			sql += "WHERE `is_delete` != 1 AND `id` IN " +
+				"(SELECT `mid` FROM `mail_tags` WHERE `tid` = " +
+				strconv.Itoa(this.LabelId) + ") "
+		} else {
+			sql += "WHERE `is_delete` != 1 "
+		}
+	}
+
+	if this.UnRead == 1 {
+		// 如果有明确的标识说只看未读的邮件，才加上这个条件，否则返回未读和已读的
+		sql += "AND `is_read` != 1 "
+	}
+
+	if this.IsStar != 1 {
+		if this.IsSent == 1 {
+			sql += "AND `is_sent` = 1 "
+		} else {
+			sql += "AND `is_sent` != 1 "
+		}
+
+		if this.IsCalendar == 1 {
+			sql += "AND `is_calendar` = 1 "
+		} else {
+			sql += "AND `is_calendar` != 1 "
+		}
+	}
+
+	return sql
 }
 
 func (this *MailListSchema) BuildListSql() string {
@@ -24,36 +64,7 @@ func (this *MailListSchema) BuildListSql() string {
 		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
 		"`reply_to`, `subject`, `date`, `is_read`, `is_star` " +
 		"FROM mails "
-
-	if this.IsDelete == 1 {
-		sql += "WHERE `is_delete` = 1 "
-	} else {
-		if this.LabelId > 0 {
-			sql += "WHERE `is_delete` != 1 AND `id` IN " +
-				"(SELECT `mid` FROM `mail_tags` WHERE `tid` = " +
-				strconv.Itoa(this.LabelId) + ") "
-		} else {
-			sql += "WHERE `is_delete` != 1 "
-		}
-	}
-
-	if this.UnRead == 1 {
-		// 如果有明确的标识说只看未读的邮件，才加上这个条件，否则返回未读和已读的
-		sql += "AND `is_read` != 1 "
-	}
-
-	if this.IsSent == 1 {
-		sql += "AND `is_sent` = 1 "
-	} else {
-		sql += "AND `is_sent` != 1 "
-	}
-
-	if this.IsCalendar == 1 {
-		sql += "AND `is_calendar` = 1 "
-	} else {
-		sql += "AND `is_calendar` != 1 "
-	}
-
+	sql += this.getSearchCriteria()
 	sql += "ORDER BY `date` DESC, `id` DESC LIMIT ?, ?"
 
 	return sql
@@ -62,34 +73,7 @@ func (this *MailListSchema) BuildListSql() string {
 func (this *MailListSchema) BuildTotalSql() string {
 	sql := "SELECT COUNT(*) FROM mails "
 
-	if this.IsDelete == 1 {
-		sql += "WHERE `is_delete` = 1 "
-	} else {
-		if this.LabelId > 0 {
-			sql += "WHERE `is_delete` != 1 AND `id` IN " +
-				"(SELECT `mid` FROM `mail_tags` WHERE `tid` = " +
-				strconv.Itoa(this.LabelId) + ") "
-		} else {
-			sql += "WHERE `is_delete` != 1 "
-		}
-	}
-
-	if this.UnRead == 1 {
-		// 如果有明确的标识说只看未读的邮件，才加上这个条件，否则返回未读和已读的
-		sql += "AND `is_read` != 1 "
-	}
-
-	if this.IsSent == 1 {
-		sql += "AND `is_sent` = 1 "
-	} else {
-		sql += "AND `is_sent` != 1 "
-	}
-
-	if this.IsCalendar == 1 {
-		sql += "AND `is_calendar` = 1 "
-	} else {
-		sql += "AND `is_calendar` != 1 "
-	}
+	sql += this.getSearchCriteria()
 
 	return sql
 }
