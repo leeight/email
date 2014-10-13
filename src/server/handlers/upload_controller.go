@@ -63,10 +63,11 @@ func (h UploadControllerHandler) receiveAttachmentUpload(w http.ResponseWriter, 
 				config.DownloadDir(),
 				"00000",
 				"att",
-				fmt.Sprintf("%x%s",
-					md5.Sum(buf),
-					path.Ext(fileHeader.Filename),
-				),
+				fileHeader.Filename,
+				// fmt.Sprintf("%x%s",
+				// 	md5.Sum(buf),
+				// 	path.Ext(fileHeader.Filename),
+				// ),
 			)
 			log.Info("Uploaded Attachment = [%s]", abspath)
 			os.MkdirAll(path.Dir(abspath), 0755)
