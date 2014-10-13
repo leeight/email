@@ -46,11 +46,11 @@ define(function (require) {
                     name: 'Starred Mail',
                     active: false
                 },
-                {
-                    path: '#/thread/list',
-                    name: 'All Thread',
-                    active: false
-                },
+                // {
+                //     path: '#/thread/list',
+                //     name: 'All Thread',
+                //     active: false
+                // },
                 {
                     path: '#/calendar/list',
                     name: 'All Calendar',

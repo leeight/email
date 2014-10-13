@@ -6,6 +6,7 @@
 define(function (require) {
     // require template
     require('bat-ria/tpl!./compose.tpl.html');
+    require('ckeditor/plugins/autoupload');
 
     var FormView = require('bat-ria/mvc/FormView');
     var u = require('underscore');
@@ -26,14 +27,18 @@ define(function (require) {
 
     MailComposeView.prototype.enterDocument = function() {
         FormView.prototype.enterDocument.apply(this, arguments);
-        CKEDITOR.replace('email-body-editor', {
+
+        var editor = CKEDITOR.replace('email-body-editor', {
             removePlugins: 'elementspath',
+            extraPlugins: 'autoupload',
+            enterMode: CKEDITOR.ENTER_BR,
             contentsCss: require.toUrl('common/css/ckeditor.less')
         });
+        editor.on('newAttachment', u.bind(this._onNewAttachment, this));
 
         var message = this.model.get('message');
         if (message) {
-            CKEDITOR.instances['email-body-editor'].setData(message);
+            editor.setData(message);
         }
         else {
             var to = this.get('to');
@@ -42,6 +47,29 @@ define(function (require) {
                 input.focus();
             }
         }
+    };
+
+    MailComposeView.prototype._onNewAttachment = function(e) {
+        var name = e.data.name;
+        // downloads/00000/att/b9c834ecf9593cb59f393f3cd0ba2f8e.pdf
+        var url = e.data.url.replace('downloads/', '');
+
+        var ui = this.get('attachments');
+        var ds = ui.get('datasource');
+        var rv = ui.get('rawValue');
+
+        ds.push({
+            title: name,
+            value: url,
+            checked: true
+        });
+        rv.push(url);
+
+        ui.setProperties({
+            'datasource': ds,
+            'rawValue': rv
+        });
+        ui.repaint();
     };
 
     MailComposeView.prototype.getExtraFormData = function() {
@@ -54,9 +82,11 @@ define(function (require) {
      * @inheritDoc
      */
     MailComposeView.prototype.getUIProperties = function() {
-        var rawValue = u.map(this.model.get('attachments'), function(item){
+        var attachments = this.model.get('attachments') || [];
+        var rawValue = u.map(attachments, function(item){
             return item.value;
-        })
+        });
+
         var uiProperties = {
             cc: {
                 value: '@cc'
@@ -65,7 +95,7 @@ define(function (require) {
                 value: '@to'
             },
             attachments: {
-                datasource: '@attachments',
+                datasource: attachments,
                 rawValue: rawValue
             }
         };
