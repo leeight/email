@@ -137,7 +137,7 @@ npm i -g edp edp-webserver --registry=http://npm.baidu.com
 
 ### 过滤器
 
-邮件的过滤器主要是通过`filters.yml`来配置完成的，参考现有的进行修改即可。常见的一个过滤器结构如下：
+邮件的过滤器主要是通过`filters.yml`来配置完成的，可以把`filters.example.yml`拷贝为`filters.yml`，进行一些调整来符合自己的需求。调整的时候参考现有的内容即可。常见的一个过滤器结构如下：
 
 ```
 - filter:
