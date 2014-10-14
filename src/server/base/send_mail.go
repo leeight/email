@@ -1,6 +1,7 @@
 package base
 
 import (
+	"crypto/tls"
 	"net/smtp"
 
 	"../net/mail"
@@ -13,7 +14,7 @@ func SendMail(
 	cc []*mail.Address,
 	raw []byte,
 	smtpserver string,
-	tls bool,
+	xtls bool,
 	auth smtp.Auth,
 ) error {
 	c, err := smtp.Dial(smtpserver)
@@ -21,8 +22,9 @@ func SendMail(
 		return err
 	}
 
-	if tls {
-		if err = c.StartTLS(nil); err != nil {
+	if xtls {
+		config := tls.Config{InsecureSkipVerify: true}
+		if err = c.StartTLS(&config); err != nil {
 			return err
 		}
 	}
