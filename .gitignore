@@ -26,6 +26,7 @@ raw.txt
 /src/server/filters.yml
 /src/server/downloads
 config.yml
+filters.yml
 126.config.yml
 
 /email-client.sublime-project
