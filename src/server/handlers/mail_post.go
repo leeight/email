@@ -81,7 +81,7 @@ func (h MailPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.FormValue("attachments") != "" {
 		// TODO(user) 校验合法性
-		attachments = strings.Split(r.FormValue("attachments"), "; ")
+		attachments = strings.Split(r.FormValue("attachments"), ",")
 	}
 
 	// 查找HTML邮件内容中是否存在Content-Id的引用

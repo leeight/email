@@ -9,6 +9,7 @@ define(function (require) {
     require('ckeditor/plugins/autoupload');
 
     var FormView = require('bat-ria/mvc/FormView');
+    var lib = require('esui/lib');
     var u = require('underscore');
 
     /**
@@ -27,6 +28,10 @@ define(function (require) {
 
     MailComposeView.prototype.enterDocument = function() {
         FormView.prototype.enterDocument.apply(this, arguments);
+        var model = this.model;
+        var onNewAttachment = u.bind(this._onNewAttachment, this);
+
+        window.xyz = this;
 
         var editor = CKEDITOR.replace('email-body-editor', {
             removePlugins: 'elementspath',
@@ -34,7 +39,13 @@ define(function (require) {
             enterMode: CKEDITOR.ENTER_BR,
             contentsCss: require.toUrl('common/css/ckeditor.less')
         });
-        editor.on('newAttachment', u.bind(this._onNewAttachment, this));
+        editor.on('newAttachment', onNewAttachment);
+
+        lib.on('newAttachment', 'change', function() {
+            u.each(this.files, function(file) {
+                model.uploadAttachment(file).then(onNewAttachment);
+            });
+        });
 
         var message = this.model.get('message');
         if (message) {
@@ -130,6 +141,10 @@ define(function (require) {
         'cc:input': function(e) {
             displaySuggestions(this, e.target)
         },
+        'addAtt:click': function(e) {
+            // https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
+            lib.g('newAttachment').click();
+        }
     };
 
     require('er/util').inherits(MailComposeView, FormView);

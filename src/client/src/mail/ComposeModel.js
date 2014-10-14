@@ -8,6 +8,7 @@ define(function (require) {
     var datasource = require('er/datasource');
     var api = require('common/config').api;
     var batUtil = require('bat-ria/util');
+    var Deferred = require('er/Deferred');
 
     /**
      * [Please Input Model Description]
@@ -48,6 +49,41 @@ define(function (require) {
         return api.contactsList({keyword: keyword, pageSize: 6}).then(function(page){
             return page.result || [];
         })
+    };
+
+    /**
+     * 上传附件
+     * @param {File} file 已经选择的文件.
+     */
+    MailComposeModel.prototype.uploadAttachment = function(file) {
+        var requesting = new Deferred();
+
+        var xhr = new XMLHttpRequest();
+        var fd = new FormData();
+
+        fd.append('file', file, file.name);
+        fd.append('type', 'ajax');
+
+        xhr.open('POST', '/api/upload/controller?action=file', true);
+        xhr.onload = function(e) {
+            try {
+                var json = JSON.parse(e.target.response);
+                if (json.state === 'SUCCESS') {
+                    requesting.resolve({
+                        data: {
+                            name: file.name,
+                            url: json.url
+                        }
+                    });
+                }
+            }
+            catch(ex) {
+                requesting.reject(ex);
+            }
+        }
+        xhr.send(fd);
+
+        return requesting.promise;
     };
 
     /**

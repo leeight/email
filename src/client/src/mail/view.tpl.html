@@ -40,11 +40,10 @@
     <!-- if: !${email.hide_subject} -->
     <div class="mail-subject">
         <!-- if: ${email.subject} -->
-        <h2>${email.subject}</h2>
+        <h2 title="${email.subject}">${email.subject}</h2>
         <!-- else -->
         <h2>(no subject)</h2>
         <!-- /if -->
-        <a href="#/mail/inbox">Inbox</a>
         <!-- if: ${email.labels} -->
             <!-- for: ${email.labels} as ${item} -->
             <a href="#/mail/inbox~label=${item.id}">${item.name}</a>

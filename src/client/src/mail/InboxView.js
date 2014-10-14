@@ -47,11 +47,11 @@ define(function (require) {
         actions: {
             displayText: '操作',
             datasource: [
+                { text: '删除', action: 'delete' },
                 { text: '归档', action: 'archive' },
                 { text: '标记已读', action: 'markAsRead' },
                 { text: '添加标签', action: 'addLabel' },
-                { text: '添加星标', action: 'addStar' },
-                { text: '删除', action: 'delete' }
+                { text: '添加星标', action: 'addStar' }
             ]
         },
         'unread-only': {
