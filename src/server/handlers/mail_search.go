@@ -57,7 +57,7 @@ func (h MailSearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	params.Init(r)
 
 	// 发起请求
-	var searcherUrl = params.BuildSearcherUrl()
+	var searcherUrl = params.BuildSearcherUrl(ctx.GetConfig())
 	log.Info("%s", searcherUrl)
 	resp, err := http.Post(searcherUrl, "", bytes.NewReader(params.BuildSearcherBody()))
 	if err != nil {

@@ -2,6 +2,7 @@ package web
 
 import (
 	"database/sql"
+	"fmt"
 
 	// 支持mysql
 	_ "github.com/go-sql-driver/mysql"
@@ -32,15 +33,15 @@ type webContext struct {
 
 func (c webContext) GetDb() *sql.DB {
 	return c.GetMysqlDb()
-	// db, err := sql.Open("sqlite3", c.config.DbPath())
-	// if err != nil {
-	// 	c.GetLogger().Warning("%s", err)
-	// }
-	// return db
 }
 
 func (c webContext) GetMysqlDb() *sql.DB {
-	db, err := sql.Open("mysql", "root:@/foo?parseTime=true")
+	// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
+	srv := c.config.Service.Db
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
+		srv.User, srv.Pass, srv.Host, srv.Port, srv.Name)
+
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		c.GetLogger().Warning("%s", err)
 		panic(err)

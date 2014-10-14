@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/gorilla/schema"
+
+	"../../base"
 )
 
 type MailSearchSchema struct {
@@ -44,9 +46,10 @@ type scoreSortFieldType struct {
 	} `json:"_score"`
 }
 
-func (this *MailSearchSchema) BuildSearcherUrl() string {
-	var host = "http://localhost:9200/baidu/mails/_search"
-	return host
+func (this *MailSearchSchema) BuildSearcherUrl(config *base.ServerConfig) string {
+	return fmt.Sprintf("http://%s:%d/baidu/mails/_search",
+		config.Service.Indexer.Host,
+		config.Service.Indexer.Port)
 }
 
 func (this *MailSearchSchema) BuildSearcherBody() []byte {

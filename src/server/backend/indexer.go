@@ -29,12 +29,15 @@ func AddToIndexer(ctx web.Context) {
 
 func doPut(ctx web.Context, email *base.EMail) {
 	log := ctx.GetLogger()
+	config := ctx.GetConfig()
 
 	var msg = messageType{
 		email.Id, email.Uidl, email.Subject, email.Date.Unix(),
 	}
 
-	url := fmt.Sprintf("http://localhost:9200/baidu/mails/%d",
+	url := fmt.Sprintf("http://%s:%d/baidu/mails/%d",
+		config.Service.Indexer.Host,
+		config.Service.Indexer.Port,
 		email.Id)
 	client := &http.Client{}
 	data, _ := json.Marshal(msg)

@@ -14,7 +14,7 @@ import (
 
 func main() {
 	var configfile = flag.String("config", "config.yml", "The config file path")
-	var initsqlfile = flag.String("initsql", "", "The init sql file path")
+	// var initsqlfile = flag.String("initsql", "", "The init sql file path")
 	var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 	flag.Parse()
@@ -38,7 +38,7 @@ func main() {
 	ctx := web.NewContext(config)
 
 	// 检查数据库文件是否存在
-	backend.InitDatabase(ctx, *initsqlfile)
+	// backend.InitDatabase(ctx, *initsqlfile)
 
 	// 先执行一次
 	executor := backend.ReceiveRecentMails(ctx)

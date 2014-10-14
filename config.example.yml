@@ -2,20 +2,39 @@ http:
   port: 8765
 
 pop3:
-  username: liyubei
+  username: username
   password: password
   host: email.baidu.com
   port: 995
   tls: true
+
+# 检查邮件的间隔，60s
   interval: 60
 
+# 删除14天之前的邮件，如果不配置，或者配置为0的话，不删除
+  delete_older_mails: 14
+
 smtp:
-  username: internal\liyubei
+  username: internal\username
   password: password
   host: email.baidu.com
   port: 25
   tls: true
 
-frontend:
-  from: username@baidu.com
-  name: username
+service:
+# mysql server
+  db:
+    name: foo
+    host: localhost
+    user: root
+    pass:
+    port: 3306
+
+# elasticsearch server
+  indexer:
+    host: localhost
+    port: 9200
+
+# http://www.libreoffice.org/
+  soffice:
+    exec: /this/is/the/soffice/bin/path

@@ -61,26 +61,23 @@ type frontendType struct {
 }
 
 type serviceType struct {
-	Doc      docServiceType
-	Searcher searcherServiceType
-	Soffice  sofficeServerType
-}
-
-type searcherServiceType struct {
-	Datadir string
-	Port    int
+	Soffice sofficeServerType
+	Db      dbType
+	Indexer indexerType
 }
 
 type sofficeServerType struct {
 	Exec string
 }
 
-type docServiceType struct {
-	Url      string
-	Pid      int
-	Token    string
-	Sformats []string
-	Tformat  string
+type dbType struct {
+	Type, Name, Host, User, Pass string
+	Port                         int
+}
+
+type indexerType struct {
+	Host string
+	Port int
 }
 
 type ServerConfig struct {
@@ -89,7 +86,6 @@ type ServerConfig struct {
 	Smtp     smtpType
 	Frontend frontendType
 	Service  serviceType
-	Db       string
 	Dirs     struct {
 		Base string
 	}
@@ -104,11 +100,7 @@ func (config *ServerConfig) RawDir() string {
 }
 
 func (config *ServerConfig) DbPath() string {
-	if config.Db == "" {
-		return path.Join(config.Dirs.Base, kDefaultDbName)
-	} else {
-		return path.Join(config.Dirs.Base, config.Db)
-	}
+	return path.Join(config.Dirs.Base, kDefaultDbName)
 }
 
 func GetConfig(file string) (*ServerConfig, error) {
@@ -143,11 +135,11 @@ func GetConfig(file string) (*ServerConfig, error) {
 		path.Join(filepath.Dir(abs),
 			"data", domain, config.Pop3.Username))
 
-	// 如果不是绝对路径，那么路径是相对于config.yml所在的目录来计算的
-	if !filepath.IsAbs(config.Service.Searcher.Datadir) {
-		config.Service.Searcher.Datadir = filepath.Clean(
-			path.Join(filepath.Dir(abs),
-				config.Service.Searcher.Datadir))
+	if config.Frontend.Name == "" {
+		config.Frontend.Name = config.Pop3.Username
+	}
+	if config.Frontend.From == "" {
+		config.Frontend.From = config.Frontend.Name + "@" + domain
 	}
 
 	// 创建目录保证正确性
@@ -160,7 +152,7 @@ func GetConfig(file string) (*ServerConfig, error) {
 	log.Printf("Dirs.Base: %s\n", config.Dirs.Base)
 	log.Printf("Dirs.Download: %s\n", config.DownloadDir())
 	log.Printf("Dirs.Raw: %s\n", config.RawDir())
-	log.Printf("Dirs.DbPath: %s\n", config.DbPath())
+	// log.Printf("Dirs.DbPath: %s\n", config.DbPath())
 	fmt.Println()
 
 	return &config, nil
