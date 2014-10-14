@@ -46,8 +46,7 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 
 **注意事项**
 
-Windows下面安装可能会遇到很多问题，推荐在 Linux 或者 Mac 下面尝试。
-
+Windows下面安装可能会遇到很多问题，推荐在 Linux 或者 Mac 下面尝试
 
 ### git
 
@@ -98,6 +97,17 @@ go install github.com/go-sql-driver/mysql
 go install github.com/mattn/go-sqlite3
 go install github.com/bytbox/go-pop3
 go install gopkg.in/yaml.v1
+```
+
+### 使用jumbo
+
+如果在开发机使用 jumbo 安装的话，可以执行如下的命令来部署环境：
+
+```
+jumbo add-repo ftp://st01-arch-platform00.st01.baidu.com/home/bambi/repo/tmp
+jumbo install sun-java6 go mysql nodejs
+export PATH=${JUMBO_ROOT}/opt/sun-java6/bin:$PATH
+npm i -g edp edp-webserver --registry=http://npm.baidu.com
 ```
 
 ## 启动服务
