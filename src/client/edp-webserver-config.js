@@ -4,6 +4,7 @@ exports.documentRoot = __dirname;
 
 exports.proxyMap = {
     '127.0.0.1:8848': 'localhost:8765',
+    '10.95.42.43:8848': 'localhost:8765',
     '172.17.237.30:8848': 'localhost:8765'
 };
 

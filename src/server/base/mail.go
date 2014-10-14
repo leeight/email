@@ -108,7 +108,8 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 
 	// Date: Wed, 17 Sep 2014 07:34:46 +0100
 	// Date: Wed, 17 Sep 2014 14:31:06 +0800
-	date, err := time.Parse(kTimeLayout, msg.Header.Get(kDate))
+	datestr := regexp.MustCompile(`\s\([^\)]+\)`).ReplaceAllString(msg.Header.Get(kDate), "")
+	date, err := time.Parse(kTimeLayout, datestr)
 	if err != nil {
 		return nil, err
 	}
