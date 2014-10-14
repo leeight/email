@@ -108,8 +108,29 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 
 	// Date: Wed, 17 Sep 2014 07:34:46 +0100
 	// Date: Wed, 17 Sep 2014 14:31:06 +0800
+
+	var date time.Time
+	var timeLayouts = []string{
+		"Mon, 2 Jan 2006 15:04:05 -0700",
+		"Mon, 2 Jan 2006 15:4:5 -0700",
+		"Mon, 2 Jan 06 15:04:05 -0700",
+		"Mon, 2 Jan 06 15:4:5 -0700",
+		"2 Jan 2006 15:04:05 -0700",
+		"2 Jan 2006 15:4:5 -0700",
+		"2 Jan 06 15:04:05 +0700",
+		"2 Jan 06 15:4:5 +0700",
+		"Mon, 2 Jan 2006 15:04:05 GMT",
+		"Mon, 2 Jan 2006 15:4:5 GMT",
+		"Mon, 2 Jan 06 15:04:05 GMT",
+		"Mon, 2 Jan 06 15:4:5 GMT",
+	}
 	datestr := regexp.MustCompile(`\s\([^\)]+\)`).ReplaceAllString(msg.Header.Get(kDate), "")
-	date, err := time.Parse(kTimeLayout, datestr)
+	for _, layout := range timeLayouts {
+		date, err = time.Parse(layout, datestr)
+		if err == nil {
+			break
+		}
+	}
 	if err != nil {
 		return nil, err
 	}
