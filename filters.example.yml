@@ -1,0 +1,176 @@
+# 邮件的过滤器配置信息
+- filter:
+  name: 邮件列表/w3.org
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, '@w3.org']
+      - [SentTo, Contains, '@lists.css-discuss.org']
+  action:
+    Label: 邮件列表/w3.org
+
+- filter:
+  name: 邮件列表
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, '@lists.webkit.org']
+  action:
+    Label: 邮件列表/webkit.org
+
+- filter:
+  name: 邮件列表
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, 'jpaas@baidu.com']
+      - [SentTo, Contains, 'jpaas-users@baidu.com']
+  action:
+    Label: 邮件列表/jpaas
+
+- filter:
+  name: 监控邮件
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [From, Contains, 'galaxy-mon@baidu.com']
+      - [From, Contains, 'classified.ci@baidu.com']
+      - [From, Contains, 'noah-autopost@baidu.com']
+      - [From, Contains, 'autopost@baidu.com']
+      - [From, Contains, 'Spammail@baidu.com']
+      - [From, Contains, 'icafeauto@baidu.com']
+      - [From, Contains, 'dr-api@baidu.com']
+      - [From, Contains, 'jn-noreply@baidu.com']
+      - [From, Contains, 'hadoop-admin@baidu.com']
+      - [SentTo, Contains, 'jp-video-rd@baidu.com']
+      - [SentTo, Contains, 'tieba-ecom-rd@baidu.com']
+      - [Subject, Contains, '一个月以上未活动版本统计']
+      - [Subject, Contains, 'FS系统的linkinfo文件分发稳定性统计报表']
+      - [Subject, Contains, 'FS数据库-每日服务排查报告']
+      - [Subject, Contains, '[LOG.BAIDU.JP][WARN]']
+      - [Subject, Contains, '[LOG.BAIDU.COM][WARN]']
+      - [Subject, Contains, 'THIS IS SPAM']
+  action:
+    Label: 监控邮件
+    MarkAsRead: true
+    MarkAsDelete: true
+
+- filter:
+  name: Spam Filter
+  stop: true
+  condition:
+    match: All
+    rules:
+      - [From, '!Contains', baidu.com]
+      - [From, '!Contains', yinxiang.com]
+      - [From, '!Contains', platform.n.shifen.com]
+      - [From, '!Contains', gitlab.baidu.com]
+      - [From, '!Contains', ct_rsv@ctrip.com]
+  action:
+    Label: Spam
+    MarkAsRead: true
+    MarkAsDelete: true
+
+- filter:
+  name: HTTPs
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [From, Contains, https@baidu.com]
+      - [SentTo, Contains, https@baidu.com]
+      - [Subject, Contains, https]
+  action:
+    Label: HTTPs
+
+- filter:
+  name: Weigou
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [Subject, Contains, 微购]
+      - [SentTo, Contains, 'weigou-bugs@baidu.com']
+      - [SentTo, Contains, 'baidu-ec-qa@baidu.com']
+      - [SentTo, Contains, 'baidu-ec@baidu.com']
+      - [SentTo, Contains, 'eckg-rd@baidu.com']
+      - [SentTo, Contains, 'ecpm@baidu.com']
+      - [SentTo, Contains, 'baidu-ec-rd@baidu.com']
+      - [SentTo, Contains, 'ecrd-mp@baidu.com']
+      - [SentTo, Contains, 'ecrd-fe@baidu.com']
+      - [SentTo, Contains, 'ecqa-mp@baidu.com']
+  action:
+    Label: 微购
+
+- filter:
+  name: Huacai
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, huacai]
+  action:
+    Label: 华彩专区
+
+- filter:
+  name: Cooder
+  stop: true
+  condition:
+    match: Any
+    rules:
+      - [Subject, Contains, Cooder]
+      - [Subject, Contains, COODER]
+  action:
+    Label: Cooder
+
+- filter:
+  name: 发给我的
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, liyubei@baidu.com]
+      - [Subject, Contains, 文章推荐]
+  action:
+    Label: SentToMe
+
+- filter:
+  name: 度学堂
+  condition:
+    match: Any
+    rules:
+      - [From, Is, du-learning@baidu.com]
+  action:
+    Label: 度学堂
+
+- filter:
+  name: bdd-core
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, bdd-core@baidu.com]
+  action:
+    Label: bdd-core
+
+- filter:
+  name: Gitlab
+  condition:
+    match: Any
+    rules:
+      - [From, Contains, gitlab.baidu.com]
+      - [From, Contains, platform.n.shifen.com]
+  action:
+    Label: Gitlab
+
+- filter:
+  name: 图+
+  condition:
+    match: Any
+    rules:
+      - [SentTo, Contains, imageplus]
+      - [Subject, Contains, 图+]
+  action:
+    Label: 图+
