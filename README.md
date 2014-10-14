@@ -44,6 +44,11 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
     a. [redis](http://redis.io/download)
 3. [golang](http://golang.org/doc/install)
 
+**注意事项**
+
+Windows下面安装可能会遇到很多问题，推荐在 Linux 或者 Mac 下面尝试。
+
+
 ### git
 
 检出代码：`git clone http://gitlab.baidu.com/baidu/email.git`
@@ -75,14 +80,9 @@ redis-server redis.conf
 
 ### golang
 
-首先需要设置`GOPATH`环境变量：
-
-```
-mkdir $HOME/gocode
-export GOPATH=$HOME/gocode
-```
-
-然后开始下载所需要的依赖包（初次下载可能会比较慢，等耐心等待）
+1. 下载依赖包：`git clone http://gitlab.baidu.com/liyubei/gopath.git`
+2. 设置`GOPATH`环境变量：`export GOPATH=$(pwd)/gopath`
+3. 编译一下
 
 ```
 go install code.google.com/p/go.net/publicsuffix
