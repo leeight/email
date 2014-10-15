@@ -133,7 +133,9 @@ npm i -g edp edp-webserver --registry=http://npm.baidu.com
 1. go run src/server/frontend.go
 2. cd src/client && edp webserver start
 
-正常启动之后，可以通过 <http://localhost:8765/index.html?ed=1#/mail/inbox> 来查看邮件。
+正常启动之后，可以通过 <http://127.0.0.1:8765/index.html?ed=1#/mail/inbox> 来查看邮件。
+
+建议在 Chrome 或者 Firefox 下面进行使用，没有在 IE 下面进行测试，无法保证功能正常。当然，你也可以在这个测试环境下体验一把：<http://er-app-email.jpaas-idea.baidu.com/index.html#/mail/inbox>，发送邮件给<erappemails@126.com>，如果一切正常的话，过一分钟左右应该能看到新的邮件。
 
 ### 过滤器
 
