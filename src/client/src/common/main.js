@@ -9,6 +9,7 @@ define(
 
         var config = require('common/config');
         var etpl = require('etpl');
+        var View = require('er/View');
 
         /**
          * 引入各业务模块的Action配置
@@ -38,6 +39,11 @@ define(
 
             var user = require('bat-ria/system/user');
             var visitor = user.visitor;
+
+            View.prototype.dispose = function() {
+                // IGNORE
+                // 解决白屏的问题
+            };
 
             // 在这里用 visitor 信息初始化用户信息等 UI 元素
             // 以及自定义各种系统配置、导航栏等等
