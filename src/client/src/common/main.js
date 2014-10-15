@@ -53,12 +53,27 @@ define(
             // if (nav && nav.navId && nav.tabs) {
             //     require('bat-ria/ui/navigator').init(nav.navId, nav.tabs);
             // }
-            require('er/events').on('error', function (e) {
+            var events = require('er/events');
+            var lib = require('esui/lib');
+
+            events.on('forwardaction', function(e) {
+                lib.g('loading').style.display = '';
+            });
+
+            events.on('enteractioncomplete', function(e) {
+                lib.g('loading').style.display = 'none';
+            });
+
+            events.on('enteractionfail', function(e) {
+                lib.g('loading').style.display = 'none';
+            });
+
+            events.on('error', function (e) {
                 console.error(e.error.stack);
             });
 
             //拦截全局错误，做相应的跳转
-            require('er/events').on('globalError', function(e){
+            events.on('globalError', function(e){
                 console.error(e.error);
             });
         }
