@@ -167,3 +167,7 @@ npm i -g edp edp-webserver --registry=http://npm.baidu.com
 ### 跟 email.baidu.com 有啥区别？
 
 本质功能是一样的，虽然有些功能还没有 email.baidu.com 完善，有些功能比 email.baidu.com 更易用（例如发送和浏览邮件的功能），而且定制性和扩展性更好，希望更多的童鞋参与进来。
+
+### 为什么有些邮件收取不了呢？
+
+这是因为 POP3 协议的限制，没有文件夹的概念。 如果在服务器上保存了 Outlook 的过滤器，可能会把一些邮件放到 非Inbox 文件夹下面，此时用 POP3 就无法收取了，建议停用所有的过滤器（非删除），这样子就能收取所有的有邮件了。
