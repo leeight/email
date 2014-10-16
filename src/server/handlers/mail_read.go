@@ -21,7 +21,7 @@ func (h MailReadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	sql := "SELECT " +
 		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
-		"`reply_to`, `subject`, `date`, `message`, `is_sent`, `is_calendar`, `ical_message` " +
+		"`reply_to`, `subject`, `date`, `message`, `is_sent`, `is_calendar`, `is_star`, `ical_message` " +
 		"FROM mails " +
 		"WHERE `id` = ?"
 	log.Info(sql)
@@ -40,6 +40,7 @@ func (h MailReadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		&email.Message,
 		&email.IsSent,
 		&email.IsCalendar,
+		&email.IsStar,
 		&email.IcalMessage)
 
 	// 从sqlite3导入数据到mysql之后，发生了转义的问题

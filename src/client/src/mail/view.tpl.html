@@ -39,11 +39,19 @@
 <div class="list-header">
     <!-- if: !${email.hide_subject} -->
     <div class="mail-subject">
-        <!-- if: ${email.subject} -->
-        <h2 title="${email.subject}">${email.subject}</h2>
-        <!-- else -->
-        <h2>(no subject)</h2>
-        <!-- /if -->
+        <h2 title="${email.subject}">
+            <!-- if: ${email.is_star} -->
+            <ins class="x-icon-star-lit4"></ins>
+            <!-- else -->
+            <ins class="x-icon-star4"></ins>
+            <!-- /if -->
+
+            <!-- if: ${email.subject} -->
+            ${email.subject}
+            <!-- else -->
+            (no subject)
+            <!-- /if -->
+        </h2>
         <!-- if: ${email.labels} -->
             <!-- for: ${email.labels} as ${item} -->
             <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
