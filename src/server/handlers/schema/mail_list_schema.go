@@ -28,9 +28,17 @@ func (this *MailListSchema) getSearchCriteria() string {
 		sql += "WHERE `is_star` = 1 "
 	} else {
 		if this.LabelId > 0 {
-			sql += "WHERE `is_delete` != 1 AND `id` IN " +
-				"(SELECT `mid` FROM `mail_tags` WHERE `tid` = " +
-				strconv.Itoa(this.LabelId) + ") "
+			if this.LabelId != 2 && this.LabelId != 9 {
+				sql += "WHERE `is_delete` != 1 AND `id` IN " +
+					"(SELECT `mid` FROM `mail_tags` WHERE `tid` = " +
+					strconv.Itoa(this.LabelId) + ") "
+			} else {
+				// Spam 和 监控邮件 默认设置 is_delete = 1，因此
+				// 如果有 is_delete = 1在这种情况下，是过滤不出来任何东西的
+				sql += "WHERE `id` IN " +
+					"(SELECT `mid` FROM `mail_tags` WHERE `tid` = " +
+					strconv.Itoa(this.LabelId) + ") "
+			}
 		} else {
 			sql += "WHERE `is_delete` != 1 "
 		}
