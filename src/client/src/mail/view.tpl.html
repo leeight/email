@@ -139,15 +139,15 @@
               </td>
             </tr>
             <!-- /if -->
-            <!-- if: ${email.is_calendar} && ${email.ical_message.METHOD} == "REQUEST" -->
-            <!-- var: vevent = ${email.ical_message.VEVENT} -->
+            <!-- if: ${email.ical_event} -->
+            <!-- var: properties = ${email.ical_event.properties}-->
             <tr>
                 <th>时间：</th>
-                <td>${vevent.DTSTART} - ${vevent.DTEND}</td>
+                <td>${properties.DTSTART[0].value|dateFormat} - ${properties.DTEND[0].value|dateFormat}</td>
             </tr>
             <tr>
                 <th>地点：</th>
-                <td>${vevent.LOCATION|raw}</td>
+                <td>${properties.LOCATION[0].value|raw}</td>
             </tr>
             <!-- /if -->
         </table>
@@ -159,11 +159,12 @@
 <div class="mail-body">加载中...</div>
 <!-- else -->
 <div class="mail-body">
-  <!-- if: ${email.is_calendar} -->
-  <pre>${vevent.DESCRIPTION|raw}</pre>
-  <!-- /if -->
+  <!-- if: ${email.ical_event} -->
+  <pre>${properties.DESCRIPTION[0].value|raw}</pre>
+  <!-- else -->
   ${email.message|raw}
   <!-- /if -->
+<!-- /if -->
 </div>
 <!-- /if -->
 <!-- /block -->

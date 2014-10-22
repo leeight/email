@@ -9,6 +9,7 @@ define(
 
         var config = require('common/config');
         var etpl = require('etpl');
+        var moment = require('moment');
         var View = require('er/View');
 
         /**
@@ -88,6 +89,9 @@ define(
                 // 获取邮件内容的的简略信息
                 var rv = body.trim().replace(/(<[^>]+>|\s+)/g, '').substr(0, 100);
                 return rv;
+            });
+            etpl.addFilter('dateFormat', function(date) {
+                return moment(date).format('YYYY-MM-DD HH:mm:ss');
             });
 
             require('bat-ria/main')

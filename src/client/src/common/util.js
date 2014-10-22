@@ -7,6 +7,7 @@ var moment = require('moment');
 var lib = require('esui/lib');
 var u = require('underscore');
 var ical = require('common/ical');
+var icalendar = require('third_party/icalendar/bundle');
 var URL = require('er/URL');
 
 var exports = {};
@@ -172,6 +173,12 @@ exports.applyEMailPath = function(email) {
 
     if (email.is_calendar === 1) {
         try {
+            var icalx = icalendar.parse_calendar(email.ical_message);
+            var icalxEvents = icalx.events();
+            if (icalxEvents.length) {
+                email.ical_event = icalxEvents[0];
+            }
+
             var calendar = ical.parse(email.ical_message);
             email.ical_message = ical.format(calendar);
         }
