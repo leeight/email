@@ -6,7 +6,6 @@ define(function(require) {
 var moment = require('moment');
 var lib = require('esui/lib');
 var u = require('underscore');
-var ical = require('common/ical');
 var icalendar = require('third_party/icalendar/bundle');
 var URL = require('er/URL');
 
@@ -178,12 +177,8 @@ exports.applyEMailPath = function(email) {
             if (icalxEvents.length) {
                 email.ical_event = icalxEvents[0];
             }
-
-            var calendar = ical.parse(email.ical_message);
-            email.ical_message = ical.format(calendar);
         }
         catch(ex) {
-            email.ical_message = '<pre><b>' + ex.toString() + '</b>\n' + email.ical_message + '</pre>';
         }
     } else {
         // FIXME(user) 修复了 http://gitlab.baidu.com/baidu/email/issues/20 之后应该就不需要了
