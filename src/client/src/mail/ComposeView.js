@@ -35,8 +35,8 @@ define(function (require) {
 
         var editor = CKEDITOR.replace('email-body-editor', {
             removePlugins: 'elementspath',
-            extraPlugins: 'autoupload',
-            enterMode: CKEDITOR.ENTER_BR,
+            extraPlugins: 'autoupload,colorbutton',
+            // enterMode: CKEDITOR.ENTER_BR,
             contentsCss: require.toUrl('common/css/ckeditor.less')
         });
         editor.on('newAttachment', onNewAttachment);
