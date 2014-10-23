@@ -34,6 +34,16 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 
 ![mail_view.png](docs/mail_view.png)
 
+### 查看附件
+
+先进行网盘授权，授权之后邮件的附件是自动转存到百度云，方便预览。
+
+![view_attachment.png](docs/view_attachment.png)
+
+![view_attachment2.png](docs/view_attachment2.png)
+
+
+
 ## 环境搭建
 
 基于上面的介绍，搭建环境之前需要有一些依赖的服务需要准备好：
