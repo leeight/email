@@ -21,6 +21,7 @@ import (
 	"github.com/saintfish/chardet"
 
 	"../RFC2047"
+	"../base/netdisk"
 	"../net/mail"
 )
 
@@ -58,7 +59,7 @@ type inlineResourceType struct {
 
 // 从邮件的正文中创建一个邮件对象 EMail 然后存储到
 // sqlite里面去
-func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
+func NewMail(raw []byte, downloadDir, prefix string, config *ServerConfig) (*EMail, error) {
 	msg, err := mail.ReadMessage(bytes.NewBuffer(raw))
 	if err != nil {
 		return nil, err
@@ -218,7 +219,15 @@ func NewMail(raw []byte, downloadDir, prefix string) (*EMail, error) {
 				continue
 			}
 
-			ioutil.WriteFile(path.Join(downloadDir, "att", fname), value.body, 0644)
+			go ioutil.WriteFile(path.Join(downloadDir, "att", fname), value.body, 0644)
+
+			if config.Service.Netdisk.AccessToken != "" {
+				uidl := path.Base(downloadDir)
+				go netdisk.WriteFile(
+					config.Service.Netdisk.AccessToken,
+					config.NetdiskFile(fname, uidl),
+					value.body)
+			}
 		}
 	}
 
@@ -233,7 +242,7 @@ func SaveMail(raw []byte, uidl string, config *ServerConfig) (*EMail, error) {
 	downloadDir := path.Join(config.DownloadDir(), uidl)
 	prefix := path.Join(path.Base(config.DownloadDir()), uidl)
 	os.MkdirAll(downloadDir, 0755)
-	email, err := NewMail(raw, downloadDir, prefix)
+	email, err := NewMail(raw, downloadDir, prefix, config)
 	if err != nil {
 		return nil, err
 	}

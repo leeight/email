@@ -9,6 +9,7 @@ define(function (require) {
     var u = require('underscore');
     var URL = require('er/URL');
     var locator = require('er/locator');
+    var netdisk = require('common/netdisk');
 
     /**
      * Action构造函数
@@ -45,6 +46,16 @@ define(function (require) {
 
         this.view.get('create').on('click',
             u.partial(util.composeMail, this.view, '撰写邮件', null));
+
+        this.view.get('connectNetdisk').on('click', function() {
+            netdisk.auth()
+                .then(function(){
+                    // OK
+                }, function(){
+                    // FAIL
+                });
+        });
+
         this.view.get('refresh').on('click', this.reload, this);
         this.view.get('unread-only').on('click', function() {
             var url = this.context.url;

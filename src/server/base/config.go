@@ -1,6 +1,7 @@
 package base
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -8,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"code.google.com/p/go.net/publicsuffix"
@@ -64,6 +66,16 @@ type serviceType struct {
 	Soffice sofficeServerType
 	Db      dbType
 	Indexer indexerType
+	Netdisk netdiskType
+}
+
+type netdiskType struct {
+	ExpiresIn     int    `json:"expires_in"`
+	RefreshToken  string `json:"refresh_token"`
+	AccessToken   string `json:"access_token"`
+	SessionSecret string `json:"session_secret"`
+	SessionKey    string `json:"session_key"`
+	Scope         string `json:"scope"`
 }
 
 type sofficeServerType struct {
@@ -103,6 +115,15 @@ func (config *ServerConfig) DbPath() string {
 	return path.Join(config.Dirs.Base, kDefaultDbName)
 }
 
+func (config *ServerConfig) NetdiskFile(name, uidl string) string {
+	chunks := strings.Split(config.Dirs.Base, "/")
+	return fmt.Sprintf("/apps/dropbox/%s/%s/%s/%s",
+		chunks[len(chunks)-2],
+		chunks[len(chunks)-1],
+		uidl,
+		name)
+}
+
 func GetConfig(file string) (*ServerConfig, error) {
 	abs, err := filepath.EvalSymlinks(file)
 	if err != nil {
@@ -140,6 +161,14 @@ func GetConfig(file string) (*ServerConfig, error) {
 	}
 	if config.Frontend.From == "" {
 		config.Frontend.From = config.Frontend.Name + "@" + domain
+	}
+
+	if _, err := os.Stat(path.Join(config.Dirs.Base, "netdisk.json")); err == nil {
+		netdiskConfig, err := ioutil.ReadFile(path.Join(config.Dirs.Base, "netdisk.json"))
+		if err != nil {
+			log.Fatal(err)
+		}
+		json.Unmarshal(netdiskConfig, &config.Service.Netdisk)
 	}
 
 	// 创建目录保证正确性

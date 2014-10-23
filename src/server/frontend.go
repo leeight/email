@@ -53,6 +53,9 @@ func main() {
 	http.Handle("/api/labels", handlers.MailLabelsHandler{context})
 	http.Handle("/api/contacts", handlers.ContactsListHandler{context})
 
+	// pcs授权之后的的回掉函数
+	http.Handle("/api/pcs/oauth_redirect", handlers.PcsOAuthRedirectHandler{context})
+
 	// 文档转化成功之后的wurl调用
 	// http.Handle("/api/doc/feedback", handlers.DocFeedbackHandler{context})
 	// http.Handle("/api/doc/notify", handlers.DocNotifyHandler{context})
