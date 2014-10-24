@@ -103,7 +103,7 @@ define(function (require) {
         var view = this;
         view.get('table').addHandlers('click', {
             handler: function(element, e) {
-                if (lib.hasClass(element, 'x-icon-star4')) {
+                if (lib.hasClass(element, 'fa-star-o')) {
                     view.fire('addStar', element);
                 }
                 else {
@@ -111,8 +111,8 @@ define(function (require) {
                 }
             },
             matchFn: function(element) {
-                return lib.hasClass(element, 'x-icon-star4') ||
-                lib.hasClass(element, 'x-icon-star-lit4')
+                return lib.hasClass(element, 'fa-star-o') ||
+                lib.hasClass(element, 'fa-star')
             }
         });
     };

@@ -29,32 +29,34 @@
     }
 }
 
+header {
+    background-color: #f1f1f1;
+    padding: 10px 0;
+
+    .x-logo {
+        display: inline-block;
+        padding-left: 10px;
+        em {
+            font-family: 'Playball', cursive;
+            font-size: 2.5em;
+            text-shadow: 2px 2px #fff;
+        }
+    }
+
+    a {
+        color: #000 !important;
+    }
+}
+
 #loading {
     position: fixed;
     top: 18px;
     width: 100%;
     text-align: center;
-    color: #fff;
-    span {
-        font-weight: bold;
-    }
 }
 
-.x-icon-star4,
-.x-icon-star-lit4 {
-    width: 19px;
-    height: 19px;
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-    top: 3px;
-}
-
-.x-icon-star4 {
-    background: url(../img/star4.png) no-repeat scroll 0 0 transparent;
-}
-.x-icon-star-lit4 {
-    background: url(../img/star-lit4.png) no-repeat scroll 0 0 transparent;
+.fa-3 {
+    font-size: 3em;
 }
 
 .x-icon-attchments {
@@ -62,14 +64,6 @@
     width: 16px;
     height: 16px;
     opacity: 0.8;
-}
-
-.x-icon-refresh {
-    background: url(../img/general_black.png) no-repeat scroll -1px -85px transparent;
-    width: 16px;
-    height: 16px;
-    opacity: 0.8;
-    display: inline-block;
 }
 
 .ui-link-disabled {

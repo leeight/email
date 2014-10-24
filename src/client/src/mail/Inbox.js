@@ -85,7 +85,7 @@ define(function (require) {
             var id = element.getAttribute('data-id');
 
             model.addStar([id]).then(function() {
-                element.className = 'x-icon-star-lit4';
+                element.className = 'fa fa-star';
             });
         });
 
@@ -94,7 +94,7 @@ define(function (require) {
             var id = element.getAttribute('data-id');
 
             model.removeStar([id]).then(function() {
-                element.className = 'x-icon-star4';
+                element.className = 'fa fa-star-o';
             });
         });
 

@@ -66,12 +66,13 @@ function getTableFields(linkBuilder) {
         // },
         {
             field: 'star',
-            width: 35,
+            width: 30,
             stable: true,
             title: '',
             content: function (item) {
-                return '<ins data-id="' + item.id + '" title="' + item.uidl + '" class="' +
-                    (item.is_star ? 'x-icon-star-lit4' : 'x-icon-star4') + '"></ins>';
+                // <i class="fa fa-star"></i>
+                return '<i data-id="' + item.id + '" title="' + item.uidl + '" class="' +
+                    (item.is_star ? 'fa fa-star' : 'fa fa-star-o') + '"></i>';
             }
         },
         {

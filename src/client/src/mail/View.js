@@ -40,7 +40,9 @@ define(function (require) {
         this.view.get('replyAll').on('click', this._replyAllMail, this);
         this.view.get('forward').on('click', this._forwardMail, this);
         this.view.get('delete').on('click', this._deleteMail, this);
-        lib.on('pcs-retry', 'click', u.bind(this._pcsRetry, this));
+        if (lib.g('pcs-retry')) {
+            lib.on('pcs-retry', 'click', u.bind(this._pcsRetry, this));
+        }
 
         document.title = this.model.get('email').subject + ' - 伊妹儿';
     };
