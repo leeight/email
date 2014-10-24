@@ -114,8 +114,8 @@ func ReceiveRecentMails(ctx web.Context) func(time.Time) {
 			log.Info("[ SAVE] %d -> %s\n", msg, uidl)
 
 			if email.IsDelete != 1 {
-				indexerChannel <- email
-				threadChannel <- email
+				// indexerChannel <- email
+				// threadChannel <- email
 			}
 		}
 

@@ -1,86 +1,30 @@
 package schema
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/schema"
-
-	"../../base"
 )
 
 type MailSearchSchema struct {
-	PageSize int    `schema:"pageSize"`
-	PageNo   int    `schema:"pageNo"`
-	Keyword  string `schema:"keyword"`
+	PageSize  int    `schema:"pageSize"`
+	PageNo    int    `schema:"pageNo"`
+	SkipCount int    `schema:"-"`
+	Keyword   string `schema:"keyword"`
 }
 
-type searchRequestType struct {
-	Query struct {
-		Match struct {
-			Subject string `json:"subject"`
-			// Analyzer string `json:"analyzer"`
-		} `json:"match"`
-	} `json:"query"`
-	Highlight struct {
-		Fields struct {
-			Subject struct{} `json:"subject"`
-		} `json:"fields"`
-	} `json:"highlight"`
-	Sort []interface{} `json:"sort"`
-	From int           `json:"from"`
-	Size int           `json:"size"`
-}
-
-type dateSortFieldType struct {
-	Date struct {
-		Order string `json:"order"`
-	} `json:"date"`
-}
-
-type scoreSortFieldType struct {
-	Score struct {
-		Order string `json:"order"`
-	} `json:"_score"`
-}
-
-func (this *MailSearchSchema) BuildSearcherUrl(config *base.ServerConfig) string {
-	return fmt.Sprintf("http://%s:%d/baidu/mails/_search",
-		config.Service.Indexer.Host,
-		config.Service.Indexer.Port)
-}
-
-func (this *MailSearchSchema) BuildSearcherBody() []byte {
-	var params searchRequestType
-	params.Query.Match.Subject = this.Keyword
-	// params.Query.Match.Analyzer = "smartcn"
-	params.From = (this.PageNo - 1) * this.PageSize
-	params.Size = this.PageSize
-	params.Sort = make([]interface{}, 0)
-
-	var sortByDate dateSortFieldType
-	sortByDate.Date.Order = "desc"
-	var sortByScore scoreSortFieldType
-	sortByScore.Score.Order = "desc"
-	params.Sort = append(params.Sort, sortByScore)
-	params.Sort = append(params.Sort, sortByDate)
-
-	raw, _ := json.Marshal(params)
-
-	fmt.Printf("%s\n", string(raw))
-
-	return raw
-}
-
-func (this *MailSearchSchema) BuildListSql(ids []string) string {
-	sql := fmt.Sprintf("SELECT "+
-		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, "+
-		"`reply_to`, `subject`, `date`, `is_read` "+
-		"FROM mails WHERE `is_delete` != 1 AND `id` IN (%s)",
-		strings.Join(ids, ","))
+func (this *MailSearchSchema) BuildListSql() string {
+	sql := fmt.Sprintf("SELECT " +
+		"`id`, `uidl`, `from`, `to`, `cc`, `bcc`, " +
+		"`reply_to`, `subject`, `date`, `is_read` " +
+		"FROM `mails` WHERE `is_delete` != 1 AND `subject` LIKE ? " +
+		"ORDER BY `date` DESC, `id` DESC LIMIT ?, ?")
 	return sql
+}
+
+func (this *MailSearchSchema) BuildTotalSql() string {
+	return "SELECT COUNT(*) FROM `mails` WHERE `is_delete` != 1 AND `subject` LIKE ?"
 }
 
 func (this *MailSearchSchema) Init(r *http.Request) {
@@ -97,5 +41,10 @@ func (this *MailSearchSchema) setDefault() {
 
 	if this.PageNo == 0 {
 		this.PageNo = kDefaultPageNo
+	}
+
+	this.SkipCount = (this.PageNo - 1) * this.PageSize
+	if this.SkipCount < 0 {
+		this.SkipCount = 0
 	}
 }
