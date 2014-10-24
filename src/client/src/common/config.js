@@ -22,7 +22,8 @@ define(function (require) {
         labelList: '/api/labels',
         threadList: '/api/thread/list',
         readThread: '/api/thread/read',
-        contactsList: '/api/contacts'
+        contactsList: '/api/contacts',
+        pcsRetry: '/api/pcs/retry'
     };
 
     var config = {

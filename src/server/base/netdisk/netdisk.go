@@ -2,14 +2,17 @@ package netdisk
 
 import (
 	"bytes"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/textproto"
 	"net/url"
 	"path"
+	"time"
 )
 
 func WriteFile(token, filename string, body []byte) error {
@@ -40,9 +43,19 @@ func WriteFile(token, filename string, body []byte) error {
 	contentType := writer.FormDataContentType()
 	writer.Close()
 
-	targetUrl := "https://c.pcs.baidu.com/rest/2.0/pcs/file?" + v.Encode()
+	tr := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		Dial: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout: 10 * time.Second,
+		TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
 
-	resp, err := http.Post(targetUrl, contentType, raw)
+	targetUrl := "https://c.pcs.baidu.com/rest/2.0/pcs/file?" + v.Encode()
+	resp, err := client.Post(targetUrl, contentType, raw)
 	if err != nil {
 		return err
 	}

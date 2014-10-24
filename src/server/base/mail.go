@@ -8,6 +8,7 @@ import (
 	"html"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime"
 	"mime/multipart"
 	"os"
@@ -222,11 +223,16 @@ func NewMail(raw []byte, downloadDir, prefix string, config *ServerConfig) (*EMa
 			go ioutil.WriteFile(path.Join(downloadDir, "att", fname), value.body, 0644)
 
 			if config.Service.Netdisk.AccessToken != "" {
-				uidl := path.Base(downloadDir)
-				go netdisk.WriteFile(
-					config.Service.Netdisk.AccessToken,
-					config.NetdiskFile(fname, uidl),
-					value.body)
+				go func() {
+					uidl := path.Base(downloadDir)
+					err := netdisk.WriteFile(
+						config.Service.Netdisk.AccessToken,
+						config.NetdiskFile(fname, uidl),
+						value.body)
+					if err != nil {
+						log.Printf("%v\n", err)
+					}
+				}()
 			}
 		}
 	}

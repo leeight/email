@@ -7,6 +7,7 @@ define(function (require) {
     var BaseAction = require('bat-ria/mvc/BaseAction');
     var compose = require('common/compose');
     var u = require('underscore');
+    var lib = require('esui/lib');
     var util = require('common/util');
 
     /**
@@ -39,6 +40,7 @@ define(function (require) {
         this.view.get('replyAll').on('click', this._replyAllMail, this);
         this.view.get('forward').on('click', this._forwardMail, this);
         this.view.get('delete').on('click', this._deleteMail, this);
+        lib.on('pcs-retry', 'click', u.bind(this._pcsRetry, this));
 
         document.title = this.model.get('email').subject + ' - 伊妹儿';
     };
@@ -59,6 +61,17 @@ define(function (require) {
      */
     MailView.prototype._replyMail = function() {
         compose.reply(this.model.get('email'), this.view);
+    };
+
+    /**
+     * 附件重新上传而已
+     */
+    MailView.prototype._pcsRetry = function() {
+        var email = this.model.get('email');
+        var uidl = email.uidl;
+        this.model.pcsRetry(uidl).then(function() {
+            alert('Done.');
+        });
     };
 
     /**

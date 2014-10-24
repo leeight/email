@@ -55,6 +55,7 @@ func main() {
 
 	// pcs授权之后的的回掉函数
 	http.Handle("/api/pcs/oauth_redirect", handlers.PcsOAuthRedirectHandler{context})
+	http.Handle("/api/pcs/retry", handlers.PcsRetryHandler{context})
 
 	// 文档转化成功之后的wurl调用
 	// http.Handle("/api/doc/feedback", handlers.DocFeedbackHandler{context})

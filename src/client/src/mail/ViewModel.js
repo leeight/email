@@ -99,6 +99,14 @@ define(function (require) {
         return api.deleteMails({ids: ids});
     };
 
+    /**
+     * @param {Array.<string>} uidl 把 uidl 的邮件的附件重新上传
+     */
+    MailViewModel.prototype.pcsRetry = function(uidl) {
+        return api.pcsRetry({uidl: uidl});
+    };
+
+
     // return模块
     require('er/util').inherits(MailViewModel, BaseModel);
     return MailViewModel;
