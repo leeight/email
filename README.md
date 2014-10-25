@@ -42,17 +42,13 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 
 ![view_attachment2.png](docs/view_attachment2.png)
 
-
-
 ## 环境搭建
 
 基于上面的介绍，搭建环境之前需要有一些依赖的服务需要准备好：
 
 0. [git](http://git-scm.com/)
 1. [mysql](http://mysql.com/downloads)
-2. [elasticsearch-rtf](https://github.com/medcl/elasticsearch-rtf)
-    a. [redis](http://redis.io/download)
-3. [golang](http://golang.org/doc/install)
+2. [golang](http://golang.org/doc/install)
 
 **注意事项**
 
@@ -76,16 +72,6 @@ mysqld --datadir=THE_DATA_DIR
 如果想要用默认的话，就直接执行`mysqld_safe`，启动服务即可。
 
 第一次使用之前初始化数据库，导入 `src/server/init.sql` 即可。
-
-### elasticsearch-rtf
-
-依赖了redis服务，记得先启动：
-
-```
-redis-server redis.conf
-```
-
-然后再启动`elasticsearch`即可，执行的命令是`bin/elasticsearch`。
 
 ### golang
 
