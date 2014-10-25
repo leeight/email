@@ -57,3 +57,4 @@ CREATE INDEX `index_thread_id` ON `mails` (`thread_id`);
 CREATE INDEX `index_is_read` ON `mails` (`is_read`);
 CREATE INDEX `index_is_delete` ON `mails` (`is_delete`);
 CREATE INDEX `index_is_calendar` ON `mails` (`is_calendar`);
+CREATE INDEX `index_subject` ON `mails` (`subject`);

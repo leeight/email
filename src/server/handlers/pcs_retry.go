@@ -41,28 +41,31 @@ func (h PcsRetryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var iterator = func(x, y, z string) {
+		body, err := ioutil.ReadFile(path.Join(x, y))
+		if err != nil {
+			log.Warning("%s", err)
+			return
+		}
+
+		log.Info("Uploading %s", y)
+		err = netdisk.WriteFile(
+			config.Service.Netdisk.AccessToken,
+			config.NetdiskFile(y, z),
+			body)
+		if err != nil {
+			log.Warning("%s", err)
+		} else {
+			log.Info("Successfully Uploaded %s", y)
+		}
+	}
+
 	for _, item := range fileInfos {
 		if item.IsDir() {
 			continue
 		}
 
-		go func() {
-			body, err := ioutil.ReadFile(path.Join(downloadDir, item.Name()))
-			if err != nil {
-				log.Warning("%s", err)
-				return
-			}
-
-			err = netdisk.WriteFile(
-				config.Service.Netdisk.AccessToken,
-				config.NetdiskFile(item.Name(), uidl),
-				body)
-			if err != nil {
-				log.Warning("%s", err)
-			} else {
-				log.Info("Successfully Uploaded %s", item.Name())
-			}
-		}()
+		go iterator(downloadDir, item.Name(), uidl)
 	}
 
 	s, _ := json.MarshalIndent(

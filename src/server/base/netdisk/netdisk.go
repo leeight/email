@@ -61,13 +61,13 @@ func WriteFile(token, filename string, body []byte) error {
 	}
 	defer resp.Body.Close()
 
-	_, err = ioutil.ReadAll(resp.Body)
+	xyz, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
 	if resp.StatusCode != 200 {
-		return errors.New("Invalid respone status")
+		return errors.New(string(xyz))
 	}
 
 	return nil
