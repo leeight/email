@@ -25,7 +25,9 @@ raw.txt
 /src/server/raw
 /src/server/filters.yml
 /src/server/downloads
+data
 config.yml
+config.json
 filters.yml
 126.config.yml
 

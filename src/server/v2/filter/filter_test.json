@@ -1,0 +1,20 @@
+[
+  {
+    "name": "邮件列表/w3.org",
+    "stop": true,
+    "condition": {
+      "match": "Any",
+      "rules": [
+        ["SentTo", "Contains", "@w3.org"],
+        ["SentTo", "Contains", "@lists.css-discuss.org"]
+      ]
+    },
+    "action": {
+      "Label": "邮件列表/w3.org",
+      "MarkAsDelete": true,
+      "MarkAsSpam": false,
+      "Int": 10,
+      "Float": 20.3
+    }
+  }
+]
