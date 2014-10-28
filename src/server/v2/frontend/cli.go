@@ -18,6 +18,10 @@ func Run(config *models.ServerConfig) error {
 	beego.Router("/api/mail/mark_as_read", &controllers.MarkAsReadController{})
 	beego.Router("/api/mail/add_star", &controllers.AddStarController{})
 	beego.Router("/api/mail/remove_star", &controllers.RemoveStarController{})
+	beego.Router("/api/mail/delete", &controllers.MailDeleteController{})
+
+	// 文件和图片上传的功能
+	beego.Router("/api/upload/controller", &controllers.UploadController{})
 
 	beego.Run()
 
