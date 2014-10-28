@@ -16,6 +16,8 @@ func Run(config *models.ServerConfig) error {
 	beego.Router("/api/mail/read", &controllers.MailReadController{})
 	beego.Router("/api/mail/search", &controllers.MailSearchController{})
 	beego.Router("/api/mail/mark_as_read", &controllers.MarkAsReadController{})
+	beego.Router("/api/mail/add_star", &controllers.AddStarController{})
+	beego.Router("/api/mail/remove_star", &controllers.RemoveStarController{})
 
 	beego.Run()
 
