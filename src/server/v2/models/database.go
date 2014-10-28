@@ -81,7 +81,7 @@ type Tag struct {
 	Id          int64    `orm:"pk;auto" json:"id"`
 	Name        string   `orm:"size(512)" json:"name"`
 	Emails      []*Email `orm:"reverse(many)" json:"-"`
-	UnreadCount int      `orm:"-" json:"unread_count"`
+	UnreadCount int64    `orm:"-" json:"unread_count"`
 }
 
 // 邮件内容的一些资源，比如inline image，附件等等

@@ -11,9 +11,12 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/dustin/go-humanize"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/qiniu/iconv"
 	"github.com/saintfish/chardet"
+
+	"../models"
 )
 
 var charsetMap map[string]string
@@ -110,4 +113,60 @@ func StripUnnecessaryTags(html []byte) []byte {
 		"span", "table", "td", "tr", "font", "li", "ol", "ul")
 
 	return sanitizer.SanitizeBytes(html)
+}
+
+func ScanAttachments(dir string) []*models.Attachment {
+	var atts []*models.Attachment
+	fileInfos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return atts
+	}
+
+	for _, item := range fileInfos {
+		if item.IsDir() {
+			continue
+		}
+		att := models.Attachment{
+			humanize.Bytes(uint64(item.Size())),
+			item.Name(),
+		}
+		atts = append(atts, &att)
+	}
+	return atts
+}
+
+func ListResponse(totalCount int64, pageNo int, pageSize int, args ...interface{}) models.Response {
+	return &models.ListResponse{
+		Success: "true",
+		Page: models.PageType{
+			TotalCount: totalCount,
+			PageNo:     pageNo,
+			PageSize:   pageSize,
+			OrderBy:    "id",
+			Order:      "desc",
+			Result:     args[0].(interface{}),
+		},
+	}
+}
+
+func SimpleResponse(args ...interface{}) models.Response {
+	if args == nil {
+		return &models.SimpleResponse{
+			Success: "true",
+			Result:  models.DefaultResult{},
+		}
+	}
+
+	if len(args) == 1 {
+		// args = [ [A, B, C] ] -> args = [A, B, C]
+		return &models.SimpleResponse{
+			Success: "true",
+			Result:  args[0].(interface{}),
+		}
+	} else {
+		return &models.SimpleResponse{
+			Success: "true",
+			Result:  args,
+		}
+	}
 }

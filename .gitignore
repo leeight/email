@@ -1,15 +1,15 @@
 node_modules
 
 # bin目录
-main
-parser
-sqlite3
-frontend
-searcher
-yml
-rebuild
-run_filters
-sent_mail
+/bin/main
+/bin/parser
+/bin/sqlite3
+/bin/frontend
+/bin/searcher
+/bin/yml
+/bin/rebuild
+/bin/run_filters
+/bin/sent_mail
 
 # 临时文件
 body.html
