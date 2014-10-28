@@ -14,6 +14,10 @@ type LabelsController struct {
 }
 
 func (this *LabelsController) Get() {
+	this.Post()
+}
+
+func (this *LabelsController) Post() {
 	var qs = gSrvConfig.Ormer.QueryTable("tag")
 
 	var tags []*models.Tag

@@ -115,7 +115,8 @@ func StripUnnecessaryTags(html []byte) []byte {
 	return sanitizer.SanitizeBytes(html)
 }
 
-func ScanAttachments(dir string) []*models.Attachment {
+// 扫描 att 目录，补充必要的信息
+func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.Attachment {
 	var atts []*models.Attachment
 	fileInfos, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -126,9 +127,16 @@ func ScanAttachments(dir string) []*models.Attachment {
 		if item.IsDir() {
 			continue
 		}
+
+		// http://pan.baidu.com/disk/home#path=%252Fapps%252Fdropbox%252Fbaidu.com%252Fliyubei%252F390026932.08759.stu.xjtu.edu.cn,S=2174601
+		var dst = fmt.Sprintf("/apps/dropbox/%s/%s/%s",
+			config.Pop3.Domain, config.Pop3.Username, StripInvalidCharacter(uidl))
+		var previewUrl = fmt.Sprintf("http://pan.baidu.com/disk/home#path=%s",
+			url.QueryEscape(url.QueryEscape(dst)))
 		att := models.Attachment{
 			humanize.Bytes(uint64(item.Size())),
 			item.Name(),
+			previewUrl,
 		}
 		atts = append(atts, &att)
 	}

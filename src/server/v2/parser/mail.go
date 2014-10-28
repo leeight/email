@@ -3,14 +3,12 @@ package parser
 import (
 	"bytes"
 	"encoding/base64"
-	"errors"
 	"io"
 	"io/ioutil"
 	"mime"
 	"mime/multipart"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/alexcesaro/mail/quotedprintable"
 	"github.com/saintfish/chardet"
@@ -42,7 +40,7 @@ func NewEmail(raw []byte) (*models.Email, error) {
 
 	email := new(models.Email)
 
-	date, err := parseDate(msg.Header.Get("Date"))
+	date, err := msg.Header.Date()
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +185,7 @@ func decodeMultipartMessage(email *models.Email, part *multipart.Part) error {
 // 根据编码的不同返回对应解码之后的内容，主要是 quoted-printable 和 base64 两种
 // 其它的类型直接返回，什么也不做
 func getBodyReader(reader io.Reader, encoding string, ignoreQP bool) io.Reader {
-	switch encoding {
+	switch strings.ToLower(encoding) {
 	case "quoted-printable":
 		if ignoreQP {
 			// 如果 ignoreQP 为 true，说明内部已经处理过 kQuotedPrintable 编码类型了
@@ -231,34 +229,6 @@ func getReferences(msg *mail.Message) string {
 	}
 
 	return strings.Join(references, ",")
-}
-
-// 不同的邮件中日期的格式是不一样的，这里把常用的列出来，挨个去检测
-func parseDate(d string) (time.Time, error) {
-	var layouts = []string{
-		"Mon, 2 Jan 2006 15:04:05 -0700",
-		"Mon, 2 Jan 2006 15:4:5 -0700",
-		"Mon, 2 Jan 06 15:04:05 -0700",
-		"Mon, 2 Jan 06 15:4:5 -0700",
-		"2 Jan 2006 15:04:05 -0700",
-		"2 Jan 2006 15:4:5 -0700",
-		"2 Jan 06 15:04:05 +0700",
-		"2 Jan 06 15:4:5 +0700",
-		"Mon, 2 Jan 2006 15:04:05 GMT",
-		"Mon, 2 Jan 2006 15:4:5 GMT",
-		"Mon, 2 Jan 06 15:04:05 GMT",
-		"Mon, 2 Jan 06 15:4:5 GMT",
-	}
-	d = regexp.MustCompile(`\s\([^\)]+\)`).ReplaceAllString(d, "")
-
-	for _, layout := range layouts {
-		date, err := time.Parse(layout, d)
-		if err == nil {
-			return date, err
-		}
-	}
-
-	return time.Now(), errors.New("Unsupported date format")
 }
 
 // 通过检测编码来修复邮件的标题

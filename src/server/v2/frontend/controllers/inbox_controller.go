@@ -1,11 +1,7 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
-	"net/url"
-	"path"
-	"regexp"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -17,6 +13,10 @@ import (
 // 邮件列表默认页面
 type InboxController struct {
 	beego.Controller
+}
+
+func (this *InboxController) Get() {
+	this.Post()
 }
 
 func (this *InboxController) Post() {
@@ -42,21 +42,8 @@ func (this *InboxController) Post() {
 		return
 	}
 
-	re := regexp.MustCompile(`src="cid:([^"]+)"`)
 	for _, email := range emails {
-		// 修复from,to,cc,bcc,reply_to这5个字段的值
-		email.FixMailAddressFields()
-
-		// 删除一些无意义的标签
-		email.Message = string(util.StripUnnecessaryTags([]byte(email.Message)))
-
-		// 替换src="cid:"的内容
-		email.Message = re.ReplaceAllString(email.Message,
-			fmt.Sprintf(`src="downloads/%s/cid/$1"`, url.QueryEscape(email.Uidl)))
-
-		// 修复email.Attachments字段的值
-		email.Attachments = util.ScanAttachments(
-			path.Join(gSrvConfig.BaseDir, "downloads", email.Uidl, "att"))
+		patchEmailFields(email)
 
 		// TODO(user) email.Tags 内容的修复
 		// email.Tags = ?
@@ -85,7 +72,7 @@ func (this *InboxController) buildQuerySeter() (
 	} else if schema.IsStar == 1 {
 		qs = qs.Filter("IsStar", 1)
 	} else if schema.LabelId > 0 {
-		// TODO
+		qs = qs.Filter("Tags__Tag__Id", schema.LabelId)
 	} else {
 		qs = qs.Filter("IsDelete", 0)
 	}
@@ -100,6 +87,8 @@ func (this *InboxController) buildQuerySeter() (
 		qs = qs.Filter("IsSent", schema.IsSent)
 		qs = qs.Filter("IsCalendar", schema.IsCalendar)
 	}
+
+	qs = qs.OrderBy("-Date", "-Id")
 
 	return qs, schema, nil
 }

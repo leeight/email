@@ -66,15 +66,16 @@ type Thread struct {
 }
 
 type Contact struct {
-	Id    int64  `orm:"pk;auto" json:"-"`
-	Name  string `orm:"size(512);null" json:"name"`
-	Email string `orm:"size(511);" json:"email"`
-	Count int    `orm:"default(0)" json:"-"`
+	Id      int64  `orm:"pk;auto" json:"-"`
+	Name    string `orm:"size(512);null" json:"name"`
+	Address string `orm:"size(511);" json:"address"`
+	Count   int    `orm:"default(0)" json:"-"`
 }
 
 type Attachment struct {
-	Size string `orm:"-" json:"size"`
-	Name string `orm:"-" json:"name"`
+	Size       string `orm:"-" json:"size"`
+	Name       string `orm:"-" json:"name"`
+	PreviewUrl string `orm:"-" json:"preview_url"`
 }
 
 type Tag struct {
@@ -110,7 +111,7 @@ func parseAddress(address string) (*Contact, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Contact{Name: x.Name, Email: x.Address}, nil
+	return &Contact{Name: x.Name, Address: x.Address}, nil
 }
 
 func parseAddressList(list string) ([]*Contact, error) {
@@ -121,7 +122,7 @@ func parseAddressList(list string) ([]*Contact, error) {
 
 	y := make([]*Contact, len(x))
 	for i, a := range x {
-		y[i] = &Contact{Name: a.Name, Email: a.Address}
+		y[i] = &Contact{Name: a.Name, Address: a.Address}
 	}
 
 	return y, nil
@@ -155,7 +156,7 @@ func (e *Email) HasMessage(msgType string) bool {
 func (c *Contact) TableIndex() [][]string {
 	return [][]string{
 		[]string{"Name"},
-		[]string{"Email"},
+		[]string{"Address"},
 	}
 }
 

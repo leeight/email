@@ -188,7 +188,7 @@ exports.applyEMailPath = function(email) {
 
     // FIXME(user) 修复查看附件url的地址
     u.each(email.attachments, function(item) {
-        item.preview_url = 'http://pan.baidu.com/disk/home#path=%252Fapps%252Fdropbox%252Fbaidu.com%252Fliyubei%252F' + email.uidl;
+        item.preview_url = item.preview_url || 'http://pan.baidu.com/disk/home#path=%252Fapps%252Fdropbox%252Fbaidu.com%252Fliyubei%252F' + email.uidl;
     });
 
     return email;

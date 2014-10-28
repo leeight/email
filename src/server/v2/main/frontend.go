@@ -5,6 +5,7 @@ import (
 	"log"
 	"path"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
@@ -40,6 +41,10 @@ func main() {
 	orm.RunCommand()
 
 	config.Ormer = orm.NewOrm()
+
+	beego.HttpPort = config.Http.Port
+	beego.SetStaticPath("/downloads", path.Join(config.BaseDir, "downloads"))
+	beego.SetStaticPath("/raw", path.Join(config.BaseDir, "raw"))
 
 	frontend.Run(config)
 }
