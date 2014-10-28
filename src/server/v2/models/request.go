@@ -1,6 +1,6 @@
 package models
 
-// 页面的请求提交的参数
+// Inbox页面的请求提交的参数
 type InboxControllerSchema struct {
 	PageSize   int `form:"pageSize"`
 	PageNo     int `form:"pageNo"`

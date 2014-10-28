@@ -71,7 +71,7 @@ define(function (require) {
      */
     MailSearchModel.prototype.defaultArgs = {
         order: 'desc',
-        pageSize: '@pageSize'
+        pageSize: 15
     };
 
 
