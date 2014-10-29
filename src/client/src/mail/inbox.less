@@ -4,13 +4,6 @@
  */
 
 .mail-inbox {
-    .x-icon-attchments {
-        float: right;
-        position: relative;
-        top: 2px;
-        cursor: pointer;
-    }
-
     .ui-table-cell-text {
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -25,15 +18,25 @@
         border-radius: 3px;
     }
 
-    .ui-table-cell-text i.fa {
-        color: #000;
-        background: transparent;
-        padding: 0;
-        margin: 0;
-        border-radius: 0;
-        border: none;
-        cursor: pointer;
+    .ui-table-cell-text {
+        i.fa {
+            color: #000;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            border-radius: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .x-icons {
+            float: right;
+            .fa {
+                margin-left: 10px;
+            }
+        }
     }
+
 
     .list-header {
         overflow: hidden;

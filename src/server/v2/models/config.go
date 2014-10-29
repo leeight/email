@@ -15,6 +15,7 @@ type ServerConfig struct {
 	Pop3       pop3Type    `json:"pop3"`
 	Smtp       smtpType    `json:"smtp"`
 	Service    serviceType `json:"service"`
+	Debug      bool        `json:"debug"`
 	ConfigPath string      `json:"-"`
 	BaseDir    string      `json:"-"`
 	Ormer      orm.Ormer   `json:"-"`

@@ -96,13 +96,19 @@ function getTableFields(linkBuilder) {
             field: 'subject',
             title: '标题',
             content: function (item) {
-                var extra = '';
+                var extra = [];
                 if (item.attachments && item.attachments.length) {
-                    extra = '<span class="x-icon-attchments" title="' +
-                    u.map(item.attachments, function(x){
+                    var tip = u.map(item.attachments, function(x){
                         return x.name + ' (' + x.size + ')';
-                    }).join(' ') + '"></span>';
+                    }).join(' ');
+                    extra.push('<i class="fa fa-file" title="' + tip + '"></i>');
                 }
+
+                if (item.status === 1) {
+                    // 邮件发送中
+                    extra.push('<i class="fa fa-sign-out" title="正在发送..."></i>');
+                }
+                var icons = extra.length ? '<div class="x-icons">' + extra.join('') + '</div>' : '';
 
                 var prefix = '';
                 if (item.importance) {
@@ -111,7 +117,7 @@ function getTableFields(linkBuilder) {
 
                 var href = linkBuilder(item);
                 return prefix + '<a href="' + href + '">' +
-                    (item.subject || '(no subject)') + '</a>' + extra;
+                    (item.subject || '(no subject)') + '</a>' + icons;
             }
         },
         {

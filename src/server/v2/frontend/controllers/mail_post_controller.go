@@ -100,6 +100,7 @@ func (this *MailPostController) saveAndSendMail(
 	}
 
 	// 开始发送邮件，即便上面失败了，也会走到这里的
+	log.Println("Sending Mail...")
 	var auth = sender.NewLoginAuth(gSrvConfig.Smtp.Username,
 		gSrvConfig.Smtp.Password)
 	var server = fmt.Sprintf("%s:%d", gSrvConfig.Smtp.Host, gSrvConfig.Smtp.Port)
@@ -108,6 +109,7 @@ func (this *MailPostController) saveAndSendMail(
 	if err != nil {
 		log.Println(err)
 	}
+	log.Printf("Successfully Sent Mail %s\n", uidl+".txt")
 
 	// 成功之后把发送状态修改回来
 	if email.Id > 0 {

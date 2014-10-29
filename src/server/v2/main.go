@@ -10,8 +10,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 
-	"../config"
-	"../frontend"
+	"./backend"
+	"./config"
+	"./frontend"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	orm.Debug = true
+	orm.Debug = config.Debug
 	orm.RegisterDriver("mysql", orm.DR_MySQL)
 	orm.RegisterDriver("sqlite3", orm.DR_Sqlite)
 
@@ -46,5 +47,6 @@ func main() {
 	beego.SetStaticPath("/downloads", path.Join(config.BaseDir, "downloads"))
 	beego.SetStaticPath("/raw", path.Join(config.BaseDir, "raw"))
 
+	go backend.Run(config)
 	frontend.Run(config)
 }

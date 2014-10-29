@@ -58,8 +58,9 @@ func Receiver(config *models.ServerConfig) error {
 	// 在循环的过程中，如果有错误，打印出来，不要中断循环
 	for msgid, msg := range msgs {
 		var uidl = uidls[msg]
-		var email = &models.Email{Uidl: string(uidl)}
-		var err = config.Ormer.Read(email, "Uidl")
+
+		var email = &models.Email{}
+		var err = config.Ormer.QueryTable("email").Filter("Uidl", string(uidl)).One(email, "Id")
 
 		if err == nil && email.Id > 0 {
 			// 存在记录
