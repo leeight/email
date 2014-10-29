@@ -66,6 +66,7 @@ define(function(require) {
         var suggestions = this.control.suggestions || [];
         for (var i = 0; i < suggestions.length; i++) {
             var classes = this.control.helper.getPartClasses('node');
+            suggestions[i].email = suggestions[i].address || suggestions[i].email;
 
             html += '<li data-index="' + i + '"'
                 + ' class="' + classes.join(' ') + '">';

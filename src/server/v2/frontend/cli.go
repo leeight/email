@@ -27,6 +27,9 @@ func Run(config *models.ServerConfig) error {
 	beego.Router("/api/pcs/oauth_redirect", &controllers.PcsOAuthRedirectController{})
 	beego.Router("/api/pcs/retry", &controllers.PcsRetryController{})
 
+	// 联系人列表
+	beego.Router("/api/contacts", &controllers.ContactsController{})
+
 	beego.Run()
 
 	return nil
