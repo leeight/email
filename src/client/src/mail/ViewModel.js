@@ -81,9 +81,6 @@ define(function (require) {
 
             return navigators;
         },
-        hostname: function(model) {
-            return location.hostname;
-        },
         email: function(model) {
             return api.readMail({id: model.get('id')}).then(function(email){
                 return util.applyEMailPath(email);

@@ -121,12 +121,12 @@
               <th>源文件：</th>
               <td>
                 <!-- if: ${email.is_sent} == 1 -->
-                <a href="http://${hostname}:8765/raw/sent/${email.uidl}.txt" target="_blank">查看</a>
+                <a href="/raw/sent/${email.uidl}.txt" target="_blank">查看</a>
                 <!-- else -->
-                <a href="http://${hostname}:8765/raw/${email.uidl}.txt" target="_blank">查看</a>
+                <a href="/raw/${email.uidl}.txt" target="_blank">查看</a>
                 <!-- /if -->
                 &nbsp;|&nbsp;
-                <a href="http://${hostname}:8765/ori/message/${email.uidl}.html" target="_blank">未过滤内容的邮件</a>
+                <a href="/ori/message/${email.uidl}.html" target="_blank">源文件</a>
               </td>
             </tr>
             <!-- if: ${email.attachments.length} -->

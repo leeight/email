@@ -22,9 +22,6 @@ define(function (require) {
      * @inheritDoc
      */
     ThreadViewModel.prototype.datasource = {
-        hostname: function(model) {
-            return location.hostname;
-        },
         emails: function(model) {
             return api.readThread({id: model.get('id')}).then(function(emails){
                 var size = emails.length;

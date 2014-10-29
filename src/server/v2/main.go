@@ -61,10 +61,22 @@ func main() {
 	config.Ormer = orm.NewOrm()
 
 	beego.HttpPort = config.Http.Port
+	beego.DirectoryIndex = true
+
+	// 静态文件的根目录
+	var root = "/Volumes/HDD/Users/leeight/local/leeight.github.com/email-client/src/client"
+
+	beego.StaticDir["/"] = root
+
+	// 特殊的静态文件目录
+	beego.SetStaticPath("/src", path.Join(root, "src"))
+	beego.SetStaticPath("/dep", path.Join(root, "dep"))
 	beego.SetStaticPath("/downloads", path.Join(config.BaseDir, "downloads"))
 	beego.SetStaticPath("/raw", path.Join(config.BaseDir, "raw"))
-	// TODO(user) 只在开发的模式下启用
-	beego.InsertFilter("/src/common/css/main.less", beego.BeforeStatic, util.StyleFilter)
+
+	// 一个特殊的资源文件，只在开发的模式下启用
+	beego.InsertFilter("/src/common/css/main.less",
+		beego.BeforeStatic, util.StyleFilter(root))
 
 	go backend.Run(config)
 	frontend.Run(config)

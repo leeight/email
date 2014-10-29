@@ -178,16 +178,21 @@ func AddressToString(list []*mail.Address) string {
 
 // 开发模式的时候启用，主要目的是不再依赖edp webserver
 // 方式是通过系统调用lessc来搞定这个事情
-func StyleFilter(ctx *context.Context) {
-	var cmd = exec.Command("lessc", "-ru", ctx.Input.Url())
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	var err = cmd.Run()
-	if err != nil {
-		log.Println("lessc", "-ru", ctx.Input.Url(), err)
-		return
+func StyleFilter(root string) func(*context.Context) {
+	return func(ctx *context.Context) {
+		var cmd = exec.Command("lessc", "-ru", root+ctx.Input.Url())
+		var out bytes.Buffer
+		cmd.Stdout = &out
+
+		var err = cmd.Run()
+		if err != nil {
+			log.Println("lessc", "-ru", ctx.Input.Url(), err)
+			return
+		}
+
+		ctx.ResponseWriter.Header().Set("Content-Type", "text/css; charset=utf-8")
+		ctx.ResponseWriter.Write(out.Bytes())
 	}
-	log.Println(string(out.Bytes()))
 }
 
 func ListResponse(totalCount int64, pageNo int, pageSize int, args ...interface{}) models.Response {
