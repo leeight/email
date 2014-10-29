@@ -23,6 +23,10 @@ func Run(config *models.ServerConfig) error {
 	// 文件和图片上传的功能
 	beego.Router("/api/upload/controller", &controllers.UploadController{})
 
+	// pcs授权之后的的回掉函数
+	beego.Router("/api/pcs/oauth_redirect", &controllers.PcsOAuthRedirectController{})
+	beego.Router("/api/pcs/retry", &controllers.PcsRetryController{})
+
 	beego.Run()
 
 	return nil
