@@ -1,6 +1,9 @@
 package models
 
 import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -8,12 +11,32 @@ import (
 
 // backend和frontend所依赖的配置信息
 type ServerConfig struct {
-	Http    httpType    `json:"http"`
-	Pop3    pop3Type    `json:"pop3"`
-	Smtp    smtpType    `json:"smtp"`
-	Service serviceType `json:"service"`
-	BaseDir string      `json:"-"`
-	Ormer   orm.Ormer   `json:"-"`
+	Http       httpType    `json:"http"`
+	Pop3       pop3Type    `json:"pop3"`
+	Smtp       smtpType    `json:"smtp"`
+	Service    serviceType `json:"service"`
+	ConfigPath string      `json:"-"`
+	BaseDir    string      `json:"-"`
+	Ormer      orm.Ormer   `json:"-"`
+}
+
+// 数据同步到本地磁盘
+func (sc ServerConfig) Sync() error {
+	if sc.ConfigPath == "" {
+		return errors.New("Invalid sc.ConfigPath")
+	}
+
+	var data, err = json.MarshalIndent(sc, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(sc.ConfigPath, data, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // WebServer的配置信息
@@ -40,11 +63,9 @@ type smtpType struct {
 
 // 相关的一些其它服务
 type serviceType struct {
-	Soffice sofficeServerType `json:"soffice"`
-	Db      dbType            `json:"db"`
-	Indexer indexerType       `json:"indexer"`
-	Netdisk netdiskType       `json:"netdisk"`
-	Filter  filterConfigType  `json:"filter"`
+	Db      dbType           `json:"db"`
+	Netdisk netdiskType      `json:"netdisk"`
+	Filter  filterConfigType `json:"filter"`
 }
 
 // soffice的可执行文件路径
@@ -81,4 +102,13 @@ type netdiskType struct {
 // 过滤器的配置信息
 type filterConfigType struct {
 	Config string `json:"config"`
+}
+
+func NewNetdiskType(data []byte) (*netdiskType, error) {
+	var nt = netdiskType{}
+	var err = json.Unmarshal(data, &nt)
+	if err != nil {
+		return nil, err
+	}
+	return &nt, nil
 }

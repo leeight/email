@@ -25,7 +25,8 @@ exports.auth = function() {
     var defer = new Deferred();
 
     if (!wHandle || wHandle.closed) {
-        wHandle = window.open(getAuthorizationCodeUrl(), "netdisk", "height=490,width=860");
+        var url = getAuthorizationCodeUrl();
+        wHandle = window.open(url, "netdisk", "height=490,width=860");
     }
     else {
         wHandle.focus();

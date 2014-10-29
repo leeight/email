@@ -40,6 +40,7 @@ func NewConfig(file string) (*models.ServerConfig, error) {
 	v.Pop3.Domain = domain
 
 	// base是相对于config.yml来计算的
+	v.ConfigPath = abs
 	v.BaseDir = filepath.Clean(
 		path.Join(filepath.Dir(abs),
 			"data", domain, v.Pop3.Username))
