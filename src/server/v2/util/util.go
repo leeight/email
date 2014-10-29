@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
 	"html"
 	"io"
@@ -8,9 +9,12 @@ import (
 	"log"
 	"mime"
 	"net/url"
+	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 
+	"github.com/astaxie/beego/context"
 	"github.com/dustin/go-humanize"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/qiniu/iconv"
@@ -157,6 +161,12 @@ func ParseAddressList(value string) []*mail.Address {
 	return list
 }
 
+func ParseDate(date string) (time.Time, error) {
+	var y = mail.Header{}
+	y["Date"] = []string{date}
+	return y.Date()
+}
+
 func AddressToString(list []*mail.Address) string {
 	addresses := make([]string, len(list))
 	for i, item := range list {
@@ -164,6 +174,20 @@ func AddressToString(list []*mail.Address) string {
 	}
 
 	return strings.Join(addresses, ", ")
+}
+
+// 开发模式的时候启用，主要目的是不再依赖edp webserver
+// 方式是通过系统调用lessc来搞定这个事情
+func StyleFilter(ctx *context.Context) {
+	var cmd = exec.Command("lessc", "-ru", ctx.Input.Url())
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	var err = cmd.Run()
+	if err != nil {
+		log.Println("lessc", "-ru", ctx.Input.Url(), err)
+		return
+	}
+	log.Println(string(out.Bytes()))
 }
 
 func ListResponse(totalCount int64, pageNo int, pageSize int, args ...interface{}) models.Response {

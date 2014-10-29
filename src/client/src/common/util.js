@@ -107,7 +107,11 @@ function getTableFields(linkBuilder) {
                 if (item.status === 1) {
                     // 邮件发送中
                     extra.push('<i class="fa fa-sign-out" title="正在发送..."></i>');
+                } else if(item.status === 3) {
+                    // 邮件解析内容失败，格式非法
+                    extra.push('<i class="fa fa-exclamation-triangle" title="邮件内容解析失败"></i>')
                 }
+
                 var icons = extra.length ? '<div class="x-icons">' + extra.join('') + '</div>' : '';
 
                 var prefix = '';

@@ -80,25 +80,35 @@ func Receiver(config *models.ServerConfig) error {
 			continue
 		}
 
-		raw, err := client.Retr(msg)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		// 如果不存在的话，保存原始的文件
+		var raw []byte
 		var rawFile = path.Join(config.BaseDir, "raw", uidl+".txt")
 		if _, err := os.Stat(rawFile); err != nil {
-			err = ioutil.WriteFile(rawFile, []byte(raw), 0644)
+			// 如果不存在的话，开始接收，然后保存原始的文件
+			res, err := client.Retr(msg)
 			if err != nil {
 				log.Println(err)
+				continue
+			}
+
+			raw = []byte(res)
+			err = ioutil.WriteFile(rawFile, raw, 0644)
+			if err != nil {
+				log.Println(err)
+			}
+		} else {
+			// 原始文件存在了，直接读取即可，减少网络的访问
+			raw, err = ioutil.ReadFile(rawFile)
+			if err != nil {
+				log.Println(err)
+				continue
 			}
 		}
 
 		// 解析邮件的正文，得到 Email 对象
-		email, err = parser.NewEmail([]byte(raw))
+		email, err = parser.NewEmail(raw)
 		if err != nil {
 			log.Println(uidl, err)
+			saver.EmailSaveFallback(raw, string(uidl), err.Error(), config)
 			continue
 		}
 		email.Uidl = string(uidl)

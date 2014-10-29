@@ -51,7 +51,7 @@ func NewEmail(raw []byte) (*models.Email, error) {
 	email.Cc = msg.Header.Get("Cc")
 	email.Bcc = msg.Header.Get("Bcc")
 	email.ReplyTo = msg.Header.Get("Reply-To")
-	email.Subject = fixSubject(RFC2047.Decode(msg.Header.Get("Subject")))
+	email.Subject = FixSubject(RFC2047.Decode(msg.Header.Get("Subject")))
 	email.MsgId = regexp.MustCompile("[<>]").ReplaceAllString(
 		msg.Header.Get("Message-ID"), "")
 	email.Refs = getReferences(msg)
@@ -234,7 +234,7 @@ func getReferences(msg *mail.Message) string {
 // 通过检测编码来修复邮件的标题
 // 因为有些邮件的标题没有按照规范正确的Encode，这里只能人肉去处理一下
 // 大部分都是写程序发送的邮件，比如一些报警之类的
-func fixSubject(s string) string {
+func FixSubject(s string) string {
 	if s != "" {
 		detector := chardet.NewTextDetector()
 		result, err := detector.DetectBest(

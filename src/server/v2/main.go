@@ -1,9 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"os"
 	"path"
+	"strings"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -13,14 +16,28 @@ import (
 	"./backend"
 	"./config"
 	"./frontend"
+	"./util"
 )
 
 func main() {
+	var configfile = flag.String("config", "config.json", "The config file path")
+	flag.Parse()
+
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	config, err := config.NewConfig("config.json")
+	config, err := config.NewConfig(*configfile)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if len(os.Args) >= 2 && strings.Index(os.Args[1], "-config=") == 0 {
+		// 为了兼容 	orm.RunCommand() 的参数处理逻辑，当发现传递 -config= 参数的时候，
+		// 人肉把它删掉，例如：
+		// os.Args = ["main", "-config=x.json", "orm", "sqlall"]
+		// =>
+		// os.Args = ["main", "orm", "sqlall"]
+		// https://github.com/astaxie/beego/blob/a144769515b8ddfb69046b3ef9e29c38bab94f3b/orm/cmd.go#L51
+		os.Args = append(os.Args[0:1], os.Args[2:]...)
 	}
 
 	orm.Debug = config.Debug
@@ -46,6 +63,8 @@ func main() {
 	beego.HttpPort = config.Http.Port
 	beego.SetStaticPath("/downloads", path.Join(config.BaseDir, "downloads"))
 	beego.SetStaticPath("/raw", path.Join(config.BaseDir, "raw"))
+	// TODO(user) 只在开发的模式下启用
+	beego.InsertFilter("/src/common/css/main.less", beego.BeforeStatic, util.StyleFilter)
 
 	go backend.Run(config)
 	frontend.Run(config)

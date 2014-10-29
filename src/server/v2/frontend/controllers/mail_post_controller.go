@@ -107,9 +107,10 @@ func (this *MailPostController) saveAndSendMail(
 	var tls = gSrvConfig.Smtp.Tls
 	err = sender.SendMail(mailer, raw, server, tls, auth)
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed Sent Mail", uidl+".txt", err)
+	} else {
+		log.Printf("Successfully Sent Mail %s\n", uidl+".txt")
 	}
-	log.Printf("Successfully Sent Mail %s\n", uidl+".txt")
 
 	// 成功之后把发送状态修改回来
 	if email.Id > 0 {

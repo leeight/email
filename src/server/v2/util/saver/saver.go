@@ -1,15 +1,59 @@
 package saver
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"log"
+	"net/textproto"
 	"path"
 	"regexp"
+	"time"
 
 	".."
+	"../../../RFC2047"
 	"../../models"
+	"../parser"
 	"../storage"
 )
+
+// 当解析失败之后，但是也需要保存邮件的信息，此时就
+// 尽可能从邮件头里面得到信息，然后存储到数据库里面去
+func EmailSaveFallback(data []byte, uidl, message string, config *models.ServerConfig) {
+	var idx = bytes.Index(data, []byte("\n\n"))
+
+	if idx == -1 {
+		idx = len(data)
+	}
+
+	var reader = textproto.NewReader(bufio.NewReader(bytes.NewReader(data[0:idx])))
+	var header, err = reader.ReadMIMEHeader()
+	if header == nil || len(header) <= 0 {
+		// 这里不判断err，而是判断header，只要header可以用，就继续往下面执行
+		log.Println(err)
+		return
+	}
+
+	date, err := util.ParseDate(header.Get("Date"))
+	if err != nil {
+		log.Println(uidl, header.Get("Date"), err)
+		date = time.Now()
+	}
+
+	EmailSave(&models.Email{
+		Subject: parser.FixSubject(RFC2047.Decode(header.Get("Subject"))),
+		Date:    date,
+		Uidl:    uidl,
+		From:    header.Get("From"),
+		Cc:      header.Get("Cc"),
+		Bcc:     header.Get("Bcc"),
+		To:      header.Get("To"),
+		ReplyTo: header.Get("Reply-To"),
+		Status:  3,
+		Message: message,
+		IsRead:  1,
+	}, config)
+}
 
 // 把邮件的保存到数据库，包括相关的Tags信息
 func EmailSave(email *models.Email, config *models.ServerConfig) {
