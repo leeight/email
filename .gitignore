@@ -39,6 +39,14 @@ filters.yml
 /src/server/orm_test.db
 /src/server/threads.txt
 
+foo_backup.sql
+liyubei@baidu.com.json
+processes.json.bak
+src/server/v2/leeight@126.com.json
+src/server/v2/leeight@stu.xjtu.edu.cn.json
+src/server/v2/x.go
+src/server/v2/x.json
+
 ckeditor
 
 *~

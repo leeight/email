@@ -56,7 +56,6 @@ func (this *MailPostController) Post() {
 		Uidl:        this.GetString("uidl"),
 		Attachments: this.GetString("attachments"),
 		SrvConfig:   gSrvConfig,
-		IsSent:      0,
 	}
 	var raw, err = mailer.Enclose()
 	if err != nil {

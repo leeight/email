@@ -49,5 +49,6 @@ func (this *OriMessageController) Post() {
 		email.Message = strings.Replace(email.Message, "`", "'", -1)
 	}
 
+	this.Ctx.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
 	this.Ctx.WriteString(email.Message)
 }

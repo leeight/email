@@ -25,7 +25,6 @@ type MailBuilder struct {
 	Message, Uidl, Attachments string
 	From                       *mail.Address
 	To, Cc, Bcc                []*mail.Address
-	IsSent                     int
 	SrvConfig                  *models.ServerConfig
 	headers                    textproto.MIMEHeader
 	body                       []byte
@@ -113,17 +112,16 @@ func (m *MailBuilder) encloseBody() error {
 // 回复或者转发邮件的时候，把关联邮件的邮件头里面的信息加上
 func (m *MailBuilder) appendOriginalHeaders() {
 	// 相关邮件的原始文本信息
-	var abs string
-	if m.IsSent == 1 {
-		abs = path.Join(m.SrvConfig.BaseDir, "raw", "sent", m.Uidl+".txt")
-	} else {
-		abs = path.Join(m.SrvConfig.BaseDir, "raw", m.Uidl+".txt")
-	}
+	var abs = path.Join(m.SrvConfig.BaseDir, "raw", m.Uidl+".txt")
 
 	fi, err := os.Open(abs)
 	if err != nil {
-		log.Println(err)
-		return
+		abs = path.Join(m.SrvConfig.BaseDir, "raw", "sent", m.Uidl+".txt")
+		fi, err = os.Open(abs)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	}
 	defer fi.Close()
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -13,7 +14,7 @@ import (
 	// "code.google.com/p/go.net/publicsuffix"
 	"gopkg.in/yaml.v1"
 
-	"./base"
+	"../base"
 	// "./task"
 	// "./web"
 	// "./net/mail"
@@ -94,6 +95,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	x, err := json.MarshalIndent(filters, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(x))
+	return
+
 	fmt.Printf("Length = %d\n", len(filters))
 	fmt.Printf("Name = %s\n", filters[0].Name)
 	fmt.Printf("%s, %s, %s\n",
