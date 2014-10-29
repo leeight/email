@@ -45,7 +45,14 @@ func Receiver(config *models.ServerConfig) error {
 		return err
 	}
 
-	filters, err := filter.NewFilters(config.Service.Filter.Config)
+	var fc = config.Service.Filter.Config
+	if fc == "" {
+		fc = path.Join(config.BaseDir, "filters.json")
+	} else {
+		fc = path.Join(path.Dir(config.ConfigPath), fc)
+	}
+
+	filters, err := filter.NewFilters(fc)
 	if err != nil {
 		log.Println(err)
 	}

@@ -45,11 +45,6 @@ func NewConfig(file string) (*models.ServerConfig, error) {
 		path.Join(filepath.Dir(abs),
 			"data", domain, v.Pop3.Username))
 
-	// 设置默认值
-	if v.Service.Filter.Config == "" {
-		v.Service.Filter.Config = path.Join(v.BaseDir, "filters.json")
-	}
-
 	// 初始化目录的结构
 	os.MkdirAll(path.Join(v.BaseDir, "raw"), 0755)
 	os.MkdirAll(path.Join(v.BaseDir, "downloads"), 0755)
