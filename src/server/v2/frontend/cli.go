@@ -19,6 +19,7 @@ func Run(config *models.ServerConfig) error {
 	beego.Router("/api/mail/add_star", &controllers.AddStarController{})
 	beego.Router("/api/mail/remove_star", &controllers.RemoveStarController{})
 	beego.Router("/api/mail/delete", &controllers.MailDeleteController{})
+	beego.Router("/api/mail/post", &controllers.MailPostController{})
 
 	// 文件和图片上传的功能
 	beego.Router("/api/upload/controller", &controllers.UploadController{})

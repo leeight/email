@@ -16,6 +16,7 @@ import (
 	"github.com/qiniu/iconv"
 	"github.com/saintfish/chardet"
 
+	"../../net/mail"
 	"../models"
 )
 
@@ -141,6 +142,28 @@ func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.At
 		atts = append(atts, &att)
 	}
 	return atts
+}
+
+// 发送邮件的时候，把邮件地址解析成后续可用的
+// 如果遇到非法的，无法解析的，直接抛弃掉
+func ParseAddressList(value string) []*mail.Address {
+	var list []*mail.Address
+	for _, item := range strings.Split(value, "; ") {
+		v, err := mail.ParseAddress(item)
+		if err == nil {
+			list = append(list, v)
+		}
+	}
+	return list
+}
+
+func AddressToString(list []*mail.Address) string {
+	addresses := make([]string, len(list))
+	for i, item := range list {
+		addresses[i] = item.String()
+	}
+
+	return strings.Join(addresses, ", ")
 }
 
 func ListResponse(totalCount int64, pageNo int, pageSize int, args ...interface{}) models.Response {

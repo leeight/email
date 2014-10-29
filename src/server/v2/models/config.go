@@ -48,6 +48,7 @@ type httpType struct {
 type pop3Type struct {
 	Username         string        `json:"username"`
 	Password         string        `json:"password"`
+	Email            string        `json:"email"`
 	Host             string        `json:"host"`
 	Domain           string        `json:"-"`
 	Port             int           `json:"port"`
@@ -58,7 +59,11 @@ type pop3Type struct {
 
 // SMTP服务的配置信息
 type smtpType struct {
-	pop3Type
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Tls      bool   `json:"tls"`
 }
 
 // 相关的一些其它服务

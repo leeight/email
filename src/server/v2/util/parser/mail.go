@@ -13,10 +13,10 @@ import (
 	"github.com/alexcesaro/mail/quotedprintable"
 	"github.com/saintfish/chardet"
 
-	"../../RFC2047"
-	"../../net/mail"
-	"../models"
-	"../util"
+	".."
+	"../../../RFC2047"
+	"../../../net/mail"
+	"../../models"
 )
 
 func NewEmail(raw []byte) (*models.Email, error) {
