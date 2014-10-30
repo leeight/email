@@ -36,7 +36,8 @@ func (this *InboxController) Post() {
 	_, err = qs.
 		Offset(schema.Offset).
 		Limit(schema.PageSize).
-		All(&emails)
+		All(&emails, "Id", "Uidl", "From", "Date", "Subject",
+		"Status", "IsRead", "IsStar")
 	if err != nil {
 		log.Println(err)
 		return
