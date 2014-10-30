@@ -72,12 +72,13 @@ func main() {
 	}
 
 	// 静态文件的根目录
-	var root = "/Volumes/HDD/Users/leeight/local/leeight.github.com/email-client/src/client"
+	var root = "static"
 
 	beego.StaticDir["/"] = root
 
 	// 特殊的静态文件目录
 	beego.SetStaticPath("/src", path.Join(root, "src"))
+	beego.SetStaticPath("/asset", path.Join(root, "asset"))
 	beego.SetStaticPath("/dep", path.Join(root, "dep"))
 	beego.SetStaticPath("/downloads", path.Join(config.BaseDir, "downloads"))
 	beego.SetStaticPath("/raw", path.Join(config.BaseDir, "raw"))
