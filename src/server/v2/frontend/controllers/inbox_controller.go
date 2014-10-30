@@ -72,6 +72,10 @@ func (this *InboxController) buildQuerySeter() (
 	} else if schema.IsStar == 1 {
 		qs = qs.Filter("IsStar", 1)
 	} else if schema.LabelId > 0 {
+		if schema.LabelId != 2 && schema.LabelId != 9 {
+			// TODO(user) 以后修复
+			qs = qs.Filter("IsDelete", 0)
+		}
 		qs = qs.Filter("Tags__Tag__Id", schema.LabelId)
 	} else {
 		qs = qs.Filter("IsDelete", 0)
