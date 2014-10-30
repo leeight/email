@@ -27,7 +27,12 @@ define(function (require) {
      * @inheritDoc
      */
     UserSettingsView.prototype.uiProperties = {
-
+        'smtp-tls': {
+            'checked': '@formData.smtp.tls'
+        },
+        'pop3-tls': {
+            'checked': '@formData.pop3.tls'
+        }
     };
 
     /**
