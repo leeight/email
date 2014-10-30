@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"path"
 	"time"
 
-	"github.com/astaxie/beego/orm"
 	pop3 "github.com/bytbox/go-pop3"
 
 	"../filter"
@@ -16,6 +14,9 @@ import (
 	"../util/parser"
 	"../util/saver"
 )
+
+// 一次批量查询的个数
+const kMatchBatchNum = 256
 
 func Receiver(config *models.ServerConfig) error {
 	log.Println("Receiving Mails...")
@@ -45,6 +46,106 @@ func Receiver(config *models.ServerConfig) error {
 		return err
 	}
 
+	uidls, err := client.UidlAll()
+	if err != nil {
+		return err
+	}
+
+	// 在循环的过程中，如果有错误，打印出来，不要中断循环
+	// 第一次收取完毕邮件之后，基本上就有一个全量的uidl了，后续再次收取的时候
+	// 很多时候都是一些无效的查询，理论上可以在内存里面缓存所有的uidl,id,date的组合，不过
+	// 貌似比较麻烦，所以简化一下，通过批量查询来提高一些效率
+
+	var uidlMap = make(map[string][]int)
+
+	for msgid, msg := range msgs {
+		uidlMap[string(uidls[msg])] = []int{msgid, msg}
+		if len(uidlMap) >= kMatchBatchNum {
+			err := batchProcess(uidlMap, config, client)
+			if err != nil {
+				// 就算有错误，比如有些邮件没有收取下来，那么下一分钟还会继续收取的
+				log.Println(err)
+			}
+			uidlMap = make(map[string][]int)
+		}
+	}
+
+	if len(uidlMap) > 0 {
+		err := batchProcess(uidlMap, config, client)
+		if err != nil {
+			// 就算有错误，比如有些邮件没有收取下来，那么下一分钟还会继续收取的
+			log.Println(err)
+		}
+	}
+
+	return nil
+}
+
+// 批量查询数据库，然后看情况从服务器删除一些邮件
+// 再看情况收取一些邮件
+func batchProcess(uidlMap map[string][]int,
+	config *models.ServerConfig, client *pop3.Client) error {
+
+	// 得到所有的uidl集合，然后从数据库批量查询状态
+	uidls := make([]string, 0, len(uidlMap))
+	for k := range uidlMap {
+		uidls = append(uidls, k)
+	}
+
+	// 1. 从数据库里面查询结果
+	var emails []*models.Email
+	num, err := config.Ormer.
+		QueryTable("email").
+		Filter("Uidl__in", uidls).
+		All(&emails, "Id", "Uidl", "Date")
+	if err != nil {
+		return err
+	}
+
+	if num > 0 {
+		// 2. 如果有结果的话，看看是否需要从服务器删除邮件
+
+		// 执行到这里说明数据库里面已经有邮件了，这里就开始检查是否需要删除服务器的信息
+		var kmos = config.Pop3.KeepMailOnServer
+		var msgids = make([]int, 0, len(emails))
+		if kmos > 0 {
+			// 配置文件的里面配置了，说是要从服务器中删除，那么就检查是否已经超过这么多天了
+			for _, email := range emails {
+				if time.Since(email.Date).Hours() > float64(24*kmos) {
+					msgids = append(msgids, uidlMap[email.Uidl][0])
+					log.Printf("[ DELETE] %d -> %s (%f)\n", uidlMap[email.Uidl][0],
+						email.Uidl, time.Since(email.Date).Hours())
+				}
+			}
+		}
+
+		// 3. 开始执行删除的逻辑
+		if kmos > 0 && len(msgids) > 0 {
+			for _, msgid := range msgids {
+				if msgid <= 0 {
+					continue
+				}
+				client.Dele(msgid)
+			}
+		}
+
+		// 4. 从uidlMap里面删除已经有结果的数据，删除之后，剩下的就是需要从邮件服务器里面接收的uidl了
+		for _, email := range emails {
+			delete(uidlMap, email.Uidl)
+		}
+	}
+
+	// 5. 开始从邮件服务器接收邮件
+	if len(uidlMap) > 0 {
+		fetchAndSaveMail(uidlMap, config, client)
+	}
+
+	return nil
+}
+
+func fetchAndSaveMail(uidlMap map[string][]int,
+	config *models.ServerConfig, client *pop3.Client) {
+
 	var fc = config.Service.Filter.Config
 	if fc == "" {
 		fc = path.Join(config.BaseDir, "filters.json")
@@ -57,62 +158,25 @@ func Receiver(config *models.ServerConfig) error {
 		log.Println(err)
 	}
 
-	uidls, err := client.UidlAll()
-	if err != nil {
-		return err
-	}
+	for uidl, array := range uidlMap {
+		var msg = array[1]
 
-	// 在循环的过程中，如果有错误，打印出来，不要中断循环
-	for msgid, msg := range msgs {
-		var uidl = uidls[msg]
-
-		var email = &models.Email{}
-		var err = config.Ormer.QueryTable("email").Filter("Uidl", string(uidl)).One(email, "Id")
-
-		if err == nil && email.Id > 0 {
-			// 存在记录
-			var kmos = config.Pop3.KeepMailOnServer
-			if kmos > 0 &&
-				time.Since(email.Date).Hours() > float64(24*kmos) {
-				// 判断 date 和 当前的日期差别，如果大于 config.Pop3.Delete_older_mails 的配置
-				// 说明可以删除
-				log.Printf("[ DELETE] %d -> %s (%f)\n", msgid, uidl,
-					time.Since(email.Date).Hours())
-				client.Dele(msgid)
-			}
-			continue
-		} else if err != orm.ErrNoRows {
-			// 肯定有其它错误了
+		var raw []byte
+		var rawFile = path.Join(config.BaseDir, "raw", uidl+".txt")
+		res, err := client.Retr(msg)
+		if err != nil {
 			log.Println(err)
 			continue
 		}
 
-		var raw []byte
-		var rawFile = path.Join(config.BaseDir, "raw", uidl+".txt")
-		if _, err := os.Stat(rawFile); err != nil {
-			// 如果不存在的话，开始接收，然后保存原始的文件
-			res, err := client.Retr(msg)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-
-			raw = []byte(res)
-			err = ioutil.WriteFile(rawFile, raw, 0644)
-			if err != nil {
-				log.Println(err)
-			}
-		} else {
-			// 原始文件存在了，直接读取即可，减少网络的访问
-			raw, err = ioutil.ReadFile(rawFile)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
+		raw = []byte(res)
+		err = ioutil.WriteFile(rawFile, raw, 0644)
+		if err != nil {
+			log.Println(err)
 		}
 
 		// 解析邮件的正文，得到 Email 对象
-		email, err = parser.NewEmail(raw)
+		email, err := parser.NewEmail(raw)
 		if err != nil {
 			log.Println(uidl, err)
 			saver.EmailSaveFallback(raw, string(uidl), err.Error(), config)
@@ -136,6 +200,4 @@ func Receiver(config *models.ServerConfig) error {
 
 		log.Printf("[ SAVE] %d -> %s (%d)\n", msg, uidl, email.Id)
 	}
-
-	return nil
 }
