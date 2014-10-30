@@ -32,7 +32,7 @@ define(function (require) {
     MailInbox.prototype.redirectForSearch = function (args) {
         var path = '/mail/search';
         var url = URL.withQuery(path, args);
-        this.redirect(url, { force: true });
+        this.redirect(url, {force: true});
     };
 
     /**
@@ -48,12 +48,7 @@ define(function (require) {
             u.partial(util.composeMail, this.view, '撰写邮件', null));
 
         this.view.get('connectNetdisk').on('click', function() {
-            netdisk.auth()
-                .then(function(){
-                    // OK
-                }, function(){
-                    // FAIL
-                });
+            netdisk.auth();
         });
 
         this.view.get('refresh').on('click', this.reload, this);
@@ -65,13 +60,14 @@ define(function (require) {
             var value = this.view.get('unread-only').getValue();
             if (value === '1') {
                 query.unreadOnly = value;
-            } else {
+            }
+            else {
                 query = u.omit(query, 'unreadOnly');
             }
             query = u.omit(query, 'pageNo');
 
-            var url = URL.withQuery(path, query);
-            this.redirect(url, { force: true });
+            url = URL.withQuery(path, query);
+            this.redirect(url, {force: true});
         }, this);
 
         document.title = '伊妹儿';

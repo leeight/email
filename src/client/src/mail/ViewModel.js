@@ -82,15 +82,16 @@ define(function (require) {
             return navigators;
         },
         email: function(model) {
-            return api.readMail({id: model.get('id')}).then(function(email){
+            return api.readMail({id: model.get('id')}).then(function(email) {
                 return util.applyEMailPath(email);
-            })
+            });
         }
     };
 
 
     /**
      * @param {Array.<string>} ids 把ids的邮件标记为已删除
+     * @returns {er.Deferred} .
      */
     MailViewModel.prototype.deleteMails = function(ids) {
         return api.deleteMails({ids: ids});
@@ -98,6 +99,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} uidl 把 uidl 的邮件的附件重新上传
+     * @returns {er.Deferred} .
      */
     MailViewModel.prototype.pcsRetry = function(uidl) {
         return api.pcsRetry({uidl: uidl});

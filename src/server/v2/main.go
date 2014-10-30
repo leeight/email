@@ -62,6 +62,9 @@ func main() {
 
 	beego.HttpPort = config.Http.Port
 	beego.DirectoryIndex = true
+	if !config.Debug {
+		beego.RunMode = "prod"
+	}
 
 	// 静态文件的根目录
 	var root = "/Volumes/HDD/Users/leeight/local/leeight.github.com/email-client/src/client"

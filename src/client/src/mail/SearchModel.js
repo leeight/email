@@ -5,10 +5,7 @@
 
 define(function (require) {
     var ListModel = require('bat-ria/mvc/ListModel');
-    var datasource = require('er/datasource');
     var api = require('common/config').api;
-    var batUtil = require('bat-ria/util');
-    var u = require('underscore');
 
     /**
      * [Please Input Model Description]
@@ -77,6 +74,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} ids 把ids的邮件标记为已读
+     * @returns {er.Deferred} .
      */
     MailSearchModel.prototype.markAsRead = function(ids) {
         return api.markAsRead({ids: ids});
@@ -84,6 +82,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} ids 把ids的邮件标记为已删除
+     * @returns {er.Deferred} .
      */
     MailSearchModel.prototype.deleteMails = function(ids) {
         return api.deleteMails({ids: ids});

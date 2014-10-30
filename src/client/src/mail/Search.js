@@ -38,11 +38,11 @@ define(function (require) {
 
             var action = e.action;
             if (action === 'markAsRead') {
-                this.model.markAsRead(ids).then(function(){
+                this.model.markAsRead(ids).then(function() {
                     locator.reload();
                 });
             } else if (action === 'delete') {
-                this.model.deleteMails(ids).then(function(){
+                this.model.deleteMails(ids).then(function() {
                     locator.reload();
                 });
             }

@@ -5,7 +5,6 @@
 
 define(function (require) {
     var FormAction = require('bat-ria/mvc/FormAction');
-    var util = require('er/util');
 
     /**
      * Action构造函数

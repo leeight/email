@@ -5,10 +5,7 @@
 
 define(function (require) {
     var ListModel = require('bat-ria/mvc/ListModel');
-    var datasource = require('er/datasource');
     var api = require('common/config').api;
-    var batUtil = require('bat-ria/util');
-    var locator = require('er/locator');
     var u = require('underscore');
 
     /**
@@ -81,6 +78,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} ids 把ids的邮件标记为已读
+     * @returns {er.Deferred} .
      */
     MailInboxModel.prototype.markAsRead = function(ids) {
         return api.markAsRead({ids: ids});
@@ -88,6 +86,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} ids 把ids的邮件标记为已删除
+     * @returns {er.Deferred} .
      */
     MailInboxModel.prototype.deleteMails = function(ids) {
         return api.deleteMails({ids: ids});
@@ -95,6 +94,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} ids 把ids的邮件添加星标
+     * @returns {er.Deferred} .
      */
     MailInboxModel.prototype.addStar = function(ids) {
         return api.addStar({ids: ids});
@@ -102,6 +102,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} ids 把ids的邮件删除星标
+     * @returns {er.Deferred} .
      */
     MailInboxModel.prototype.removeStar = function(ids) {
         return api.removeStar({ids: ids});
@@ -126,13 +127,13 @@ define(function (require) {
         var url = index === -1 ? '' : location.href.slice(index);
 
         if (url.indexOf('#/mail/deleted') === 0) {
-            return { 'is_delete': 1 };
+            return {'is_delete': 1};
         } else if (url.indexOf('#/mail/sent') === 0) {
-            return { 'is_sent': 1 };
+            return {'is_sent': 1};
         } else if (url.indexOf('#/calendar/list') === 0) {
-            return { 'is_calendar': 1 };
+            return {'is_calendar': 1};
         } else if (url.indexOf('#/mail/starred') === 0) {
-            return { 'is_star': 1 };
+            return {'is_star': 1};
         }
 
         return {};

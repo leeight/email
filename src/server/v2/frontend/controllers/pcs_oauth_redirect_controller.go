@@ -32,12 +32,8 @@ func (this *PcsOAuthRedirectController) Post() {
 	p.Set("code", code)
 	p.Set("client_id", "sO9daRmMp9hY6GZ0WfGTfZX1")
 	p.Set("client_secret", "a9pxdjaFb5jVSGt7HvStNwEfspP8NxoD")
-	if this.Ctx.Input.Header("Host") == "" {
-		// TODO(user) 貌似是edp-webserver proxy的问题？
-		p.Set("redirect_uri", "http://localhost:8849/api/pcs/oauth_redirect")
-	} else {
-		p.Set("redirect_uri", "http://"+this.Ctx.Input.Host()+"/api/pcs/oauth_redirect")
-	}
+	p.Set("redirect_uri", "http://localhost:"+
+		strconv.Itoa(gSrvConfig.Http.Port)+"/api/pcs/oauth_redirect")
 
 	var url = "https://openapi.baidu.com/oauth/2.0/token?" + p.Encode()
 	log.Println(url)

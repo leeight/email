@@ -90,7 +90,6 @@ define(function (require) {
     // Date: Sun, Aug 24, 2014 at 1:23 PM
     // Subject: Thanks for your order ref 489538-74861
     // To: leeight@gmail.com
-    //
     // Message
     MailView.prototype._forwardMail = function() {
         compose.forward(this.model.get('email'), this.view);

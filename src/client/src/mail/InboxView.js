@@ -6,9 +6,7 @@
 define(function (require) {
     // require template
     require('bat-ria/tpl!./inbox.tpl.html');
-    var locator = require('er/locator');
     var u = require('underscore');
-    var notification = require('common/notification');
     var util = require('common/util');
     var lib = require('esui/lib');
     var ListView = require('bat-ria/mvc/ListView');
@@ -36,22 +34,22 @@ define(function (require) {
             displayText: '选择邮件',
             // displayHtml: '<input data-ui-type="CheckBox" />选择邮件',
             datasource: [
-                { text: 'All' },
-                { text: 'None' },
-                { text: 'Read' },
-                { text: 'Unread' },
-                { text: 'Starred' },
-                { text: 'Unstarred' }
+                {text: 'All'},
+                {text: 'None'},
+                {text: 'Read'},
+                {text: 'Unread'},
+                {text: 'Starred'},
+                {text: 'Unstarred'}
             ]
         },
         actions: {
             displayText: '操作',
             datasource: [
-                { text: '删除', action: 'delete' },
-                { text: '归档', action: 'archive' },
-                { text: '标记已读', action: 'markAsRead' },
-                { text: '添加标签', action: 'addLabel' },
-                { text: '添加星标', action: 'addStar' }
+                {text: '删除', action: 'delete'},
+                {text: '归档', action: 'archive'},
+                {text: '标记已读', action: 'markAsRead'},
+                {text: '添加标签', action: 'addLabel'},
+                {text: '添加星标', action: 'addStar'}
             ]
         },
         'unread-only': {
@@ -65,8 +63,7 @@ define(function (require) {
     MailInboxView.prototype.uiEvents = {
         'cm:select': function(e) {
             var table = this.get('table');
-            var action = e.item.text;
-            switch(e.item.text) {
+            switch (e.item.text) {
                 case 'All':
                     table.setAllRowSelected(true);
                     break;
@@ -112,7 +109,7 @@ define(function (require) {
             },
             matchFn: function(element) {
                 return lib.hasClass(element, 'fa-star-o') ||
-                lib.hasClass(element, 'fa-star')
+                lib.hasClass(element, 'fa-star');
             }
         });
     };

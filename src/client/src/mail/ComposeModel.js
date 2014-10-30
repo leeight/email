@@ -5,9 +5,7 @@
 
 define(function (require) {
     var FormModel = require('bat-ria/mvc/FormModel');
-    var datasource = require('er/datasource');
     var api = require('common/config').api;
-    var batUtil = require('bat-ria/util');
     var Deferred = require('er/Deferred');
 
     /**
@@ -34,6 +32,7 @@ define(function (require) {
 
     /**
      * @inheritDoc
+     * @returns {Object} .
      */
     MailComposeModel.prototype.getDefaultArgs = function() {
         return {
@@ -44,16 +43,18 @@ define(function (require) {
     /**
      * 查询联系人的信息
      * @param {string} keyword 联系人的关键字
+     * @returns {er.Deferred} .
      */
     MailComposeModel.prototype.getContacts = function(keyword) {
-        return api.contactsList({keyword: keyword, pageSize: 6}).then(function(page){
+        return api.contactsList({keyword: keyword, pageSize: 6}).then(function(page) {
             return page.result || [];
-        })
+        });
     };
 
     /**
      * 上传附件
      * @param {File} file 已经选择的文件.
+     * @returns {er.Deferred} .
      */
     MailComposeModel.prototype.uploadAttachment = function(file) {
         var requesting = new Deferred();
@@ -80,7 +81,7 @@ define(function (require) {
             catch(ex) {
                 requesting.reject(ex);
             }
-        }
+        };
         xhr.send(fd);
 
         return requesting.promise;
@@ -88,6 +89,7 @@ define(function (require) {
 
     /**
      * @inheritDoc
+     * @returns {Object} .
      */
     MailComposeModel.prototype.getExtraData = function () {
         return {};

@@ -3,6 +3,8 @@
  * @author leeight(leeight@gmail.com)
  */
 
+/* jshint: GLOBAL: CKEDITOR */
+
 define(function (require) {
     // require template
     require('bat-ria/tpl!./compose.tpl.html');
@@ -83,18 +85,22 @@ define(function (require) {
         ui.repaint();
     };
 
+    /**
+     * @returns {Object} .
+     */
     MailComposeView.prototype.getExtraFormData = function() {
         return {
             message: CKEDITOR.instances['email-body-editor'].getData()
-        }
+        };
     };
 
     /**
      * @inheritDoc
+     * @returns {Object} .
      */
     MailComposeView.prototype.getUIProperties = function() {
         var attachments = this.model.get('attachments') || [];
-        var rawValue = u.map(attachments, function(item){
+        var rawValue = u.map(attachments, function(item) {
             return item.value;
         });
 
@@ -124,8 +130,9 @@ define(function (require) {
                 view.model.getContacts(u.trim(keyword)).then(function(contacts) {
                     control.set('suggestions', contacts);
                 });
-            } else {
-                control.set('suggestions', [])
+            }
+            else {
+                control.set('suggestions', []);
             }
         }, 300);
         control.set('_delayTimer', timer);
@@ -136,10 +143,10 @@ define(function (require) {
      */
     MailComposeView.prototype.uiEvents = {
         'to:input': function(e) {
-            displaySuggestions(this, e.target)
+            displaySuggestions(this, e.target);
         },
         'cc:input': function(e) {
-            displaySuggestions(this, e.target)
+            displaySuggestions(this, e.target);
         },
         'addAtt:click': function(e) {
             // https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
