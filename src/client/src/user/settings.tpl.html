@@ -1,0 +1,172 @@
+<!-- target: TPL_user_settings -->
+<div class="user-settings">
+<form data-ui-type="Form" data-ui-id="form" data-ui-auto-validate="true" method="POST">
+    <!-- if: !${formData.pop3.email} -->
+    <div class="tip">初次使用，请先设置账户信息。</div>
+    <!-- /if -->
+
+    <div class="form-segment">
+        <h3>基本设置</h3>
+        <div class="form-body">
+
+            <div class="form-row">
+                <div class="form-key"><span class="field-required">*</span>邮箱：</div>
+                <div class="form-value">
+                    <input data-ui-id="email"
+                           data-ui-type="TextBox"
+                           data-ui-required="required"
+                           name="email"
+                           placeholder="例如：liyubei@baidu.com"
+                           data-ui-value="${formData.pop3.email}" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-key"><span class="field-required">*</span>密码：</div>
+                <div class="form-value">
+                    <input type="password"
+                           data-ui-id="password"
+                           data-ui-type="TextBox"
+                           data-ui-required="required"
+                           name="password"
+                           data-ui-value="${formData.pop3.password}" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-segment form-segment-last">
+        <h3>高级设置</h3>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <div class="form-body">
+                        <div class="form-row">
+                            <div class="form-key"><span class="field-required">*</span><a href="http://en.wikipedia.org/wiki/Post_Office_Protocol" target="_blank">POP3</a>账户：</div>
+                            <div class="form-value">
+                                <input data-ui-id="pop3-username"
+                                       data-ui-type="TextBox"
+                                       data-ui-required="required"
+                                       name="pop3.username"
+                                       data-ui-value="${formData.pop3.username}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key"><span class="field-required">*</span><a href="http://en.wikipedia.org/wiki/Post_Office_Protocol" target="_blank">POP3</a>密码：</div>
+                            <div class="form-value">
+                                <input type="password"
+                                       data-ui-id="pop3-password"
+                                       data-ui-type="TextBox"
+                                       data-ui-required="required"
+                                       name="pop3.password"
+                                       data-ui-value="${formData.pop3.password}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key"><span class="field-required">*</span>主机和端口：</div>
+                            <div class="form-value">
+                                <input data-ui-id="pop3-hostname"
+                                       data-ui-type="TextBox"
+                                       data-ui-required="required"
+                                       name="pop3.hostname"
+                                       data-ui-value="${formData.pop3.hostname}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key">检查周期：</div>
+                            <div class="form-value">
+                                <input data-ui-id="pop3-interval"
+                                       data-ui-type="TextBox"
+                                       data-ui-hint="单位：秒"
+                                       data-ui-min="30"
+                                       data-ui-max="120"
+                                       name="pop3.interval"
+                                       data-ui-value="${formData.pop3.interval}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key">在服务器上保存：</div>
+                            <div class="form-value">
+                                <input data-ui-id="pop3-keep_mail_on_server"
+                                       data-ui-type="TextBox"
+                                       data-ui-hint="单位：天"
+                                       name="pop3.keep_mail_on_server"
+                                       data-ui-value="${formData.pop3.keep_mail_on_server}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key">SSL加密：</div>
+                            <div class="form-value">
+                                <input type="checkbox"
+                                       data-ui-id="pop3-tls"
+                                       data-ui-type="CheckBox"
+                                       name="pop3.tls"
+                                       data-ui-checked="${formData.pop3.tls}" />
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-body">
+                        <div class="form-row">
+                            <div class="form-key"><span class="field-required">*</span><a href="http://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol" target="_blank">SMTP</a>账户：</div>
+                            <div class="form-value">
+                                <input data-ui-id="smtp-username"
+                                       data-ui-type="TextBox"
+                                       data-ui-required="required"
+                                       name="smtp.username"
+                                       data-ui-value="${formData.smtp.username}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key"><span class="field-required">*</span><a href="http://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol" target="_blank">SMTP</a>密码：</div>
+                            <div class="form-value">
+                                <input type="password"
+                                       data-ui-id="smtp-password"
+                                       data-ui-type="TextBox"
+                                       data-ui-required="required"
+                                       name="smtp.password"
+                                       data-ui-value="${formData.smtp.password}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key"><span class="field-required">*</span>主机和端口：</div>
+                            <div class="form-value">
+                                <input data-ui-id="smtp-hostname"
+                                       data-ui-type="TextBox"
+                                       data-ui-required="required"
+                                       name="smtp.hostname"
+                                       data-ui-value="${formData.smtp.hostname}" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-key">SSL加密：</div>
+                            <div class="form-value">
+                                <input type="checkbox"
+                                       data-ui-id="smtp-tls"
+                                       data-ui-type="CheckBox"
+                                       name="smtp.tls"
+                                       data-ui-checked="${formData.smtp.tls}" />
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="form-operation">
+        <button data-ui-type="Button" data-ui-id="submit" data-ui-skin="spring" type="submit">确定</button>
+        <button data-ui-type="Button" data-ui-id="cancel" data-ui-skin="link" type="button">取消</button>
+    </div>
+</form>
+</div>

@@ -8,7 +8,7 @@ define(function (require) {
     // 接口配置
     // 如果期望添加API时工具自动配置，请保持apiConfig名称不变
     var apiConfig = {
-        user: function(){ return {} },
+        user: '/api/u/s/r',
         constants: function(){ return {} },
 
         inboxList: '/api/inbox',
@@ -23,7 +23,9 @@ define(function (require) {
         threadList: '/api/thread/list',
         readThread: '/api/thread/read',
         contactsList: '/api/contacts',
-        pcsRetry: '/api/pcs/retry'
+        pcsRetry: '/api/pcs/retry',
+        userSettingsRead: '/api/u/s/r',
+        userSettingsUpdate: '/api/u/s/u'
     };
 
     var config = {

@@ -19,6 +19,7 @@ define(
          * @ignore
          */
         function requireConfigs() {
+            require('../user/config');
             require('../thread/config');
             require('../mail/config');
             require('../dev/config');
@@ -35,25 +36,13 @@ define(
          * @ignore
          */
         function init() {
-            var notification = require('common/notification');
-            notification.enable();
-
-            var user = require('bat-ria/system/user');
-            var visitor = user.visitor;
-
+            // var notification = require('common/notification');
+            // notification.enable();
             View.prototype.dispose = function() {
                 // IGNORE
                 // 解决白屏的问题
             };
 
-            // 在这里用 visitor 信息初始化用户信息等 UI 元素
-            // 以及自定义各种系统配置、导航栏等等
-
-            // // 初始化主导航栏
-            // var nav = config.nav;
-            // if (nav && nav.navId && nav.tabs) {
-            //     require('bat-ria/ui/navigator').init(nav.navId, nav.tabs);
-            // }
             var events = require('er/events');
             var lib = require('esui/lib');
 
@@ -77,6 +66,13 @@ define(
             events.on('globalError', function(e){
                 console.error(e.error);
             });
+
+            var user = require('bat-ria/system/user');
+            var visitor = user.visitor;
+            if (!visitor || !visitor.pop3 || !visitor.pop3.email) {
+                // 初次使用，跳转到设置页面
+                require('er/locator').redirect('/user/settings');
+            }
         }
 
         /**

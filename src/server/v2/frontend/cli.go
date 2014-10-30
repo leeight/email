@@ -32,6 +32,10 @@ func Run(config *models.ServerConfig) error {
 	// 联系人列表
 	beego.Router("/api/contacts", &controllers.ContactsController{})
 
+	// 系统设置的一些信息
+	beego.Router("/api/u/s/r", &controllers.UserSettingsReadController{})
+	beego.Router("/api/u/s/u", &controllers.UserSettingsUpdateController{})
+
 	beego.Run()
 
 	return nil

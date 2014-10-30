@@ -19,6 +19,11 @@ import (
 const kMatchBatchNum = 256
 
 func Receiver(config *models.ServerConfig) error {
+	if config.InitMode {
+		log.Println("Under the init mode, Mail Receiver will do nothing.")
+		return nil
+	}
+
 	log.Println("Receiving Mails...")
 
 	var hostname = fmt.Sprintf("%s:%d", config.Pop3.Host, config.Pop3.Port)

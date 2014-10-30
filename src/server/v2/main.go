@@ -14,7 +14,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"./backend"
-	"./config"
+	cf "./config"
 	"./frontend"
 	"./util"
 )
@@ -25,9 +25,12 @@ func main() {
 
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	config, err := config.NewConfig(*configfile)
+	var initMode = false
+	config, err := cf.NewConfig(*configfile)
 	if err != nil {
-		log.Fatal(err)
+		initMode = true
+		log.Println("Read config file failed, enter init mode.")
+		config = cf.DefaultConfig()
 	}
 
 	if len(os.Args) >= 2 && strings.Index(os.Args[1], "-config=") == 0 {
@@ -44,21 +47,23 @@ func main() {
 	orm.RegisterDriver("mysql", orm.DR_MySQL)
 	orm.RegisterDriver("sqlite3", orm.DR_Sqlite)
 
-	// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
-	srv := config.Service.Db
-	if srv.Type == "" || srv.Type == "mysql" {
-		dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&charset=utf8",
-			srv.Username, srv.Password, srv.Host, srv.Port, srv.Name)
-		orm.RegisterDataBase("default", "mysql", dsn)
-	} else if srv.Type == "sqlite" {
-		orm.RegisterDataBase("default", "sqlite3",
-			path.Join(config.BaseDir, "db", srv.Name+".db"))
-	} else {
-		log.Fatalf("Invalid Database Type: %s\n", srv.Type)
-	}
-	orm.RunCommand()
+	if !initMode {
+		// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
+		srv := config.Service.Db
+		if srv.Type == "" || srv.Type == "mysql" {
+			dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&charset=utf8",
+				srv.Username, srv.Password, srv.Host, srv.Port, srv.Name)
+			orm.RegisterDataBase("default", "mysql", dsn)
+		} else if srv.Type == "sqlite" {
+			orm.RegisterDataBase("default", "sqlite3",
+				path.Join(config.BaseDir, "db", srv.Name+".db"))
+		} else {
+			log.Fatalf("Invalid Database Type: %s\n", srv.Type)
+		}
 
-	config.Ormer = orm.NewOrm()
+		orm.RunCommand()
+		config.Ormer = orm.NewOrm()
+	}
 
 	beego.HttpPort = config.Http.Port
 	beego.DirectoryIndex = true

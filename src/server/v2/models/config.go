@@ -19,10 +19,11 @@ type ServerConfig struct {
 	ConfigPath string      `json:"-"`
 	BaseDir    string      `json:"-"`
 	Ormer      orm.Ormer   `json:"-"`
+	InitMode   bool        `json:"-"`
 }
 
 // 数据同步到本地磁盘
-func (sc ServerConfig) Sync() error {
+func (sc *ServerConfig) Sync() error {
 	if sc.ConfigPath == "" {
 		return errors.New("Invalid sc.ConfigPath")
 	}
