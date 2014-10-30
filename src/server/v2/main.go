@@ -82,5 +82,7 @@ func main() {
 		beego.BeforeStatic, util.StyleFilter(root))
 
 	go backend.Run(config)
+	go backend.FlushContacts(config)
+
 	frontend.Run(config)
 }

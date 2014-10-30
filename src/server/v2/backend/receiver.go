@@ -198,6 +198,33 @@ func fetchAndSaveMail(uidlMap map[string][]int,
 		// 保存邮件的资源和附件
 		saver.EmailResourceSave(email, config)
 
+		// 同步联系人的信息
+		flushContact(email)
+
 		log.Printf("[ SAVE] %d -> %s (%d)\n", msg, uidl, email.Id)
+	}
+}
+
+func flushContact(email *models.Email) {
+	// 修复from,to,cc,bcc,reply_to这5个字段的值
+	email.FixMailAddressFields()
+
+	if email.FromField != nil {
+		contactQueue <- email.FromField
+	}
+	if email.ReplyToField != nil && len(email.ReplyToField) > 0 {
+		for _, c := range email.ReplyToField {
+			contactQueue <- c
+		}
+	}
+	if email.ToField != nil && len(email.ToField) > 0 {
+		for _, c := range email.ToField {
+			contactQueue <- c
+		}
+	}
+	if email.CcField != nil && len(email.CcField) > 0 {
+		for _, c := range email.CcField {
+			contactQueue <- c
+		}
 	}
 }
