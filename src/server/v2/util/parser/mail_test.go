@@ -8,6 +8,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewEmailFallback(t *testing.T) {
+	raw, err := ioutil.ReadFile(path.Join("data", "727774.txt"))
+	assert.Equal(t, err, nil)
+
+	email, err := NewEmailFallback(raw)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, email.Subject, "FS数据库-每日服务排查报告 20141026")
+	assert.Equal(t, email.MsgId, "")
+	assert.Equal(t, email.Date.String(), "2014-10-27 09:55:03 +0800 CST")
+	assert.Equal(t, email.IsCalendar, 0)
+	assert.Equal(t, email.Status, 3)
+	assert.Equal(t, email.IsRead, 1)
+	assert.Equal(t, email.IsSent, 0)
+	assert.Equal(t, email.IsStar, 0)
+	assert.Equal(t, email.IsDelete, 0)
+	assert.Equal(t, email.IsArchive, 0)
+	assert.Equal(t, len(email.MessageBundle), 0)
+	assert.Equal(t, len(email.ResourceBundle), 0)
+	assert.Equal(t, email.HasMessage("text/html"), false)
+	assert.Equal(t, email.IcalMessage, "")
+	assert.Equal(t, email.Message, "")
+	assert.Nil(t, email.RawMessage)
+}
+
 func TestNewMail_727774(t *testing.T) {
 	raw, err := ioutil.ReadFile(path.Join("data", "727774.txt"))
 	assert.Equal(t, err, nil)

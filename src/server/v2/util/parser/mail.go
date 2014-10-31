@@ -1,14 +1,18 @@
 package parser
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/base64"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime"
 	"mime/multipart"
+	"net/textproto"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/alexcesaro/mail/quotedprintable"
 	"github.com/saintfish/chardet"
@@ -18,6 +22,40 @@ import (
 	"../../../net/mail"
 	"../../models"
 )
+
+// 只解析邮件头，得到一个简单的邮件信息
+func NewEmailFallback(raw []byte) (*models.Email, error) {
+	var idx = bytes.Index(raw, []byte("\n\n"))
+
+	if idx == -1 {
+		idx = len(raw)
+	}
+
+	var reader = textproto.NewReader(bufio.NewReader(bytes.NewReader(raw[0:idx])))
+	var header, err = reader.ReadMIMEHeader()
+	if header == nil || len(header) <= 0 {
+		// 这里不判断err，而是判断header，只要header可以用，就继续往下面执行
+		return nil, err
+	}
+
+	date, err := util.ParseDate(header.Get("Date"))
+	if err != nil {
+		log.Println(header.Get("Date"), err)
+		date = time.Now()
+	}
+
+	return &models.Email{
+		Subject: FixSubject(RFC2047.Decode(header.Get("Subject"))),
+		Date:    date,
+		From:    header.Get("From"),
+		Cc:      header.Get("Cc"),
+		Bcc:     header.Get("Bcc"),
+		To:      header.Get("To"),
+		ReplyTo: header.Get("Reply-To"),
+		Status:  3,
+		IsRead:  1,
+	}, nil
+}
 
 func NewEmail(raw []byte) (*models.Email, error) {
 	msg, err := mail.ReadMessage(bytes.NewBuffer(raw))
