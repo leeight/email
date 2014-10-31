@@ -2,19 +2,23 @@
 
 EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) 和 [SMTP](http://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol) 协议来实现邮件的收发功能，UI是基于在 [er](https://github.com/ecomfe/er), [esui](https://github.com/ecomfe/esui), [bat-ria](https://github.com/ecomfe/bat-ria) 的基础上开发的，天生具有很好的扩展性和跨平台的特性。
 
-## 系统架构图
+## 如何使用
 
-![design.png](docs/design.png)
+为了方便使用，提供了 Mac 下面的编译好的版本(6.8M)，可以从这里下载：<http://pan.baidu.com/s/1nOMF8>
 
-### BACKEND
+下载解压之后，执行：`./email` 即可，如果正常启动成功，然后打开浏览器，访问：<http://localhost:8877> 就可以看到设置页面。
 
-1. 基于 POP3 协议跟邮件服务器交互，完成收取邮件的功能
-2. 收取邮件之后把解析出来的元信息（例如：标题，发件人，日期等等）存储到数据，原始的文件存储到 Raw 目录，一些需要进行检索的信息发送到 elasticsearch 建立索引。
+![user_settings.png](docs/user_settings.png)
 
-### FRONTEND
+第一次访问的时候会自动跳转到设置页面，此时需要配置一些账户的信息，如果是 baidu.com 或者 126.com 的账户的话，只需要在基本设置里面填写邮箱地址和密码即可，下面的高级设置会自动补全。如果不是这两个域名下面的账户，可能就需要自己人肉去补全相应的信息了。
 
-1. 基于 SMTP 协议跟邮件服务器交互，完成发送邮件的功能
-2. 实现了一个 Web Server，响应浏览器发送过来的请求，返回合适的 JSON 数据，从而在 ER App 里面展示邮件的信息。
+配置成功之后，点击确定，然后会跳转到邮件列表页面，稍微等一会儿就可以看到最新的邮件了。
+
+### 关联网盘
+
+在邮件列表页面，点击『网盘授权』的按钮，会打开授权页面，授权成功之后会，后续收到的邮件中如果还有附件，会自动同步到百度网盘。
+
+> 需要注意的是，授权的时候，需要保证浏览器的地址是 <http://localhost:8877>，如果是其它地址，可能会失败。
 
 ## 系统预览
 
@@ -42,12 +46,27 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 
 ![view_attachment2.png](docs/view_attachment2.png)
 
+## 系统架构图
+
+![design.png](docs/design.png)
+
+### BACKEND
+
+1. 基于 POP3 协议跟邮件服务器交互，完成收取邮件的功能
+2. 收取邮件之后把解析出来的元信息（例如：标题，发件人，日期等等）存储到数据，原始的文件存储到 Raw 目录。
+
+### FRONTEND
+
+1. 基于 SMTP 协议跟邮件服务器交互，完成发送邮件的功能
+2. 实现了一个 Web Server，响应浏览器发送过来的请求，返回合适的 JSON 数据，从而在 ER App 里面展示邮件的信息。
+
+
 ## 环境搭建
 
 基于上面的介绍，搭建环境之前需要有一些依赖的服务需要准备好：
 
 0. [git](http://git-scm.com/)
-1. [mysql](http://mysql.com/downloads)
+1. [mysql](http://mysql.com/downloads) 或者 []sqlite](http://www.sqlite.org/)
 2. [golang](http://golang.org/doc/install)
 
 **注意事项**
@@ -60,20 +79,11 @@ Windows下面安装可能会遇到很多问题，推荐在 Linux 或者 Mac 下�
 
 ### mysql
 
-如果想要初始化一个特定的目录来存储相关的数据，可以这么做（需要修改参数的值）：
-
-```
-mysql_install_db \
-  --basedir=MYSQL_BASE_DIR \
-  --datadir=THE_DATA_DIR
-mysqld --datadir=THE_DATA_DIR
-```
-
-如果想要用默认的话，就直接执行`mysqld_safe`，启动服务即可。
-
-第一次使用之前初始化数据库，导入 `src/server/init.sql` 即可。
+> TODO 待完善
 
 ### golang
+
+> TODO 待完善
 
 1. 下载依赖包：`git clone http://gitlab.baidu.com/liyubei/gopath.git`
 2. 设置`GOPATH`环境变量：`export GOPATH=$(pwd)/gopath`
@@ -97,6 +107,8 @@ go install gopkg.in/yaml.v1
 
 ### 使用jumbo
 
+> TODO 待完善
+
 如果在开发机使用 jumbo 安装的话，可以执行如下的命令来部署环境：
 
 ```
@@ -108,32 +120,11 @@ npm i -g edp edp-webserver --registry=http://npm.baidu.com
 
 ## 启动服务
 
-### 修改配置
-
-第一次启动服务之前需要创建`config.yml`，直接把`config.example.yml`复制为`config.yml`，然后修改一下里面的配置即可，主要是帐号相关的信息。
-
-**注意事项**
-
-1. 如果邮件服务器是`email.baidu.com`，那么`smtp`部分的用户名是`internal\username`，不是`username`
-2. 配置更新之后，执行 `go run src/server/main.go` 即可，此时会自动创建 `data/server domain/username` 目录来存放收取的邮件或者解析出来的附件
-3. 第一次收取邮件花费的时间比较久，请耐心等待
-
-### 联系人信息
-
-邮件收取完毕之后，执行`go run src/server/tools/fix_contacts.go`来初始化一下联系人列表，之后就可以撰写邮件的时候，看到联系人自动提示的功能了。
-
-### 邮件浏览
-
-开始收取之后，就可以启动`frontend`来查看邮件了：
-
-1. go run src/server/frontend.go
-2. cd src/client && edp webserver start
-
-正常启动之后，可以通过 <http://127.0.0.1:8765/index.html?ed=1#/mail/inbox> 来查看邮件。
-
-建议在 Chrome 或者 Firefox 下面进行使用，没有在 IE 下面进行测试，无法保证功能正常。当然，你也可以在这个测试环境下体验一把：<http://er-app-email.jpaas-idea.baidu.com/index.html#/mail/inbox>，发送邮件给<erappemails@126.com>，如果一切正常的话，过一分钟左右应该能看到新的邮件。
+> TODO 待完善
 
 ### 过滤器
+
+> TODO 待完善
 
 邮件的过滤器主要是通过`filters.yml`来配置完成的，可以把`filters.example.yml`拷贝为`filters.yml`，进行一些调整来符合自己的需求。调整的时候参考现有的内容即可。常见的一个过滤器结构如下：
 
