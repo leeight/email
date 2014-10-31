@@ -15,7 +15,10 @@ debug:
 		-o bindata/bindata.go \
 		-pkg bindata \
 		static/output/...
-	go build -o email main.go
+	go build \
+		-o email \
+		-ldflags '-X main.BUILD_VERSION $(shell git log --format="%H" -n 1) -X main.BUILD_DATE "$(shell date)"' \
+		main.go
 
 release:
 	../../../../gopath/bin/go-bindata \
@@ -24,5 +27,8 @@ release:
 		-o bindata/bindata.go \
 		-pkg bindata \
 		static/output/...
-	go build -o email main.go
+	go build \
+		-o email \
+		-ldflags '-X main.BUILD_VERSION $(shell git log --format="%H" -n 1) -X main.BUILD_DATE "$(shell date)"' \
+		main.go
 	strip email

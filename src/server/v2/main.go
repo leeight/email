@@ -22,9 +22,23 @@ import (
 	"./util"
 )
 
+var BUILD_DATE = "1989-06-04 03:04:05"
+var BUILD_VERSION = "default"
+
+func printHelp() {
+	fmt.Printf("BUILD_DATE: %s\n", BUILD_DATE)
+	fmt.Printf("BUILD_VERSION: %s\n", BUILD_VERSION)
+}
+
 func main() {
 	var configfile = flag.String("config", "config.json", "The config file path")
+	var version = flag.Bool("version", false, "Print version")
 	flag.Parse()
+
+	if *version {
+		printHelp()
+		return
+	}
 
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
