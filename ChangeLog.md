@@ -1,6 +1,6 @@
 ### 0.0.5-beta.1 (2014-10-31)
 
-1. server端的代码推到重写了一次，代码放到v2目录里面去了，同时引入了(beego)[https://github.com/astaxie/beego]，简化了一下controller的实现
+1. server端的代码推到重写了一次，代码放到v2目录里面去了，同时引入了[beego](https://github.com/astaxie/beego)，简化了一下controller的实现，以及数据库的初始化工作
 2. 跟百度网盘整合到一起，附件可以保存到网盘里面，然后一些文档的预览工作就交给网盘去实现了
 3. 最终的发布版本只有一个binary，方便易用
 4. 联系人信息可以自动从邮件中识别出来，不用手工去维护了
