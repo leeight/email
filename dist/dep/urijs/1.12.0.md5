@@ -1,8 +1,0 @@
-{
-    "package.json": "4ff37f97d1da7b94ffec0e79b22b6e19",
-    "README.md": "7fc01b9a6e3292716c84b14ce5816cd5",
-    "src/IPv6.js": "222cbb8017cd419924d0859a96664c7a",
-    "src/SecondLevelDomains.js": "5455abc2c04cf7d96460b0d59d4aabb5",
-    "src/URI.js": "16ade8b6e209de3d9867d63387ad273e",
-    "src/punycode.js": "279148eca906c7d29fa1ae082b2bbd9b"
-}
