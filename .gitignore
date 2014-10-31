@@ -46,6 +46,7 @@ src/server/v2/leeight@126.com.json
 src/server/v2/leeight@stu.xjtu.edu.cn.json
 src/server/v2/x.go
 src/server/v2/x.json
+bindata.go
 
 ckeditor
 

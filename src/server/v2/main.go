@@ -4,16 +4,19 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"mime"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 
 	"./backend"
+	"./bindata"
 	cf "./config"
 	"./frontend"
 	"./util"
@@ -72,23 +75,58 @@ func main() {
 	}
 
 	// 静态文件的根目录
-	var root = "static"
+	// var root = "static"
 
-	beego.StaticDir["/"] = root
+	// beego.StaticDir["/"] = root
 
 	// 特殊的静态文件目录
-	beego.SetStaticPath("/src", path.Join(root, "src"))
-	beego.SetStaticPath("/asset", path.Join(root, "asset"))
-	beego.SetStaticPath("/dep", path.Join(root, "dep"))
+	// beego.SetStaticPath("/src", path.Join(root, "src"))
+	// beego.SetStaticPath("/asset", path.Join(root, "asset"))
+	// beego.SetStaticPath("/dep", path.Join(root, "dep"))
+
+	beego.InsertFilter("/", beego.BeforeStatic, bindataProvider)
+	beego.InsertFilter("/index.html", beego.BeforeStatic, bindataProvider)
+	beego.InsertFilter("/src/*", beego.BeforeStatic, bindataProvider)
+	beego.InsertFilter("/asset/*", beego.BeforeStatic, bindataProvider)
+	beego.InsertFilter("/dep/*", beego.BeforeStatic, bindataProvider)
+
 	beego.SetStaticPath("/downloads", path.Join(config.BaseDir, "downloads"))
 	beego.SetStaticPath("/raw", path.Join(config.BaseDir, "raw"))
 
 	// 一个特殊的资源文件，只在开发的模式下启用
 	beego.InsertFilter("/src/common/css/main.less",
-		beego.BeforeStatic, util.StyleFilter(root))
+		beego.BeforeStatic, util.StyleFilter("static"))
 
 	go backend.Run(config)
 	go backend.FlushContacts(config)
 
 	frontend.Run(config)
+}
+
+// 调用bindata.Asset的接口，返回数据
+func bindataProvider(ctx *context.Context) {
+	var url = ctx.Request.URL.Path
+	if url == "/" || url == "" {
+		url = "index.html"
+	} else {
+		// 删掉最前面的 /
+		url = url[1:]
+	}
+	if orm.Debug {
+		log.Println(url)
+	}
+
+	data, err := bindata.Asset(url)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	ct := mime.TypeByExtension(path.Ext(url))
+	if ct == "" {
+		ct = "text/plain; charset=utf-8"
+	}
+
+	ctx.ResponseWriter.Header().Set("Content-Type", ct)
+	ctx.ResponseWriter.Write(data)
 }

@@ -6,3 +6,23 @@ test:
 	go test -v ./util/parser
 	go test -v ./util/builder
 	go test -v ./util/storage
+
+debug:
+	../../../../gopath/bin/go-bindata \
+		-prefix="static/output/" \
+		-debug=true \
+		-nomemcopy=true \
+		-o bindata/bindata.go \
+		-pkg bindata \
+		static/output/...
+	go build -o email main.go
+
+release:
+	../../../../gopath/bin/go-bindata \
+		-prefix="static/output/" \
+		-nomemcopy=true \
+		-o bindata/bindata.go \
+		-pkg bindata \
+		static/output/...
+	go build -o email main.go
+	strip email
