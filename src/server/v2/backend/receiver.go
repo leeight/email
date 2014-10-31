@@ -1,11 +1,11 @@
 package backend
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"path"
+	"strings"
 	"time"
 
 	pop3 "github.com/bytbox/go-pop3"
@@ -18,8 +18,8 @@ import (
 
 // 一次批量查询的个数
 var (
-	kMatchBatchNum           = 256
-	errReachRecentMailsLimit = errors.New("Reach Recent Mails Limit.")
+	kMatchBatchNum = 256
+	emailDateMap   = make(map[string]time.Time)
 )
 
 func Receiver(config *models.ServerConfig) error {
@@ -74,9 +74,6 @@ func Receiver(config *models.ServerConfig) error {
 			if err != nil {
 				// 就算有错误，比如有些邮件没有收取下来，那么下一分钟还会继续收取的
 				log.Println(err)
-				if err == errReachRecentMailsLimit {
-					return err
-				}
 			}
 			uidlMap = make(map[string][]int)
 		}
@@ -173,6 +170,10 @@ func fetchAndSaveMail(uidlMap map[string][]int,
 	for uidl, array := range uidlMap {
 		var msg = array[1]
 
+		if shouldSkip(msg, uidl, config, client) {
+			continue
+		}
+
 		var raw []byte
 		var rawFile = path.Join(config.BaseDir, "raw", uidl+".txt")
 		res, err := client.Retr(msg)
@@ -196,6 +197,8 @@ func fetchAndSaveMail(uidlMap map[string][]int,
 		}
 		email.Uidl = string(uidl)
 
+		emailDateMap[uidl] = email.Date
+
 		// 执行过滤器
 		if filters != nil {
 			err = filter.RunFilter(email, filters[:])
@@ -213,15 +216,58 @@ func fetchAndSaveMail(uidlMap map[string][]int,
 		// 同步联系人的信息
 		flushContact(email)
 
-		if config.Pop3.RecentMails > 0 &&
-			time.Since(email.Date).Hours() > float64(24*config.Pop3.RecentMails) {
-			return errReachRecentMailsLimit
-		}
-
 		log.Printf("[ SAVE] %d -> %s (%d)\n", msg, uidl, email.Id)
 	}
 
 	return nil
+}
+
+// 判断一下是否应该调整这封邮件，主要是从邮件头中的Date字段来判断的
+func shouldSkip(msg int, uidl string,
+	config *models.ServerConfig, client *pop3.Client) bool {
+
+	if config.Pop3.RecentMails <= 0 {
+		return false
+	}
+
+	// 如果配置了 RecentMails 参数，先收取邮件头，检查一下日期
+	// 如果 Date >= (time.Now() - RecentMails) 才可以收取
+	var deadline = time.Now().Add(
+		time.Duration(-24*config.Pop3.RecentMails) * time.Hour)
+
+	if date, ok := emailDateMap[uidl]; ok {
+		if date.Before(deadline) {
+			log.Printf("(cache) Skip %s, %d\n", uidl, msg)
+			return true
+		}
+	}
+
+	// 开始收取邮件头
+	_, err := client.Cmd("TOP %d %d\r\n", msg, 0)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	lines, err := client.ReadLines()
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	var emailHeaders = strings.Join(lines, "\n")
+	email, err := parser.NewEmailFallback([]byte(emailHeaders))
+	if email != nil {
+		// 记录一下cache，这样子下次就不需要重新读取邮件头了
+		emailDateMap[uidl] = email.Date
+
+		if email.Date.Before(deadline) {
+			log.Printf("Skip %s, %d\n", uidl, msg)
+			return true
+		}
+	}
+
+	return false
 }
 
 func flushContact(email *models.Email) {
