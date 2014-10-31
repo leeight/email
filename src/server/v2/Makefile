@@ -21,6 +21,7 @@ debug:
 		main.go
 
 release:
+	cd static && edp build -f && cd -
 	../../../../gopath/bin/go-bindata \
 		-prefix="static/output/" \
 		-nomemcopy=true \
