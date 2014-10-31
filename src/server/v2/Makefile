@@ -9,13 +9,14 @@ test:
 
 debug:
 	../../../../gopath/bin/go-bindata \
-		-prefix="static/output/" \
+		-prefix="static/" \
+		-ignore="output" \
 		-debug=true \
 		-nomemcopy=true \
 		-o bindata/bindata.go \
 		-pkg bindata \
-		static/output/...
-	go build \
+		static/...
+	# go build \
 		-o email \
 		-ldflags '-X main.BUILD_VERSION $(shell git log --format="%H" -n 1) -X main.BUILD_DATE "$(shell date)"' \
 		main.go

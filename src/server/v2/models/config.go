@@ -56,6 +56,7 @@ type pop3Type struct {
 	Port             int           `json:"port"`
 	Tls              bool          `json:"tls"`
 	Interval         time.Duration `json:"interval"`
+	RecentMails      int           `json:"recent_mails"`        // 单位（天），只收取最近这些天的邮件
 	KeepMailOnServer int           `json:"keep_mail_on_server"` // 单位（天），早于这些天之前的邮件会从服务器中删除
 }
 

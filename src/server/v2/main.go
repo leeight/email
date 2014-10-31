@@ -98,6 +98,9 @@ func main() {
 	// beego.SetStaticPath("/asset", path.Join(root, "asset"))
 	// beego.SetStaticPath("/dep", path.Join(root, "dep"))
 
+	// 一个特殊的资源文件，只在开发的模式下启用
+	beego.InsertFilter("/src/common/css/main.less",
+		beego.BeforeStatic, util.StyleFilter("static"))
 	beego.InsertFilter("/", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/index.html", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/src/*", beego.BeforeStatic, bindataProvider)
@@ -106,10 +109,6 @@ func main() {
 
 	beego.SetStaticPath("/downloads", path.Join(config.BaseDir, "downloads"))
 	beego.SetStaticPath("/raw", path.Join(config.BaseDir, "raw"))
-
-	// 一个特殊的资源文件，只在开发的模式下启用
-	beego.InsertFilter("/src/common/css/main.less",
-		beego.BeforeStatic, util.StyleFilter("static"))
 
 	go backend.Run(config)
 	go backend.FlushContacts(config)

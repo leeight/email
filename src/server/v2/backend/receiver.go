@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -16,7 +17,10 @@ import (
 )
 
 // 一次批量查询的个数
-const kMatchBatchNum = 256
+var (
+	kMatchBatchNum           = 256
+	errReachRecentMailsLimit = errors.New("Reach Recent Mails Limit.")
+)
 
 func Receiver(config *models.ServerConfig) error {
 	if config.InitMode {
@@ -70,6 +74,9 @@ func Receiver(config *models.ServerConfig) error {
 			if err != nil {
 				// 就算有错误，比如有些邮件没有收取下来，那么下一分钟还会继续收取的
 				log.Println(err)
+				if err == errReachRecentMailsLimit {
+					return err
+				}
 			}
 			uidlMap = make(map[string][]int)
 		}
@@ -142,14 +149,14 @@ func batchProcess(uidlMap map[string][]int,
 
 	// 5. 开始从邮件服务器接收邮件
 	if len(uidlMap) > 0 {
-		fetchAndSaveMail(uidlMap, config, client)
+		return fetchAndSaveMail(uidlMap, config, client)
 	}
 
 	return nil
 }
 
 func fetchAndSaveMail(uidlMap map[string][]int,
-	config *models.ServerConfig, client *pop3.Client) {
+	config *models.ServerConfig, client *pop3.Client) error {
 
 	var fc = config.Service.Filter.Config
 	if fc == "" {
@@ -206,8 +213,15 @@ func fetchAndSaveMail(uidlMap map[string][]int,
 		// 同步联系人的信息
 		flushContact(email)
 
+		if config.Pop3.RecentMails > 0 &&
+			time.Since(email.Date).Hours() > float64(24*config.Pop3.RecentMails) {
+			return errReachRecentMailsLimit
+		}
+
 		log.Printf("[ SAVE] %d -> %s (%d)\n", msg, uidl, email.Id)
 	}
+
+	return nil
 }
 
 func flushContact(email *models.Email) {
