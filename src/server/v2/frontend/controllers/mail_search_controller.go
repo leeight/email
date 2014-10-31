@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"log"
+	"strings"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -62,10 +63,30 @@ func (this *MailSearchController) buildQuerySeter() (
 	schema.Init()
 
 	var o = gSrvConfig.Ormer
-	var qs = o.QueryTable("email").
-		Filter("IsDelete", 0).
-		Filter("Subject__icontains", this.GetString("keyword")).
-		OrderBy("-Date", "-Id")
+	var qs = o.QueryTable("email").Filter("IsDelete", 0)
+
+	var keyword = this.GetString("keyword")
+	if strings.Index(keyword, "from:") == 0 {
+		keyword = keyword[5:]
+
+		var chunks = strings.Split(keyword, " ")
+		qs = qs.Filter("From__icontains", chunks[0])
+		if len(chunks) > 1 {
+			qs = qs.Filter("Subject__icontains", chunks[1])
+		}
+	} else if strings.Index(keyword, "to:") == 0 {
+		keyword = keyword[3:]
+
+		var chunks = strings.Split(keyword, " ")
+		qs = qs.Filter("To__icontains", chunks[0])
+		if len(chunks) > 1 {
+			qs = qs.Filter("Subject__icontains", chunks[1])
+		}
+	} else {
+		qs = qs.Filter("Subject__icontains", keyword)
+	}
+
+	qs = qs.OrderBy("-Date", "-Id")
 
 	return qs, schema, nil
 }
