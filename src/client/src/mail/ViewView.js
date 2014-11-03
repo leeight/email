@@ -31,7 +31,17 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    MailViewView.prototype.uiEvents = {};
+    MailViewView.prototype.uiEvents = {
+        'yes:click': function() {
+            alert('YES, TODO');
+        },
+        'maybe:click': function() {
+            alert('MAYBE, TODO');
+        },
+        'no:click': function() {
+            alert('NO, TOOD');
+        }
+    };
 
     require('er/util').inherits(MailViewView, BaseView);
     return MailViewView;

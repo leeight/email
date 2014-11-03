@@ -140,17 +140,6 @@
               </td>
             </tr>
             <!-- /if -->
-            <!-- if: ${email.ical_event} -->
-            <!-- var: properties = ${email.ical_event.properties}-->
-            <tr>
-                <th>时间：</th>
-                <td>${properties.DTSTART[0].value|dateFormat} - ${properties.DTEND[0].value|dateFormat}</td>
-            </tr>
-            <tr>
-                <th>地点：</th>
-                <td>${properties.LOCATION[0].value|raw}</td>
-            </tr>
-            <!-- /if -->
         </table>
         <time>${email.date}</time>
     </div>
@@ -160,11 +149,37 @@
 <div class="mail-body">加载中...</div>
 <!-- else -->
 <div class="mail-body">
-  <!-- if: ${email.ical_event} -->
-  <pre>${properties.DESCRIPTION[0].value|raw}</pre>
-  <!-- else -->
-  ${email.message|raw}
-  <!-- /if -->
+    <!-- if: ${email.ical_event} -->
+    <!-- var: properties = ${email.ical_event.properties}-->
+    <table class="mail-calendar" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <th><i class="fa fa-calendar"></i></th>
+            <td>${properties.DTSTART[0].value|dateFormat} - ${properties.DTEND[0].value|dateFormat}</td>
+        </tr>
+        <tr>
+            <th><i class="fa fa-map-marker"></i></th>
+            <td>${properties.LOCATION[0].value|raw}</td>
+        </tr>
+        <tr>
+            <th><i class="fa fa-users"></i></th>
+            <td>
+                <!-- for: ${properties.ATTENDEE} as ${attendee} -->
+                <a href="${attendee.value}">${attendee.parameters.CN}</a>&nbsp;
+                <!-- /for -->
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div data-ui-type="Button" data-ui-id="yes">Yes</div>
+                <div data-ui-type="Button" data-ui-id="maybe">Maybe</div>
+                <div data-ui-type="Button" data-ui-id="no">No</div>
+            </td>
+        </tr>
+    </table>
+    <pre>${properties.DESCRIPTION[0].value|raw}</pre>
+    <!-- else -->
+    ${email.message|raw}
+    <!-- /if -->
 <!-- /if -->
 </div>
 <!-- /if -->

@@ -16,10 +16,6 @@ debug:
 		-o bindata/bindata.go \
 		-pkg bindata \
 		static/...
-	# go build \
-		-o email \
-		-ldflags '-X main.BUILD_VERSION $(shell git log --format="%H" -n 1) -X main.BUILD_DATE "$(shell date)"' \
-		main.go
 
 release:
 	cd static && edp build -f && cd -
