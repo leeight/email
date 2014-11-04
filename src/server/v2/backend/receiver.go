@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -17,10 +18,7 @@ import (
 )
 
 // 一次批量查询的个数
-var (
-	kMatchBatchNum = 256
-	emailDateMap   = make(map[string]time.Time)
-)
+var kMatchBatchNum = 256
 
 func Receiver(config *models.ServerConfig) error {
 	if config.InitMode {
@@ -85,6 +83,14 @@ func Receiver(config *models.ServerConfig) error {
 			// 就算有错误，比如有些邮件没有收取下来，那么下一分钟还会继续收取的
 			log.Println(err)
 		}
+	}
+
+	// 同步 emailDateMap 的数据到磁盘，如果重启了，下次还可以继续用
+	edm, err := json.MarshalIndent(emailDateMap, "", "  ")
+	if err != nil {
+		log.Println(err)
+	} else {
+		ioutil.WriteFile(path.Join(config.BaseDir, ".edm.json"), edm, 0644)
 	}
 
 	return nil
