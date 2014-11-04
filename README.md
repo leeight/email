@@ -4,7 +4,7 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 
 ## 如何使用
 
-为了方便使用，提供了 Mac 下面的编译好的版本(6.8M)，可以从这里下载：<http://pan.baidu.com/s/1nOMF8>
+为了方便使用，提供了 Mac 下面的编译好的版本(6.8M)，可以从这里下载：<http://pan.baidu.com/s/1gd1lVrl>
 
 下载解压之后，执行：`./email` 即可，如果正常启动成功，然后打开浏览器，访问：<http://localhost:8877> 就可以看到设置页面。
 
