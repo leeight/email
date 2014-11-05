@@ -66,7 +66,7 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 基于上面的介绍，搭建环境之前需要有一些依赖的服务需要准备好：
 
 0. [git](http://git-scm.com/)
-1. [mysql](http://mysql.com/downloads) 或者 []sqlite](http://www.sqlite.org/)
+1. [mysql](http://mysql.com/downloads) 或者 [sqlite](http://www.sqlite.org/)
 2. [golang](http://golang.org/doc/install)
 
 **注意事项**
