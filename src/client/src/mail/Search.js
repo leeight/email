@@ -47,6 +47,26 @@ define(function (require) {
                 });
             }
         });
+
+
+        var model = this.model;
+        this.view.on('addStar', function(evt) {
+            var element = evt.data;
+            var id = element.getAttribute('data-id');
+
+            model.addStar([id]).then(function() {
+                element.className = 'fa fa-star';
+            });
+        });
+
+        this.view.on('removeStar', function(evt) {
+            var element = evt.data;
+            var id = element.getAttribute('data-id');
+
+            model.removeStar([id]).then(function() {
+                element.className = 'fa fa-star-o';
+            });
+        });
     };
 
     require('er/util').inherits(MailSearch, ListAction);

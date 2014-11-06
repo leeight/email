@@ -88,6 +88,21 @@ define(function (require) {
         return api.deleteMails({ids: ids});
     };
 
+    /**
+     * @param {Array.<string>} ids 把ids的邮件添加星标
+     * @returns {er.Deferred} .
+     */
+    MailSearchModel.prototype.addStar = function(ids) {
+        return api.addStar({ids: ids});
+    };
+
+    /**
+     * @param {Array.<string>} ids 把ids的邮件删除星标
+     * @returns {er.Deferred} .
+     */
+    MailSearchModel.prototype.removeStar = function(ids) {
+        return api.removeStar({ids: ids});
+    };
 
     // return模块
     require('er/util').inherits(MailSearchModel, ListModel);

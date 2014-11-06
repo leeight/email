@@ -73,6 +73,9 @@ define(
                 // 初次使用，跳转到设置页面
                 require('er/locator').redirect('/user/settings');
             }
+
+            var hotfix = require('common/hotfix');
+            hotfix.init();
         }
 
         /**

@@ -9,6 +9,7 @@ define(function (require) {
     var u = require('underscore');
     var util = require('common/util');
     var lib = require('esui/lib');
+    var esui = require('esui');
     var ListView = require('bat-ria/mvc/ListView');
 
     /**
@@ -57,10 +58,36 @@ define(function (require) {
         }
     };
 
+    var lastSelectedRowIndex = -1;
+    var running = false;
+
     /**
      * @inheritDoc
      */
     MailInboxView.prototype.uiEvents = {
+        'table:select': function() {
+            var evt = esui.getEventObject();
+            if (evt) {
+                var target = evt.target || evt.srcElement;
+                if (target.nodeName === 'INPUT') {
+                    var index = parseInt(target.getAttribute('data-index'), 10);
+                    if (evt.shiftKey === true && !running) {
+                        running = true;
+
+                        var table = this.get('table');
+                        var begin = Math.min(index, lastSelectedRowIndex);
+                        var end = Math.max(index, lastSelectedRowIndex);
+
+                        for (var i = begin + 1; i < end; i ++) {
+                            table.setRowSelected(i, true);
+                        }
+
+                        running = false;
+                    }
+                    lastSelectedRowIndex = index;
+                }
+            }
+        },
         'cm:select': function(e) {
             var table = this.get('table');
             switch (e.item.text) {
