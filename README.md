@@ -60,90 +60,96 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 1. 基于 SMTP 协议跟邮件服务器交互，完成发送邮件的功能
 2. 实现了一个 Web Server，响应浏览器发送过来的请求，返回合适的 JSON 数据，从而在 ER App 里面展示邮件的信息。
 
-
 ## 环境搭建
 
 基于上面的介绍，搭建环境之前需要有一些依赖的服务需要准备好：
 
 0. [git](http://git-scm.com/)
-1. [mysql](http://mysql.com/downloads) 或者 [sqlite](http://www.sqlite.org/)
+1. [sqlite](http://www.sqlite.org/) 或者 [mysql](http://mysql.com/downloads)
 2. [golang](http://golang.org/doc/install)
 
 **注意事项**
 
 Windows下面安装可能会遇到很多问题，推荐在 Linux 或者 Mac 下面尝试
 
-### git
+### 代码编译
 
-检出代码：`git clone http://gitlab.baidu.com/baidu/email.git`
-
-### mysql
-
-> TODO 待完善
-
-### golang
-
-> TODO 待完善
-
-1. 下载依赖包：`git clone http://gitlab.baidu.com/liyubei/gopath.git`
-2. 设置`GOPATH`环境变量：`export GOPATH=$(pwd)/gopath`
-3. 编译一下
+调用`go build`之前，首先需要设置`GOPATH`环境变量，例如：
 
 ```
-go install code.google.com/p/go.net/publicsuffix
-go install github.com/alexcesaro/mail/quotedprintable
-go install github.com/dustin/go-humanize
-go install github.com/gorilla/schema
-go install github.com/microcosm-cc/bluemonday
-go install github.com/op/go-logging
-go install github.com/qiniu/iconv
-go install github.com/saintfish/chardet
-go install github.com/stretchr/testify/assert
-go install github.com/go-sql-driver/mysql
-go install github.com/mattn/go-sqlite3
-go install github.com/bytbox/go-pop3
-go install gopkg.in/yaml.v1
+export GOPATH=$HOME/gocode
+mkdir -p $HOME/gocode
 ```
 
-### 使用jumbo
-
-> TODO 待完善
-
-如果在开发机使用 jumbo 安装的话，可以执行如下的命令来部署环境：
+下载所需要的依赖包（只需要下载一次即可，有些可能需要翻墙，请自行解决）
 
 ```
-jumbo add-repo ftp://st01-arch-platform00.st01.baidu.com/home/bambi/repo/tmp
-jumbo install sun-java6 go mysql nodejs
-export PATH=${JUMBO_ROOT}/opt/sun-java6/bin:$PATH
-npm i -g edp edp-webserver --registry=http://npm.baidu.com
+go install "github.com/alexcesaro/mail/quotedprintable"
+go install "github.com/astaxie/beego"
+go install "github.com/astaxie/beego/context"
+go install "github.com/astaxie/beego/orm"
+go install "github.com/dustin/go-humanize"
+go install "github.com/microcosm-cc/bluemonday"
+go install "github.com/qiniu/iconv"
+go install "github.com/saintfish/chardet"
+go install "github.com/stretchr/testify/assert"
+go install "github.com/go-sql-driver/mysql"
+go install "github.com/mattn/go-sqlite3"
+go install "github.com/bytbox/go-pop3"
+go install "github.com/famz/RFC2047"
+go install "code.google.com/p/go.net/publicsuffix"
 ```
 
-## 启动服务
+安装`lessc`
 
-> TODO 待完善
+因为前端的一些样式代码是[less](http://lesscss.org/)写的，因此在开发的过程中需要用到`lessc`，安装的方式很简单，执行`npm i -g less`即可，安装之后，执行`lessc --version`看到正常的输出即可。
+
+调用`go build`
+
+```
+go clone https://github.com/leeight/email.git
+cd src/server/v2
+ln -s ../../client static
+make debug
+go run main.go
+```
+
+如果需要发布最终的代码，执行`make release`即可，最终的产出就是一个独立的二进制文件，所有的资源全部打包进去了。
+
+**注意事项**
+
+执行`make release`之前，需要安装`edp`，执行的命令是`npm i -g edp edp-build`
+
 
 ### 过滤器
 
 > TODO 待完善
 
-邮件的过滤器主要是通过`filters.yml`来配置完成的，可以把`filters.example.yml`拷贝为`filters.yml`，进行一些调整来符合自己的需求。调整的时候参考现有的内容即可。常见的一个过滤器结构如下：
+邮件的过滤器主要是通过`filters.json`来配置完成的，它放置的位置是`data/${domain}/${account}`目录下面。例如，假如我配置的账户是`leeight@126.com`，那么应该放到`data/126.com/leeight`这个目录下面（这个目录第一次使用的时候应该已经自动生成了）
 
-```
-- filter:
-  name: 邮件列表/w3.org
-  stop: true
-  condition:
-    match: Any
-    rules:
-      - [SentTo, Contains, '@w3.org']
-      - [SentTo, Contains, '@lists.css-discuss.org']
-  action:
-    Label: 邮件列表/w3.org
+常见的一个过滤器结构如下：
+
+```javascript
+{
+  "name": "邮件列表/w3.org",
+  "stop": true,
+  "condition": {
+    "match": "Any",
+    "rules": [
+      [ "SentTo", "Contains", "@w3.org" ],
+      [ "SentTo", "Contains", "@lists.css-discuss.org" ]
+    ]
+  },
+  "action": {
+    "Label": "邮件列表/w3.org"
+  }
+}
 ```
 
 1. `filter.stop`类型是`bool`，如果设置为true，当符合这个过滤器的时候，就不再执行后续的过滤器
 2. `filter.condition.match`取值范围是`Any`或者`All`，注意大小写。
-3. 现在可用的`action`有`Label`, `MarkAsRead`, `MarkAsDelete`，后续如果想完善的话，可以直接在`src/server/base/action.go`里面去实现。
+3. 现在可用的`action`有`Label`, `MarkAsRead`, `MarkAsDelete`，后续如果想完善的话，可以直接在`src/server/v2/models/action.go`里面去实现。
+4. `filter.rules`里面的定义的条件，可以用的 Operator 是`Is`, `Contains`, `Exists`，当然也可以用`!Is`, `!Contains`, `!Exists`表示 Negative 的情况。
 
 ## FAQ
 
