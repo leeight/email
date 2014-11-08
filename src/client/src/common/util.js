@@ -98,7 +98,7 @@ function getTableFields(linkBuilder) {
             content: function (item) {
                 var extra = [];
                 if (item.attachments && item.attachments.length) {
-                    var tip = u.map(item.attachments, function(x){
+                    var tip = u.map(item.attachments, function(x) {
                         return x.name + ' (' + x.size + ')';
                     }).join(' ');
                     extra.push('<i class="fa fa-file" title="' + tip + '"></i>');
@@ -107,9 +107,10 @@ function getTableFields(linkBuilder) {
                 if (item.status === 1) {
                     // 邮件发送中
                     extra.push('<i class="fa fa-sign-out" title="正在发送..."></i>');
-                } else if(item.status === 3) {
+                }
+                else if (item.status === 3) {
                     // 邮件解析内容失败，格式非法
-                    extra.push('<i class="fa fa-exclamation-triangle" title="邮件内容解析失败"></i>')
+                    extra.push('<i class="fa fa-exclamation-triangle" title="邮件内容解析失败"></i>');
                 }
 
                 var icons = extra.length ? '<div class="x-icons">' + extra.join('') + '</div>' : '';
@@ -131,7 +132,7 @@ function getTableFields(linkBuilder) {
             title: '发送日期',
             content: function(item) {
                 // return moment(item.date).format('YYYY-MM-DD HH:mm:ss')
-                return moment(item.date).fromNow()
+                return moment(item.date).fromNow();
             }
         }
     ];
@@ -145,7 +146,7 @@ var tableRows = {
             return 'row-unread';
         }
     }
-}
+};
 
 function defaultLinkBuilder(item) {
     var label = URL.parse(location.href).getQuery('label');
@@ -156,7 +157,7 @@ function defaultLinkBuilder(item) {
 /**
  * 列表页面的配置信息
  * @param {function(item):string} opt_linkBuilder 构造标题的链接
- * @return {Object}
+ * @return {Object} .
  */
 exports.mailListConfiguration = function(opt_linkBuilder) {
     var linkBuilder = opt_linkBuilder || defaultLinkBuilder;
@@ -171,7 +172,7 @@ exports.mailListConfiguration = function(opt_linkBuilder) {
 };
 
 exports.applyEMailPath = function(email) {
-    var date = moment(email.date)
+    var date = moment(email.date);
     email.date = date.format('YYYY-MM-DD HH:mm:ss') + ' (' + date.fromNow() + ')';
 
     if (!email.from) {

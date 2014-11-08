@@ -9,7 +9,9 @@ define(function (require) {
     // 如果期望添加API时工具自动配置，请保持apiConfig名称不变
     var apiConfig = {
         user: '/api/u/s/r',
-        constants: function(){ return {} },
+        constants: function() {
+            return {};
+        },
 
         inboxList: '/api/inbox',
         readMail: '/api/mail/read',

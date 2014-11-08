@@ -149,7 +149,8 @@ go run main.go
 1. `filter.stop`类型是`bool`，如果设置为true，当符合这个过滤器的时候，就不再执行后续的过滤器
 2. `filter.condition.match`取值范围是`Any`或者`All`，注意大小写。
 3. 现在可用的`action`有`Label`, `MarkAsRead`, `MarkAsDelete`，后续如果想完善的话，可以直接在`src/server/v2/models/action.go`里面去实现。
-4. `filter.rules`里面的定义的条件，可以用的 Operator 是`Is`, `Contains`, `Exists`，当然也可以用`!Is`, `!Contains`, `!Exists`表示 Negative 的情况。
+4. `filter.rules`里面定义的条件，可以用的 Operator 是`Is`, `Contains`, `Exists`，当然也可以用`!Is`, `!Contains`, `!Exists`表示 Negative 的情况。
+5. `filter.rules`里面定义的条件，第一个字段可以是`Subject`,`From`,`To`,`Cc`,`SentTo`,`Body`,`SubjectOrBody`,`Date`,`其它Mail Header`。
 
 ## FAQ
 
