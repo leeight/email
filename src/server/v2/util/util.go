@@ -138,6 +138,12 @@ func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.At
 			config.Pop3.Domain, config.Pop3.Username, StripInvalidCharacter(uidl))
 		var previewUrl = fmt.Sprintf("http://pan.baidu.com/disk/home#path=%s",
 			url.QueryEscape(url.QueryEscape(dst)))
+		if strings.HasSuffix(item.Name(), ".xlsx") {
+			// preview.html页面支持 xlsx 的预览，效果也比网盘的效果好
+			previewUrl = fmt.Sprintf("/preview.html?uidl=%s&file=%s",
+				url.QueryEscape(uidl),
+				url.QueryEscape(item.Name()))
+		}
 		att := models.Attachment{
 			humanize.Bytes(uint64(item.Size())),
 			item.Name(),

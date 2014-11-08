@@ -96,8 +96,8 @@ go install "github.com/stretchr/testify/assert"
 go install "github.com/go-sql-driver/mysql"
 go install "github.com/mattn/go-sqlite3"
 go install "github.com/bytbox/go-pop3"
-go install "github.com/famz/RFC2047"
 go install "code.google.com/p/go.net/publicsuffix"
+go install "github.com/tealeg/xlsx"
 ```
 
 安装`lessc`

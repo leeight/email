@@ -84,6 +84,7 @@ func main() {
 
 	beego.HttpPort = config.Http.Port
 	beego.DirectoryIndex = true
+	beego.EnableGzip = true
 	if !config.Debug {
 		beego.RunMode = "prod"
 	}
@@ -101,8 +102,11 @@ func main() {
 	// 一个特殊的资源文件，只在开发的模式下启用
 	beego.InsertFilter("/src/common/css/main.less",
 		beego.BeforeStatic, util.StyleFilter("static"))
+	beego.InsertFilter("/src/common/css/preview.less",
+		beego.BeforeStatic, util.StyleFilter("static"))
 	beego.InsertFilter("/", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/index.html", beego.BeforeStatic, bindataProvider)
+	beego.InsertFilter("/preview.html", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/src/*", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/asset/*", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/dep/*", beego.BeforeStatic, bindataProvider)
