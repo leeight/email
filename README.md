@@ -120,10 +120,7 @@ go run main.go
 
 执行`make release`之前，需要安装`edp`，执行的命令是`npm i -g edp edp-build`
 
-
 ### 过滤器
-
-> TODO 待完善
 
 邮件的过滤器主要是通过`filters.json`来配置完成的，它放置的位置是`data/${domain}/${account}`目录下面。例如，假如我配置的账户是`leeight@126.com`，那么应该放到`data/126.com/leeight`这个目录下面（这个目录第一次使用的时候应该已经自动生成了）
 
