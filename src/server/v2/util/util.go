@@ -138,8 +138,13 @@ func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.At
 			config.Pop3.Domain, config.Pop3.Username, StripInvalidCharacter(uidl))
 		var previewUrl = fmt.Sprintf("http://pan.baidu.com/disk/home#path=%s",
 			url.QueryEscape(url.QueryEscape(dst)))
-		if strings.HasSuffix(item.Name(), ".xlsx") {
-			// preview.html页面支持 xlsx 的预览，效果也比网盘的效果好
+		if strings.HasSuffix(item.Name(), ".xlsx") || strings.HasSuffix(item.Name(), ".docx") {
+			// preview.html页面支持 xlsx 和 docx 的预览，xlsx的效果也比网盘的效果好
+			// docx 的预览，需要解决的问题还比较多
+			// 1. table cell 的合并(rowspan和colspan的设置)
+			// 2. ul, li 的合理使用
+			// 3. 基本样式的保留（颜色，字体，字号等等）
+			// 4. 内联元素的显示（比如图片）
 			previewUrl = fmt.Sprintf("/preview.html?uidl=%s&file=%s",
 				url.QueryEscape(uidl),
 				url.QueryEscape(item.Name()))

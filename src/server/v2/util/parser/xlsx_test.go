@@ -1,15 +1,19 @@
 package parser
 
 import (
-	"encoding/json"
-	"fmt"
+	"path"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestXLSX2Html(t *testing.T) {
-	file := "/Volumes/HDD/Users/leeight/百度云同步盘/我的文档/emails/baidu.com/liyubei/downloads/729538/att/BDD周收入监控20141031-20141106.xlsx"
-	sheets, _ := XLSX2Html(file)
-	fmt.Println(len(sheets))
-	x, _ := json.MarshalIndent(sheets, "", "  ")
-	fmt.Println(string(x))
+	sheets, err := XLSX2Html(path.Join("data", "test.xlsx"))
+	assert.Nil(t, err)
+	assert.NotNil(t, sheets)
+	assert.Equal(t, 4, len(sheets))
+	assert.Equal(t, sheets[0].Name, "一")
+	assert.Equal(t, sheets[1].Name, "二")
+	assert.Equal(t, sheets[2].Name, "三")
+	assert.Equal(t, sheets[3].Name, "四")
 }

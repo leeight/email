@@ -5,8 +5,6 @@
 define(function(require) {
 var ajax = require('er/ajax');
 var URL = require('er/URL');
-// URL.parseQuery
-
 var lib = require('esui/lib');
 
 var exports = {};
@@ -16,6 +14,8 @@ function failure() {
 }
 
 var gSheets = null;
+var gFile = URL.parseQuery(location.search.substr(1)).file;
+
 function buildSheets(sheets, opt_idx) {
   var idx = opt_idx || 0;
   var max = 0;
@@ -24,7 +24,7 @@ function buildSheets(sheets, opt_idx) {
     max = Math.max(max, sheet.data[i].length);
   }
 
-  var navs = ['<ul class="navs">'];
+  var navs = ['<ul class="xlsx-navs">'];
   for (var i = 0; i < sheets.length; i ++) {
     navs.push('<li ' +
         'data-index="' + i + '"' +
@@ -33,11 +33,10 @@ function buildSheets(sheets, opt_idx) {
   }
   navs.push('</ul>');
 
-  var file = URL.parseQuery(location.search.substr(1)).file;
   var html = [
-    '<h2>', file, '</h2>',
+    '<h2>', gFile, '</h2>',
     navs.join(''),
-    '<table width="100%" cellpadding="5" cellspacing="0" border="1">'
+    '<table class="xlsx-table" width="100%" cellpadding="5" cellspacing="0" border="1">'
   ];
   for (var i = 0; i < sheet.data.length; i ++) {
     var row = sheet.data[i];
@@ -66,9 +65,18 @@ function initEvents() {
 exports.start = function() {
   var apiUrl = '/api/doc/preview' + location.search;
   ajax.getJSON(apiUrl).then(function(data) {
-    gSheets = data.result;
-    buildSheets(gSheets, 0);
-    initEvents();
+    if (/\.docx$/.test(gFile)) {
+      lib.g('main').innerHTML =
+        '<div class="entry">' + '<h2>' + gFile + '</h2>' + data.result + '</div>';
+    }
+    else if (/\.xlsx$/.test(gFile)) {
+      gSheets = data.result;
+      buildSheets(gSheets, 0);
+      initEvents();
+    }
+    else {
+      alert('Invalid doc format.');
+    }
   }, failure);
 };
 

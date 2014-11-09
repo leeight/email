@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 
 	"github.com/astaxie/beego"
 
@@ -38,13 +39,24 @@ func (this *DocPreviewController) Post() {
 		this.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
-	sheets, err := parser.XLSX2Html(abs)
-	if err != nil {
-		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+	if strings.HasSuffix(file, ".xlsx") {
+		sheets, err := parser.XLSX2Html(abs)
+		if err != nil {
+			log.Println(err)
+			this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		}
+		this.Data["json"] = util.SimpleResponse(sheets)
+		this.ServeJson()
+	} else if strings.HasSuffix(file, ".docx") {
+		html, err := parser.DOCX2Html(abs)
+		if err != nil {
+			log.Println(err)
+			this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		}
+		this.Data["json"] = util.SimpleResponse(html)
+		this.ServeJson()
+	} else {
+		log.Printf("Unsupported doc format: %s\n", file)
+		this.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
-
-	this.Data["json"] = util.SimpleResponse(sheets)
-
-	this.ServeJson()
 }
