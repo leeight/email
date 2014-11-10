@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"path"
 	"testing"
 
@@ -20,4 +21,12 @@ func TestDOCX2Html(t *testing.T) {
 	assert.Contains(t, html, "<p>遂令天下父母心，不重生男重生女。骊宫高处入青云，仙乐风飘处处闻。</p>")
 	assert.Contains(t, html, "<p>缓歌谩舞凝丝竹，尽日君王看不足。渔阳鼙鼓动地来，惊破霓裳羽衣曲。</p>")
 	assert.Contains(t, html, "<p>九重城阙烟尘生，千乘万骑西南行。翠华摇摇行复止，西出都门百余里。</p>")
+}
+
+func TestDOCX2Html_Table(t *testing.T) {
+	html, err := DOCX2Html(path.Join("data", "test_table.docx"))
+
+	assert.Nil(t, err)
+	assert.NotEqual(t, "", html)
+	fmt.Println(html)
 }

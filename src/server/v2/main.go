@@ -83,6 +83,7 @@ func main() {
 	}
 
 	beego.HttpPort = config.Http.Port
+	beego.HttpAddr = "localhost"
 	beego.DirectoryIndex = true
 	beego.EnableGzip = true
 	if !config.Debug {

@@ -1,46 +1,88 @@
-.xlsx-table {
-  table-layout: fixed;
-  border-collapse: collapse;
-  border: 1px solid #ccc;
-  font-size: 12px;
+html, body {
+    padding: 0;
+    margin: 0;
+}
 
-  td {
-    width: 80px;
-    height: 14px;
-    overflow: hidden;
-    white-space: nowrap;
-    border-color: #ccc;
-  }
+.xlsx-table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+    font-size: 12px;
+
+    col {
+        width: 100px;
+    }
+    col:first-child {
+        width: 30px;
+    }
+    th {
+        text-align: center;
+    }
+    td {
+        height: 14px;
+        word-break: break-all;
+        border-color: #ccc;
+    }
 }
 
 .xlsx-navs {
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  margin-bottom: 10px;
-  li {
-    float: left;
-    list-style: none;
-    margin-right: 10px;
-    text-decoration: underline;
-    cursor: pointer;
-    color: #999;
-    line-height: 1;
-  }
-  li.active {
-    color: #000;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: default;
-  }
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    margin-bottom: 10px;
+    li {
+        float: left;
+        list-style: none;
+        margin-right: 10px;
+        text-decoration: underline;
+        cursor: pointer;
+        color: #999;
+        line-height: 1;
+    }
+    li.active {
+        color: #000;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: default;
+    }
 }
 
-.entry {
-  max-width: 960px;
-  table {
-    margin: auto 0;
-    width: 100%;
-    table-layout: fixed;
-    font-size: 90%;
-  }
+.xlsx-container {
+    margin: 0 50px 50px;
+}
+
+.docx-container {
+    background: #ebebeb;
+    padding: 50px 0;
+}
+
+.docx-inner {
+    width: 816px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 50px 0;
+    box-shadow: 0 0 0 1px #d1d1d1,0 0 4px 1px #ccc;
+}
+
+.docx {
+    margin: 0 auto;
+    width: 624px;
+    font-size: 15px;
+    font-family: arial, sans-serif;
+    color: #000;
+    h2 {
+        margin: 0;
+    }
+    table {
+        margin: auto 0;
+        width: 100%;
+        table-layout: fixed;
+        font-size: 90%;
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+    }
+    td {
+        padding: 5px;
+        border-color: #ccc;
+    }
 }

@@ -148,6 +148,10 @@ func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.At
 			previewUrl = fmt.Sprintf("/preview.html?uidl=%s&file=%s",
 				url.QueryEscape(uidl),
 				url.QueryEscape(item.Name()))
+		} else if regexp.MustCompile(".(png|jpe?g|gif|pdf|txt|html?)$").MatchString(item.Name()) {
+			// 图片之类的就直接在本地打开即可了
+			previewUrl = fmt.Sprintf("/downloads/%s/att/%s",
+				url.QueryEscape(uidl), item.Name())
 		}
 		att := models.Attachment{
 			humanize.Bytes(uint64(item.Size())),
