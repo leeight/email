@@ -28,6 +28,7 @@ raw.txt
 data
 config.yml
 config.json
+config.example.json
 filters.yml
 126.config.yml
 
