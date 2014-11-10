@@ -27,7 +27,14 @@ func EmailSaveFallback(data []byte, uidl, message string, config *models.ServerC
 func EmailSave(email *models.Email, config *models.ServerConfig) {
 	var err error
 
-	email.Id, err = config.Ormer.Insert(email)
+	if email.Id > 0 {
+		// 如果存在 email.Id 的话，那么不应该插入新的数据，而是应该更新数据
+		// 比如 rebuild.go 修复数据的时候
+		_, err = config.Ormer.Update(email)
+	} else {
+		email.Id, err = config.Ormer.Insert(email)
+	}
+
 	if err != nil {
 		log.Println(err)
 		return

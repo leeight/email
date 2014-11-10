@@ -1,11 +1,15 @@
 package parser
 
 import (
+	"bytes"
+	"fmt"
 	"io/ioutil"
 	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"../../../net/mail"
 )
 
 func TestNewEmailFallback(t *testing.T) {
@@ -31,6 +35,16 @@ func TestNewEmailFallback(t *testing.T) {
 	assert.Equal(t, email.IcalMessage, "")
 	assert.Equal(t, email.Message, "")
 	assert.Nil(t, email.RawMessage)
+}
+
+func TestNewMail_729676(t *testing.T) {
+	raw, err := ioutil.ReadFile(path.Join("data", "729676.txt"))
+	assert.Equal(t, err, nil)
+
+	msg, err := mail.ReadMessage(bytes.NewBuffer(raw))
+	assert.Equal(t, err, nil)
+
+	fmt.Printf("(%s)\n", msg.Header.Get("Subject"))
 }
 
 func TestNewMail_727774(t *testing.T) {

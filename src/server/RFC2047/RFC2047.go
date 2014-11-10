@@ -104,6 +104,9 @@ func Decode2(s string) string {
 
 func Decode(s string) string {
 	// ?=\s=? 替换一下?
-	s = regexp.MustCompile(`\?=\s+=\?`).ReplaceAllString(s, `?==?`)
+	s = regexp.MustCompile(`\?=\s+=\?`).ReplaceAllString(s, "?==?")
+	// 如果是 quoted-printed 编码，例如 ?==?gb2312?Q?，就删除之，把前后两部分联起来
+	// ISSUE-729676
+	s = regexp.MustCompile(`\?==\?([^\?]+)\?[Qq]\?`).ReplaceAllString(s, "")
 	return strings.TrimSpace(Decode2(s))
 }

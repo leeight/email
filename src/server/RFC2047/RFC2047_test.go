@@ -33,6 +33,16 @@ func TestDecode(t *testing.T) {
 		RFC2047.Decode2("Re: =?Big5?B?tarOYA==?=: =?Big5?B?ILV1q0ik5a7Xrden7w==?="))
 }
 
+func TestDecodeSubject(t *testing.T) {
+	input1 := "=?gb2312?Q?=5B=CC=E1=D0=D1=3A=D3=CA=BC=FE=C0=B4=D7=D4=CD=E2=B2=BF=5D__Re=3A_=CF=A3=CD?= =?gb2312?Q?=FB_WooYun-2014-82701_=D5=E2=B8=F6=CC=FB=D7=D3=B5=C4=C4=DA=C8=DD=B2=BB=D2?= =?gb2312?Q?=AA=B9=AB=BF=AA?="
+	assert.Equal(t, "[提醒:邮件来自外部]  Re: 希望 WooYun-2014-82701 这个帖子的内容不要公开",
+		RFC2047.Decode(input1))
+
+	input2 := "=?gb2312?Q?=5B=CC=E1=D0=D1=3A=D3=CA=BC=FE=C0=B4=D7=D4=CD=E2=B2=BF=5D__Re=3A_=CF=A3=CD=FB_WooYun-2014-82701_=D5=E2=B8=F6=CC=FB=D7=D3=B5=C4=C4=DA=C8=DD=B2=BB=D2=AA=B9=AB=BF=AA?="
+	assert.Equal(t, "[提醒:邮件来自外部]  Re: 希望 WooYun-2014-82701 这个帖子的内容不要公开",
+		RFC2047.Decode2(input2))
+}
+
 func TestDecode2(t *testing.T) {
 	raw, _ := ioutil.ReadFile("i.txt")
 	for _, line := range strings.Split(string(raw), "\n") {

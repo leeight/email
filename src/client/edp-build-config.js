@@ -9,10 +9,12 @@ exports.output = path.resolve( __dirname, 'output' );
 exports.getProcessors = function () {
     var lessProcessor = new LessCompiler({
         files: [
-            'src/common/css/main.less'
+            'src/common/css/main.less',
+            'src/common/css/preview.less'
         ],
         pageFiles: [
-            'index.html'
+            'index.html',
+            'preview.html'
         ]
     });
     var cssProcessor = new CssCompressor();
