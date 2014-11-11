@@ -4,26 +4,30 @@ import (
 	"strings"
 )
 
-type Array struct {
-	buffer []string
+type ArrayItem interface {
+	String() string
 }
 
-func (a *Array) Push(v string) {
+type Array struct {
+	buffer []interface{}
+}
+
+func (a *Array) Push(v interface{}) {
 	a.buffer = append(a.buffer, v)
 }
 
-func (a *Array) Last() string {
+func (a *Array) Last() interface{} {
 	if len(a.buffer) <= 0 {
 		return ""
 	}
 	return a.buffer[len(a.buffer)-1]
 }
 
-func (a *Array) Get(i int) string {
+func (a *Array) Get(i int) interface{} {
 	return a.buffer[i]
 }
 
-func (a *Array) Set(i int, v string) {
+func (a *Array) Set(i int, v interface{}) {
 	a.buffer[i] = v
 }
 
@@ -32,9 +36,18 @@ func (a *Array) Length() int {
 }
 
 func (a *Array) Join(sep string) string {
-	return strings.Join(a.buffer, sep)
+	var result = make([]string, a.Length())
+	for idx, item := range a.buffer {
+		switch item.(type) {
+		case ArrayItem:
+			result[idx] = item.(ArrayItem).String()
+		default:
+			result[idx] = item.(string)
+		}
+	}
+	return strings.Join(result, sep)
 }
 
 func NewArray() *Array {
-	return &Array{buffer: make([]string, 0)}
+	return &Array{buffer: make([]interface{}, 0)}
 }

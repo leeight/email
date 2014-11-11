@@ -1,10 +1,19 @@
 package ds
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+type xNodeType struct {
+	Name string
+}
+
+func (x *xNodeType) String() string {
+	return fmt.Sprintf("<%s></%s>", x.Name, x.Name)
+}
 
 func TestNewArray(t *testing.T) {
 	var a = NewArray()
@@ -19,4 +28,7 @@ func TestNewArray(t *testing.T) {
 
 	a.Set(0, "x")
 	assert.Equal(t, "x,2,3", a.Join(","))
+
+	a.Push(&xNodeType{"td"})
+	assert.Equal(t, "x,2,3,<td></td>", a.Join(","))
 }
