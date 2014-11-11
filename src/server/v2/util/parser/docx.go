@@ -10,104 +10,31 @@ import (
 	"io/ioutil"
 	"log"
 	"strconv"
-	"strings"
 
 	"../ds"
 )
 
 var kEmpty = ""
 
-type gridSpanNode struct {
-	Value string `xml:"val,attr"`
+type docxParser struct {
+	zipReader  *zip.Reader
+	output     *ds.Array
+	tableStack *ds.Stack
 }
 
-type vMergeNode struct {
-	Value string `xml:"val,attr"`
-}
-
-type vAlignNode struct {
-	Value string `xml:"val,attr"`
-}
-
-type tcPrNode struct {
-	GridSpan *gridSpanNode `xml:"gridSpan"`
-	VMerge   *vMergeNode   `xml:"vMerge"`
-	VAlign   *vAlignNode   `xml:"vAlign"`
-}
-
-type tcNode struct {
-	TcPr *tcPrNode `xml:"tcPr"`
-}
-
-type htmlNode struct {
-	Name  string
-	Dummy bool
-	Attr  map[string]string
-}
-
-func (n *htmlNode) String() string {
-	if n.Dummy {
-		return ""
-	}
-
-	var attrs = make([]string, len(n.Attr))
-	var i int = 0
-	for k, v := range n.Attr {
-		attrs[i] = fmt.Sprintf(" %s=\"%s\"", k, v)
-		i += 1
-	}
-
-	return fmt.Sprintf("<%s%s>", n.Name, strings.Join(attrs, ""))
-}
-
-func NewHtmlNode(Name string) *htmlNode {
-	return &htmlNode{
-		Name:  Name,
-		Dummy: false,
-		Attr:  make(map[string]string),
-	}
-}
-
-func getHtmlNode(array *ds.Array, idx int) *htmlNode {
-	if idx >= array.Length() {
-		return nil
-	}
-
-	var item = array.Get(idx)
-	switch item.(type) {
-	case *htmlNode:
-		if item.(*htmlNode).Name != "td" {
-			log.Printf("Invalid item name")
-			return nil
-		}
-	default:
-		log.Printf("Invalid item type")
-		return nil
-	}
-
-	return item.(*htmlNode)
-}
-
-// docx 2 html
-func DOCX2Html(file string) (string, error) {
-	inputs, err := ioutil.ReadFile(file)
-	if err != nil {
-		return kEmpty, err
-	}
-
-	r, err := zip.NewReader(bytes.NewReader(inputs), int64(len(inputs)))
-	if err != nil {
-		return kEmpty, err
-	}
-
-	for _, f := range r.File {
+func (p *docxParser) ToHtml() (string, error) {
+	for _, f := range p.zipReader.File {
 		if f.Name == "word/document.xml" {
 			rc, err := f.Open()
 			if err != nil {
 				return kEmpty, err
 			}
 			defer rc.Close()
-			return docxXml2Text(rc), nil
+			err = p.docxXml2Text(rc, true)
+			if err != nil {
+				return kEmpty, err
+			}
+			return p.output.Join(""), nil
 		}
 	}
 
@@ -115,10 +42,9 @@ func DOCX2Html(file string) (string, error) {
 }
 
 // TODO <a:blip r:embed="rId8" cstate="print"/>
-
-func xml2Text(input io.Reader, strict bool) string {
-	output := ds.NewArray()
-	tableStack := ds.NewStack()
+func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
+	output := p.output
+	tableStack := p.tableStack
 
 	x := xml.NewDecoder(input)
 	x.Strict = strict
@@ -134,87 +60,7 @@ func xml2Text(input io.Reader, strict bool) string {
 			output.Push(string(v))
 		case xml.StartElement:
 			if v.Name.Local == "tcPr" {
-				var tcPr = &tcPrNode{}
-				x.DecodeElement(tcPr, &v)
-
-				// 开始回溯
-
-				// 先找到当前的行的 tc 节点
-				if tableStack.IsEmpty() {
-					log.Println("tableStack should not be empty when meet tcPr")
-					break
-				}
-
-				var layout = tableStack.Peek().(*ds.TableLayout)
-				var rowIndex = layout.RowIndex
-				var cellIndex = layout.CellIndex
-				if rowIndex >= len(layout.Grids) {
-					log.Printf("Invalid rowIndex = %d, len(layout.Grids) = %d\n",
-						rowIndex, len(layout.Grids))
-					break
-				} else if cellIndex >= len(layout.Grids[rowIndex]) {
-					log.Printf("Invalid cellIndex = %d, len(layout.Grids[%d]) = %d\n",
-						cellIndex, rowIndex, len(layout.Grids[rowIndex]))
-					break
-				}
-
-				var idx = layout.Grids[rowIndex][cellIndex]
-				if idx >= output.Length() {
-					log.Printf("Invalid array index = %d, array length is %d\n",
-						idx, output.Length())
-					break
-				}
-
-				var n = getHtmlNode(output, idx)
-				if n == nil {
-					break
-				}
-
-				if tcPr.GridSpan != nil {
-					n.Attr["colspan"] = tcPr.GridSpan.Value
-					var gridSpan, _ = strconv.Atoi(tcPr.GridSpan.Value)
-					if gridSpan > 1 {
-						layout.IncCellAtRow(gridSpan-1, rowIndex, idx)
-					}
-				}
-
-				if tcPr.VAlign != nil {
-					n.Attr["valign"] = tcPr.VAlign.Value
-				}
-
-				if tcPr.VMerge != nil {
-					if tcPr.VMerge.Value == "restart" {
-						// 找到 output 里面 的 tc 节点，设置rowspan属性
-						n.Attr["rowspan"] = "1"
-					} else if tcPr.VMerge.Value == "" {
-						// 找到本行 output 里面的 tc 节点，Dummy 设置为 true
-						n.Dummy = true
-
-						// 找到上一行 output 里面的 tc 节点，rowspan + 1
-						// 上一行也可能是 Dummy 的节点，我们需要一直找下去，找到不是 Dummy 的节点为止
-						rowIndex--
-						for rowIndex >= 0 {
-							if cellIndex >= len(layout.Grids[rowIndex]) {
-								log.Printf("Invalid cellIndex = %d, len(layout.Grids[%d]) = %d\n",
-									cellIndex, rowIndex, len(layout.Grids[rowIndex]))
-								break
-							}
-
-							var idx = layout.Grids[rowIndex][cellIndex]
-							var n = getHtmlNode(output, idx)
-							if n == nil {
-								break
-							}
-
-							if !n.Dummy {
-								var rowspan, _ = strconv.Atoi(n.Attr["rowspan"])
-								n.Attr["rowspan"] = fmt.Sprintf("%d", rowspan+1)
-								break
-							}
-							rowIndex--
-						}
-					}
-				}
+				p.handle_tcPr(x, &v)
 			} else if v.Name.Local == "tr" {
 				output.Push("<tr>\n")
 				if !tableStack.IsEmpty() {
@@ -236,6 +82,11 @@ func xml2Text(input io.Reader, strict bool) string {
 				output.Push("\n")
 			} else if v.Name.Local == "p" {
 				output.Push("<p>")
+			} else if v.Name.Local == "r" {
+				// w:r
+				output.Push(NewHtmlNode("span"))
+			} else if v.Name.Local == "rPr" {
+				p.handle_rPr(x, &v)
 			}
 		case xml.EndElement:
 			if v.Name.Local == "tr" {
@@ -247,13 +98,169 @@ func xml2Text(input io.Reader, strict bool) string {
 				output.Push("</table>\n")
 			} else if v.Name.Local == "p" {
 				output.Push("</p>\n")
+			} else if v.Name.Local == "r" {
+				output.Push("</span>")
 			}
 		}
 	}
 
-	return output.Join("")
+	return nil
 }
 
-func docxXml2Text(input io.Reader) string {
-	return xml2Text(input, true)
+// 处理table cell的属性
+func (p *docxParser) handle_tcPr(x *xml.Decoder, v *xml.StartElement) {
+	output := p.output
+	tableStack := p.tableStack
+
+	var tcPr = &tcPrNode{}
+	x.DecodeElement(tcPr, v)
+
+	// 先找到当前的行的 tc 节点
+	if tableStack.IsEmpty() {
+		log.Println("tableStack should not be empty when meet tcPr")
+		return
+	}
+
+	var layout = tableStack.Peek().(*ds.TableLayout)
+	var rowIndex = layout.RowIndex
+	var cellIndex = layout.CellIndex
+	if rowIndex >= len(layout.Grids) {
+		log.Printf("Invalid rowIndex = %d, len(layout.Grids) = %d\n",
+			rowIndex, len(layout.Grids))
+		return
+	} else if cellIndex >= len(layout.Grids[rowIndex]) {
+		log.Printf("Invalid cellIndex = %d, len(layout.Grids[%d]) = %d\n",
+			cellIndex, rowIndex, len(layout.Grids[rowIndex]))
+		return
+	}
+
+	var idx = layout.Grids[rowIndex][cellIndex]
+	if idx >= output.Length() {
+		log.Printf("Invalid array index = %d, array length is %d\n",
+			idx, output.Length())
+		return
+	}
+
+	// TODO getHtmlNode函数的角色很奇怪
+	var n = getHtmlNode(output, idx)
+	if n == nil {
+		return
+	}
+
+	if tcPr.GridSpan != nil {
+		n.Attr["colspan"] = tcPr.GridSpan.Value
+		var gridSpan, _ = strconv.Atoi(tcPr.GridSpan.Value)
+		if gridSpan > 1 {
+			layout.IncCellAtRow(gridSpan-1, rowIndex, idx)
+		}
+	}
+
+	if tcPr.VAlign != nil {
+		n.Attr["valign"] = tcPr.VAlign.Value
+	}
+
+	if tcPr.Shd != nil {
+		if tcPr.Shd.Color != "" {
+			n.InlineStyles["color"] = colorValue(tcPr.Shd.Color)
+		}
+		if tcPr.Shd.Fill != "" {
+			n.InlineStyles["background-color"] = colorValue(tcPr.Shd.Fill)
+		}
+	}
+
+	if tcPr.VMerge != nil {
+		if tcPr.VMerge.Value == "restart" {
+			// 找到 output 里面 的 tc 节点，设置rowspan属性
+			n.Attr["rowspan"] = "1"
+		} else if tcPr.VMerge.Value == "" {
+			// 找到本行 output 里面的 tc 节点，Dummy 设置为 true
+			n.Dummy = true
+
+			// 找到上一行 output 里面的 tc 节点，rowspan + 1
+			// 上一行也可能是 Dummy 的节点，我们需要一直找下去，找到不是 Dummy 的节点为止
+			rowIndex--
+			for rowIndex >= 0 {
+				if cellIndex >= len(layout.Grids[rowIndex]) {
+					log.Printf("Invalid cellIndex = %d, len(layout.Grids[%d]) = %d\n",
+						cellIndex, rowIndex, len(layout.Grids[rowIndex]))
+					return
+				}
+
+				var idx = layout.Grids[rowIndex][cellIndex]
+				// TODO getHtmlNode函数的角色很奇怪
+				var n = getHtmlNode(output, idx)
+				if n == nil {
+					return
+				}
+
+				if !n.Dummy {
+					var rowspan, _ = strconv.Atoi(n.Attr["rowspan"])
+					n.Attr["rowspan"] = fmt.Sprintf("%d", rowspan+1)
+					return
+				}
+				rowIndex--
+			}
+		}
+	}
+}
+
+// 处理span的属性
+func (p *docxParser) handle_rPr(x *xml.Decoder, v *xml.StartElement) {
+	var rPr = &rPrNode{}
+	x.DecodeElement(rPr, v)
+	if p.output.Length() <= 0 {
+		return
+	}
+
+	var last = p.output.Last()
+	if r, ok := last.(*htmlNode); ok {
+		if rPr.B != nil {
+			r.InlineStyles["font-weight"] = "bold"
+		}
+		if rPr.I != nil {
+			r.InlineStyles["font-style"] = "italic"
+		}
+		if rPr.U != nil {
+			r.InlineStyles["text-decoration"] = "underline"
+		}
+
+		// TODO 颜色值有的是 black, white 之类的，需要特殊对待一下
+		if rPr.Color != nil && rPr.Color.Value != "" {
+			r.InlineStyles["color"] = colorValue(rPr.Color.Value)
+		}
+		if rPr.Highlight != nil && rPr.Highlight.Value != "" {
+			r.InlineStyles["background-color"] = colorValue(rPr.Highlight.Value)
+		}
+
+		// 字体和字号先不处理了，不然效果看起来不是很好看
+		if rPr.Sz != nil && rPr.Sz.Value != "" {
+			// r.InlineStyles["font-size"] = rPr.Sz.Value + "px"
+		}
+		if rPr.RFonts != nil && rPr.RFonts.Ascii != "" {
+			// r.InlineStyles["font-family"] = rPr.RFonts.Ascii
+		}
+	}
+}
+
+func NewDocxParser(r *zip.Reader) *docxParser {
+	return &docxParser{
+		zipReader:  r,
+		output:     ds.NewArray(),
+		tableStack: ds.NewStack(),
+	}
+}
+
+// docx 2 html
+func DOCX2Html(file string) (string, error) {
+	inputs, err := ioutil.ReadFile(file)
+	if err != nil {
+		return kEmpty, err
+	}
+
+	r, err := zip.NewReader(bytes.NewReader(inputs), int64(len(inputs)))
+	if err != nil {
+		return kEmpty, err
+	}
+
+	return NewDocxParser(r).ToHtml()
 }
