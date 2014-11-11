@@ -10,7 +10,8 @@ exports.getProcessors = function () {
     var lessProcessor = new LessCompiler({
         files: [
             'src/common/css/main.less',
-            'src/common/css/preview.less'
+            'src/common/css/preview.less',
+            'src/common/css/ckeditor.less'
         ],
         pageFiles: [
             'index.html',
@@ -27,10 +28,26 @@ exports.getProcessors = function () {
     });
     var jsProcessor = new JsCompressor();
     var pathMapperProcessor = new PathMapper();
+    var stringReplacer = new StringReplace({
+        files: [
+            '*.js'
+        ],
+        replacements: [
+            {
+                from: 'common/css/ckeditor.less',
+                to: 'common/css/ckeditor.css'
+            }
+        ]
+    });
     var addCopyright = new AddCopyright();
 
     return {
-        'default': [ lessProcessor, moduleProcessor, pathMapperProcessor ],
+        'default': [
+            lessProcessor,
+            moduleProcessor,
+            stringReplacer,
+            pathMapperProcessor
+        ],
         'release': [
             lessProcessor, cssProcessor, moduleProcessor,
             jsProcessor, pathMapperProcessor, addCopyright

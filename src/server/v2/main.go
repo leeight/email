@@ -105,6 +105,8 @@ func main() {
 		beego.BeforeStatic, util.StyleFilter("static"))
 	beego.InsertFilter("/src/common/css/preview.less",
 		beego.BeforeStatic, util.StyleFilter("static"))
+	beego.InsertFilter("/src/common/css/ckeditor.less",
+		beego.BeforeStatic, util.StyleFilter("static"))
 	beego.InsertFilter("/", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/index.html", beego.BeforeStatic, bindataProvider)
 	beego.InsertFilter("/preview.html", beego.BeforeStatic, bindataProvider)
