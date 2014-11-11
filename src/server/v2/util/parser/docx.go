@@ -3,6 +3,7 @@ package parser
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/base64"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"strconv"
+	"strings"
 
 	"../ds"
 )
@@ -20,9 +22,33 @@ type docxParser struct {
 	zipReader  *zip.Reader
 	output     *ds.Array
 	tableStack *ds.Stack
+	medias     map[string][]byte
+	rels       *docxRelations
 }
 
 func (p *docxParser) ToHtml() (string, error) {
+	for _, f := range p.zipReader.File {
+		if strings.HasPrefix(f.Name, "word/media/") {
+			rc, err := f.Open()
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			raw, err := ioutil.ReadAll(rc)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			p.medias[f.Name] = raw
+		} else if f.Name == "word/_rels/document.xml.rels" {
+			rc, _ := f.Open()
+			data, _ := ioutil.ReadAll(rc)
+			xml.Unmarshal(data, p.rels)
+		}
+	}
+
 	for _, f := range p.zipReader.File {
 		if f.Name == "word/document.xml" {
 			rc, err := f.Open()
@@ -87,6 +113,8 @@ func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
 				output.Push(NewHtmlNode("span"))
 			} else if v.Name.Local == "rPr" {
 				p.handle_rPr(x, &v)
+			} else if v.Name.Local == "blip" {
+				p.handle_blip(x, &v)
 			}
 		case xml.EndElement:
 			if v.Name.Local == "tr" {
@@ -105,6 +133,27 @@ func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
 	}
 
 	return nil
+}
+
+// 处理 <a:blip r:embed="rId8" cstate="print"/> 属性
+func (p *docxParser) handle_blip(x *xml.Decoder, v *xml.StartElement) {
+	var blip = &blipNode{}
+	x.DecodeElement(blip, v)
+
+	if blip.Embed == "" {
+		return
+	}
+
+	for _, r := range p.rels.Relationship {
+		fmt.Println(r.Id)
+		if r.Id == blip.Embed {
+			if raw, ok := p.medias["word/"+r.Target]; ok {
+				p.output.Push(fmt.Sprintf("<img src=\"data:image/png;base64,%s\" />",
+					base64.StdEncoding.EncodeToString(raw)))
+				break
+			}
+		}
+	}
 }
 
 // 处理table cell的属性
@@ -247,6 +296,8 @@ func NewDocxParser(r *zip.Reader) *docxParser {
 		zipReader:  r,
 		output:     ds.NewArray(),
 		tableStack: ds.NewStack(),
+		medias:     make(map[string][]byte),
+		rels:       &docxRelations{},
 	}
 }
 

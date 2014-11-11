@@ -28,6 +28,18 @@ type rFontsNode struct {
 	Ascii string `xml:"ascii,attr"`
 }
 
+type blipNode struct {
+	Embed string `xml:"embed,attr"`
+}
+
+type docxRelations struct {
+	Relationship []*struct {
+		Id     string `xml:"Id,attr"`
+		Type   string `xml:"Type,attr"`
+		Target string `xml:"Target,attr"`
+	}
+}
+
 // http://www.datypic.com/sc/ooxml/e-w_shd-3.html
 // w:val,...
 // w:color,w:fill,
