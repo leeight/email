@@ -31,6 +31,7 @@ config.json
 config.example.json
 filters.yml
 126.config.yml
+subjects.txt
 
 /email-client.sublime-project
 /email-client.sublime-workspace

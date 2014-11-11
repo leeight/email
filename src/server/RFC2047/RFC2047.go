@@ -55,58 +55,59 @@ func Encode(s string) string {
 }
 
 func Decode2(s string) string {
-	// =?Big5?B?tarOYA==?=
+	var charset string
+
 	r := regexp.MustCompile(`(?i)=\?(?P<charset>[^\?]+)\?(?P<enc>[bq])\?(?P<data>[^\?]*)\?=`)
-	return r.ReplaceAllStringFunc(s, func(m string) string {
+	t := r.ReplaceAllStringFunc(s, func(m string) string {
 		fields := strings.Split(m[2:len(m)-2], "?")
 		if len(fields) != 3 {
 			return m
 		}
 
-		if fields[2] == "" {
+		c, e, d := strings.ToLower(fields[0]), strings.ToLower(fields[1]), fields[2]
+		if d == "" {
 			return ""
 		}
 
-		charset, enc := strings.ToLower(fields[0]), strings.ToLower(fields[1])
 		// http://w3techs.com/technologies/comparison/en-gb18030,en-gbk,en-windows1252
-		if charset == "gbk" || charset == "gb2312" || charset == "windows-1252" {
-			charset = "gb18030"
+		if c == "gbk" || c == "gb2312" || c == "windows-1252" {
+			c = "gb18030"
 		}
+		charset = c
 
-		var in = bytes.NewBufferString(fields[2])
+		var in = bytes.NewBufferString(d)
 		var r io.Reader
-		switch enc {
+		switch e {
 		case "b":
 			r = base64.NewDecoder(base64.StdEncoding, in)
 		case "q":
 			r = qDecoder{r: in}
 		default:
-			return s
+			return d
 		}
 
 		raw, err := ioutil.ReadAll(r)
 		if err != nil {
-			return s
+			return d
 		}
 
-		if charset == "utf-8" {
-			return string(raw)
-		}
-
-		cd, err := iconv.Open("utf-8", charset)
-		if err != nil {
-			return s
-		}
-		defer cd.Close()
-		return cd.ConvString(string(raw))
+		return string(raw)
 	})
+
+	if charset == "" {
+		return t
+	}
+
+	cd, err := iconv.Open("utf-8", charset)
+	if err != nil {
+		return t
+	}
+	defer cd.Close()
+	return cd.ConvString(t)
 }
 
 func Decode(s string) string {
 	// ?=\s=? 替换一下?
 	s = regexp.MustCompile(`\?=\s+=\?`).ReplaceAllString(s, "?==?")
-	// 如果是 quoted-printed 编码，例如 ?==?gb2312?Q?，就删除之，把前后两部分联起来
-	// ISSUE-729676
-	s = regexp.MustCompile(`\?==\?([^\?]+)\?[Qq]\?`).ReplaceAllString(s, "")
 	return strings.TrimSpace(Decode2(s))
 }
