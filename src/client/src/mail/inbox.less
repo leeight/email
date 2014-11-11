@@ -4,9 +4,17 @@
  */
 
 .mail-inbox {
-    .ui-table-cell-text {
+    [data-col="2"] .ui-table-cell-text {
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+
+    [data-col="3"] .ui-table-cell-text a {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 80%;
+        display: inline-block;
     }
 
     .ui-table-cell-text i {
