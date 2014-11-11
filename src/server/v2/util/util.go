@@ -120,6 +120,10 @@ func StripUnnecessaryTags(html []byte) []byte {
 	return sanitizer.SanitizeBytes(html)
 }
 
+func encodeURIComponent(s string) string {
+	return strings.Replace(url.QueryEscape(s), "+", "%20", -1)
+}
+
 // 扫描 att 目录，补充必要的信息
 func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.Attachment {
 	var atts []*models.Attachment
@@ -146,13 +150,13 @@ func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.At
 			// 3. 基本样式的保留（颜色，字体，字号等等）
 			// 4. 内联元素的显示（比如图片）
 			previewUrl = fmt.Sprintf("/preview.html?uidl=%s&file=%s",
-				url.QueryEscape(uidl),
-				url.QueryEscape(item.Name()))
+				encodeURIComponent(uidl),
+				encodeURIComponent(item.Name()))
 		} else if regexp.MustCompile(".(png|jpe?g|gif|pdf|txt|html?|diff|patch)$").MatchString(item.Name()) {
 			// 图片，PDF，文本之类的就直接在本地打开即可了
 			previewUrl = fmt.Sprintf("/downloads/%s/att/%s",
-				url.QueryEscape(uidl),
-				url.QueryEscape(item.Name()))
+				encodeURIComponent(uidl),
+				encodeURIComponent(item.Name()))
 		}
 		att := models.Attachment{
 			humanize.Bytes(uint64(item.Size())),

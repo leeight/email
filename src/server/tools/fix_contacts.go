@@ -27,6 +27,6 @@ func main() {
 
 	for _, s := range subjects {
 		var a = RFC2047.Decode(s)
-		fmt.Println(a)
+		fmt.Printf("%+q\n", a)
 	}
 }
