@@ -34,6 +34,7 @@ func (p *docxParser) ToHtml() (string, error) {
 				log.Println(err)
 				continue
 			}
+			defer rc.Close()
 
 			raw, err := ioutil.ReadAll(rc)
 			if err != nil {
@@ -44,6 +45,7 @@ func (p *docxParser) ToHtml() (string, error) {
 			p.medias[f.Name] = raw
 		} else if f.Name == "word/_rels/document.xml.rels" {
 			rc, _ := f.Open()
+			defer rc.Close()
 			data, _ := ioutil.ReadAll(rc)
 			xml.Unmarshal(data, p.rels)
 		}
