@@ -12,18 +12,21 @@ import (
 	"../../util"
 )
 
+// MailDeleteController 处理邮件删除的请求
 type MailDeleteController struct {
 	beego.Controller
 }
 
-func (this *MailDeleteController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *MailDeleteController) Get() {
+	controller.Post()
 }
 
-func (this *MailDeleteController) Post() {
-	var ids = this.GetString("ids")
+// Post 处理 POST 请求
+func (controller *MailDeleteController) Post() {
+	var ids = controller.GetString("ids")
 	if ids == "" {
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
 	_, err := gSrvConfig.Ormer.QueryTable("email").
@@ -32,10 +35,10 @@ func (this *MailDeleteController) Post() {
 
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
-	this.Data["json"] = util.SimpleResponse()
+	controller.Data["json"] = util.SimpleResponse()
 
-	this.ServeJson()
+	controller.ServeJson()
 }

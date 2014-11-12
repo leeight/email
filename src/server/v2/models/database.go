@@ -8,6 +8,8 @@ import (
 	"../../net/mail"
 )
 
+// Email 用来定义数据库中 email 表结构，里面还有一些其它字段用来
+// 记录在处理过程中的一些信息，这些字段最终是不会被存储到数据库中的
 type Email struct {
 	Id          int64     `orm:"pk;auto" json:"id"`
 	Uidl        string    `orm:"size(512)" json:"uidl"`
@@ -53,6 +55,7 @@ type Email struct {
 	RawMessage *mail.Message `orm:"-" json:"-"`
 }
 
+// Thread 用来定义数据库中 thread 的表结构
 type Thread struct {
 	Id        int64     `orm:"pk;auto" json:"id"`
 	From      string    `orm:"size(512)" json:"from"`
@@ -65,6 +68,7 @@ type Thread struct {
 	IsArchive byte      `orm:"default(0)" json:"is_archive"`
 }
 
+// Contact 用来定义数据库中 contact 的表结构
 type Contact struct {
 	Id      int64  `orm:"pk;auto" json:"-"`
 	Name    string `orm:"size(512);null" json:"name"`
@@ -72,12 +76,14 @@ type Contact struct {
 	Count   int    `orm:"default(0)" json:"-"`
 }
 
+// Attachment 用来定义数据库中 attachment 的表结构
 type Attachment struct {
 	Size       string `orm:"-" json:"size"`
 	Name       string `orm:"-" json:"name"`
-	PreviewUrl string `orm:"-" json:"preview_url"`
+	PreviewURL string `orm:"-" json:"preview_url"`
 }
 
+// Tag 用来定义数据库中 tag 的表结构
 type Tag struct {
 	Id          int64    `orm:"pk;auto" json:"id"`
 	Name        string   `orm:"size(512)" json:"name"`
@@ -85,13 +91,13 @@ type Tag struct {
 	UnreadCount int64    `orm:"-" json:"unread_count"`
 }
 
-// 邮件内容的一些资源，比如inline image，附件等等
+// Resource 邮件内容的一些资源，比如inline image，附件等等
 type Resource struct {
-	MediaType, ContentId, Name string
+	MediaType, ContentID, Name string
 	Body                       []byte
 }
 
-// Email的索引配置
+// TableIndex 是 email 表的索引配置
 func (e *Email) TableIndex() [][]string {
 	return [][]string{
 		[]string{"MsgId"},
@@ -128,7 +134,7 @@ func parseAddressList(list string) ([]*Contact, error) {
 	return y, nil
 }
 
-// 通过 REST API 返回数据的时候，处理一下
+// FixMailAddressFields 是用来通过 REST API 返回数据的时候，处理一下
 // FromField, ReplyToField, CcField, BccField, ToField 字段的值
 func (e *Email) FixMailAddressFields() {
 	e.FromField, _ = parseAddress(e.From)
@@ -138,6 +144,7 @@ func (e *Email) FixMailAddressFields() {
 	e.BccField, _ = parseAddressList(e.Bcc)
 }
 
+// HasResource 用来判断 Email 是否含有 name 所指定的内联资源
 func (e *Email) HasResource(name string) bool {
 	if _, ok := e.ResourceBundle[name]; ok {
 		return true
@@ -145,6 +152,7 @@ func (e *Email) HasResource(name string) bool {
 	return false
 }
 
+// HasMessage 用来判断 Email 是否含有特定类型的邮件，比如 text/html, text/calendar 等等
 func (e *Email) HasMessage(msgType string) bool {
 	if _, ok := e.MessageBundle[msgType]; ok {
 		return true
@@ -152,7 +160,7 @@ func (e *Email) HasMessage(msgType string) bool {
 	return false
 }
 
-// Contact的索引配置
+// TableIndex 是 contact 表的索引配置
 func (c *Contact) TableIndex() [][]string {
 	return [][]string{
 		[]string{"Name"},
@@ -160,14 +168,14 @@ func (c *Contact) TableIndex() [][]string {
 	}
 }
 
-// Tag的索引配置
+// TableIndex 是 tag 表的索引配置
 func (t *Tag) TableIndex() [][]string {
 	return [][]string{
 		[]string{"Name"},
 	}
 }
 
-// Thread的索引配置
+// TableIndex 是 thread 表的索引配置
 func (t *Thread) TableIndex() [][]string {
 	return [][]string{
 		[]string{"Subject"},

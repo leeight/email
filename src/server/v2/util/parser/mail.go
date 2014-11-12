@@ -23,7 +23,7 @@ import (
 	"../../models"
 )
 
-// 只解析邮件头，得到一个简单的邮件信息
+// NewEmailFallback 只解析邮件头，得到一个简单的邮件信息
 func NewEmailFallback(raw []byte) (*models.Email, error) {
 	var idx = bytes.Index(raw, []byte("\n\n"))
 
@@ -57,6 +57,7 @@ func NewEmailFallback(raw []byte) (*models.Email, error) {
 	}, nil
 }
 
+// NewEmail 用来解析邮件，创建一个新的 models.Email 对象
 func NewEmail(raw []byte) (*models.Email, error) {
 	msg, err := mail.ReadMessage(bytes.NewBuffer(raw))
 	if err != nil {
@@ -210,7 +211,7 @@ func decodeMultipartMessage(email *models.Email, part *multipart.Part) error {
 			body, _ := ioutil.ReadAll(bodyReader)
 			email.ResourceBundle[key] = &models.Resource{
 				MediaType: ct,
-				ContentId: cid,
+				ContentID: cid,
 				Name:      name,
 				Body:      body,
 			}
@@ -269,7 +270,7 @@ func getReferences(msg *mail.Message) string {
 	return strings.Join(references, ",")
 }
 
-// 通过检测编码来修复邮件的标题
+// FixSubject 通过检测编码来修复邮件的标题
 // 因为有些邮件的标题没有按照规范正确的Encode，这里只能人肉去处理一下
 // 大部分都是写程序发送的邮件，比如一些报警之类的
 func FixSubject(s string) string {

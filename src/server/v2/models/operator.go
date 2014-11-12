@@ -6,22 +6,32 @@ import (
 	"../../net/mail"
 )
 
+// Operator 的接口，只有一个 Exec 需要去实现
 type Operator interface {
 	Exec(a interface{}, b string) bool
 }
 
+// IsOperator Is
 type IsOperator struct{}
+
+// ContainsOperator Contains
 type ContainsOperator struct{}
+
+// ExistsOperator Exists
 type ExistsOperator struct{}
+
+// NegativeOperator Negative
 type NegativeOperator struct {
 	wrapper Operator
 }
 
-func (this IsOperator) Exec(a interface{}, b string) bool {
+// Exec 是 IsOperator 的接口实现
+func (x IsOperator) Exec(a interface{}, b string) bool {
 	return a == b
 }
 
-func (this ContainsOperator) Exec(a interface{}, b string) bool {
+// Exec 是 ContainsOperator 的接口实现
+func (x ContainsOperator) Exec(a interface{}, b string) bool {
 	switch a.(type) {
 	case []*mail.Address:
 		for _, item := range a.([]*mail.Address) {
@@ -30,7 +40,6 @@ func (this ContainsOperator) Exec(a interface{}, b string) bool {
 			}
 		}
 		return false
-		break
 	case []string:
 		for _, item := range a.([]string) {
 			if item == b || strings.Contains(item, b) {
@@ -44,18 +53,19 @@ func (this ContainsOperator) Exec(a interface{}, b string) bool {
 	default:
 		return false
 	}
+}
+
+// Exec 是 ExistsOperator 的接口实现
+func (x ExistsOperator) Exec(a interface{}, b string) bool {
 	return false
 }
 
-// TODO(user) 暂未实现
-func (this ExistsOperator) Exec(a interface{}, b string) bool {
-	return false
+// Exec 是 NegativeOperator 的接口实现
+func (x NegativeOperator) Exec(a interface{}, b string) bool {
+	return !x.wrapper.Exec(a, b)
 }
 
-func (this NegativeOperator) Exec(a interface{}, b string) bool {
-	return !this.wrapper.Exec(a, b)
-}
-
+// NewOperator 创建一个新的 Operator 对象
 func NewOperator(t string) Operator {
 	var o Operator
 	var negative = strings.HasPrefix(t, "!")

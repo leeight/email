@@ -3,8 +3,9 @@ test:
 	go test -v ./filter
 	go test -v ./models
 	go test -v ./util
-	go test -v ./util/parser
 	go test -v ./util/builder
+	go test -v ./util/ds
+	go test -v ./util/parser
 	go test -v ./util/storage
 
 debug:
@@ -27,6 +28,6 @@ release:
 		static/output/...
 	go build \
 		-o email \
-		-ldflags '-X main.BUILD_VERSION $(shell git log --format="%H" -n 1) -X main.BUILD_DATE "$(shell date)"' \
+		-ldflags '-X main.BuildVersion $(shell git log --format="%H" -n 1) -X main.BuildDate "$(shell date)"' \
 		main.go
 	strip email

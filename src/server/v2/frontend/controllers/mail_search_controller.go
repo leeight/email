@@ -11,17 +11,19 @@ import (
 	"../../util"
 )
 
-// 邮件列表默认页面
+// MailSearchController 邮件列表默认页面
 type MailSearchController struct {
 	beego.Controller
 }
 
-func (this *MailSearchController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *MailSearchController) Get() {
+	controller.Post()
 }
 
-func (this *MailSearchController) Post() {
-	qs, schema, err := this.buildQuerySeter()
+// Post 处理 POST 请求
+func (controller *MailSearchController) Post() {
+	qs, schema, err := controller.buildQuerySeter()
 	if err != nil {
 		log.Println(err)
 		return
@@ -47,17 +49,17 @@ func (this *MailSearchController) Post() {
 		patchEmailFields(email)
 	}
 
-	this.Data["json"] = util.ListResponse(totalCount,
+	controller.Data["json"] = util.ListResponse(totalCount,
 		schema.PageNo, schema.PageSize, emails)
-	this.ServeJson()
+	controller.ServeJson()
 }
 
 // 根据请求参数，构造过滤条件
-func (this *MailSearchController) buildQuerySeter() (
+func (controller *MailSearchController) buildQuerySeter() (
 	orm.QuerySeter, *models.InboxControllerSchema, error) {
 
 	var schema = new(models.InboxControllerSchema)
-	if err := this.ParseForm(schema); err != nil {
+	if err := controller.ParseForm(schema); err != nil {
 		return nil, nil, err
 	}
 	schema.Init()
@@ -65,7 +67,7 @@ func (this *MailSearchController) buildQuerySeter() (
 	var o = gSrvConfig.Ormer
 	var qs = o.QueryTable("email").Filter("IsDelete", 0)
 
-	var keyword = this.GetString("keyword")
+	var keyword = controller.GetString("keyword")
 	if strings.Index(keyword, "from:") == 0 {
 		keyword = keyword[5:]
 

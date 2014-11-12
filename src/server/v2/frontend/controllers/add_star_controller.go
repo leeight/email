@@ -12,18 +12,21 @@ import (
 	"../../util"
 )
 
+// AddStarController 处理添加星标的请求
 type AddStarController struct {
 	beego.Controller
 }
 
-func (this *AddStarController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *AddStarController) Get() {
+	controller.Post()
 }
 
-func (this *AddStarController) Post() {
-	var ids = this.GetString("ids")
+// Post 处理 POST 请求
+func (controller *AddStarController) Post() {
+	var ids = controller.GetString("ids")
 	if ids == "" {
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
 	_, err := gSrvConfig.Ormer.QueryTable("email").
@@ -32,10 +35,10 @@ func (this *AddStarController) Post() {
 
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
-	this.Data["json"] = util.SimpleResponse()
+	controller.Data["json"] = util.SimpleResponse()
 
-	this.ServeJson()
+	controller.ServeJson()
 }

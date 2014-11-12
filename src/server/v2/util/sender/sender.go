@@ -7,7 +7,7 @@ import (
 	"../builder"
 )
 
-// 发送邮件
+// SendMail 用来发送邮件
 func SendMail(mailer *builder.MailBuilder, raw []byte,
 	smtpserver string, xtls bool, auth smtp.Auth) error {
 	c, err := smtp.Dial(smtpserver)

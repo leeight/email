@@ -1,10 +1,10 @@
 package models
 
-// Inbox页面的请求提交的参数
+// InboxControllerSchema 是邮件列表页面的请求提交的参数
 type InboxControllerSchema struct {
 	PageSize   int `form:"pageSize"`
 	PageNo     int `form:"pageNo"`
-	LabelId    int `form:"label"`
+	LabelID    int `form:"label"`
 	UnRead     int `form:"unreadOnly"`
 	IsDelete   int `form:"is_delete"`
 	IsStar     int `form:"is_star"`
@@ -13,22 +13,22 @@ type InboxControllerSchema struct {
 	Offset     int `form:"-"`
 }
 
-// 初始化请求参数的默认值
-func (this *InboxControllerSchema) Init() {
-	if this.PageSize == 0 {
-		this.PageSize = 15
+// Init 初始化请求参数的默认值
+func (r *InboxControllerSchema) Init() {
+	if r.PageSize == 0 {
+		r.PageSize = 15
 	}
 
-	if this.PageNo == 0 {
-		this.PageNo = 1
+	if r.PageNo == 0 {
+		r.PageNo = 1
 	}
 
-	if this.LabelId == 0 {
-		this.LabelId = -1
+	if r.LabelID == 0 {
+		r.LabelID = -1
 	}
 
-	this.Offset = (this.PageNo - 1) * this.PageSize
-	if this.Offset < 0 {
-		this.Offset = 0
+	r.Offset = (r.PageNo - 1) * r.PageSize
+	if r.Offset < 0 {
+		r.Offset = 0
 	}
 }

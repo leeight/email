@@ -16,8 +16,6 @@ import (
 	"../ds"
 )
 
-var kEmpty = ""
-
 type docxParser struct {
 	zipReader  *zip.Reader
 	output     *ds.Array
@@ -26,7 +24,7 @@ type docxParser struct {
 	rels       *docxRelations
 }
 
-func (p *docxParser) ToHtml() (string, error) {
+func (p *docxParser) ToHTML() (string, error) {
 	for _, f := range p.zipReader.File {
 		if strings.HasPrefix(f.Name, "word/media/") {
 			rc, err := f.Open()
@@ -55,22 +53,21 @@ func (p *docxParser) ToHtml() (string, error) {
 		if f.Name == "word/document.xml" {
 			rc, err := f.Open()
 			if err != nil {
-				return kEmpty, err
+				return "", err
 			}
 			defer rc.Close()
-			err = p.docxXml2Text(rc, true)
+			err = p.docxXML2Text(rc, true)
 			if err != nil {
-				return kEmpty, err
+				return "", err
 			}
 			return p.output.Join(""), nil
 		}
 	}
 
-	return kEmpty, errors.New("Invalid docx format.")
+	return "", errors.New("Invalid docx format.")
 }
 
-// TODO <a:blip r:embed="rId8" cstate="print"/>
-func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
+func (p *docxParser) docxXML2Text(input io.Reader, strict bool) error {
 	output := p.output
 	tableStack := p.tableStack
 
@@ -88,7 +85,7 @@ func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
 			output.Push(string(v))
 		case xml.StartElement:
 			if v.Name.Local == "tcPr" {
-				p.handle_tcPr(x, &v)
+				p.handleTcPr(x, &v)
 			} else if v.Name.Local == "tr" {
 				output.Push("<tr>\n")
 				if !tableStack.IsEmpty() {
@@ -97,7 +94,7 @@ func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
 					layout.IncRow()
 				}
 			} else if v.Name.Local == "tc" {
-				output.Push(NewHtmlNode("td"))
+				output.Push(NewHTMLNode("td"))
 				if !tableStack.IsEmpty() {
 					// 0-based
 					var layout = tableStack.Peek().(*ds.TableLayout)
@@ -112,11 +109,11 @@ func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
 				output.Push("<p>")
 			} else if v.Name.Local == "r" {
 				// w:r
-				output.Push(NewHtmlNode("span"))
+				output.Push(NewHTMLNode("span"))
 			} else if v.Name.Local == "rPr" {
-				p.handle_rPr(x, &v)
+				p.handleRPr(x, &v)
 			} else if v.Name.Local == "blip" {
-				p.handle_blip(x, &v)
+				p.handleBlip(x, &v)
 			}
 		case xml.EndElement:
 			if v.Name.Local == "tr" {
@@ -138,7 +135,7 @@ func (p *docxParser) docxXml2Text(input io.Reader, strict bool) error {
 }
 
 // 处理 <a:blip r:embed="rId8" cstate="print"/> 属性
-func (p *docxParser) handle_blip(x *xml.Decoder, v *xml.StartElement) {
+func (p *docxParser) handleBlip(x *xml.Decoder, v *xml.StartElement) {
 	var blip = &blipNode{}
 	x.DecodeElement(blip, v)
 
@@ -147,8 +144,7 @@ func (p *docxParser) handle_blip(x *xml.Decoder, v *xml.StartElement) {
 	}
 
 	for _, r := range p.rels.Relationship {
-		fmt.Println(r.Id)
-		if r.Id == blip.Embed {
+		if r.ID == blip.Embed {
 			if raw, ok := p.medias["word/"+r.Target]; ok {
 				p.output.Push(fmt.Sprintf("<img src=\"data:image/png;base64,%s\" />",
 					base64.StdEncoding.EncodeToString(raw)))
@@ -159,7 +155,7 @@ func (p *docxParser) handle_blip(x *xml.Decoder, v *xml.StartElement) {
 }
 
 // 处理table cell的属性
-func (p *docxParser) handle_tcPr(x *xml.Decoder, v *xml.StartElement) {
+func (p *docxParser) handleTcPr(x *xml.Decoder, v *xml.StartElement) {
 	output := p.output
 	tableStack := p.tableStack
 
@@ -175,7 +171,10 @@ func (p *docxParser) handle_tcPr(x *xml.Decoder, v *xml.StartElement) {
 	var layout = tableStack.Peek().(*ds.TableLayout)
 	var rowIndex = layout.RowIndex
 	var cellIndex = layout.CellIndex
-	if rowIndex >= len(layout.Grids) {
+	if rowIndex < 0 || cellIndex < 0 {
+		log.Printf("rowIndex = %d, cellIndex = %d", rowIndex, cellIndex)
+		return
+	} else if rowIndex >= len(layout.Grids) {
 		log.Printf("Invalid rowIndex = %d, len(layout.Grids) = %d\n",
 			rowIndex, len(layout.Grids))
 		return
@@ -192,8 +191,8 @@ func (p *docxParser) handle_tcPr(x *xml.Decoder, v *xml.StartElement) {
 		return
 	}
 
-	// TODO getHtmlNode函数的角色很奇怪
-	var n = getHtmlNode(output, idx)
+	// TODO getHTMLNode函数的角色很奇怪
+	var n = getHTMLNode(output, idx)
 	if n == nil {
 		return
 	}
@@ -238,8 +237,8 @@ func (p *docxParser) handle_tcPr(x *xml.Decoder, v *xml.StartElement) {
 				}
 
 				var idx = layout.Grids[rowIndex][cellIndex]
-				// TODO getHtmlNode函数的角色很奇怪
-				var n = getHtmlNode(output, idx)
+				// TODO getHTMLNode函数的角色很奇怪
+				var n = getHTMLNode(output, idx)
 				if n == nil {
 					return
 				}
@@ -256,7 +255,7 @@ func (p *docxParser) handle_tcPr(x *xml.Decoder, v *xml.StartElement) {
 }
 
 // 处理span的属性
-func (p *docxParser) handle_rPr(x *xml.Decoder, v *xml.StartElement) {
+func (p *docxParser) handleRPr(x *xml.Decoder, v *xml.StartElement) {
 	var rPr = &rPrNode{}
 	x.DecodeElement(rPr, v)
 	if p.output.Length() <= 0 {
@@ -287,12 +286,13 @@ func (p *docxParser) handle_rPr(x *xml.Decoder, v *xml.StartElement) {
 		if rPr.Sz != nil && rPr.Sz.Value != "" {
 			// r.InlineStyles["font-size"] = rPr.Sz.Value + "px"
 		}
-		if rPr.RFonts != nil && rPr.RFonts.Ascii != "" {
-			// r.InlineStyles["font-family"] = rPr.RFonts.Ascii
+		if rPr.RFonts != nil && rPr.RFonts.ASCII != "" {
+			// r.InlineStyles["font-family"] = rPr.RFonts.ASCII
 		}
 	}
 }
 
+// NewDocxParser 用来构造 docxParser 实例，然后调用 ToHTML() 方法就可以得到所需要的 HTML 代码
 func NewDocxParser(r *zip.Reader) *docxParser {
 	return &docxParser{
 		zipReader:  r,
@@ -303,17 +303,18 @@ func NewDocxParser(r *zip.Reader) *docxParser {
 	}
 }
 
-// docx 2 html
+// DOCX2Html 是把一个 docx 文件作为输入，返回转化之后的 HTML 代码，如果途中遇到任何
+// 问题，会返回error
 func DOCX2Html(file string) (string, error) {
 	inputs, err := ioutil.ReadFile(file)
 	if err != nil {
-		return kEmpty, err
+		return "", err
 	}
 
 	r, err := zip.NewReader(bytes.NewReader(inputs), int64(len(inputs)))
 	if err != nil {
-		return kEmpty, err
+		return "", err
 	}
 
-	return NewDocxParser(r).ToHtml()
+	return NewDocxParser(r).ToHTML()
 }

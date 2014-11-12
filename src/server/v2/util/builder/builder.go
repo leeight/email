@@ -19,7 +19,7 @@ import (
 	"../../util"
 )
 
-// 发送邮件的时候，构造邮件的报文
+// MailBuilder 发送邮件的时候，构造邮件的报文
 type MailBuilder struct {
 	Subject                    string
 	Message, Uidl, Attachments string
@@ -132,17 +132,17 @@ func (m *MailBuilder) appendOriginalHeaders() {
 		return
 	}
 
-	msgId := msg.Header.Get("Message-ID")
-	if msgId != "" {
-		m.headers.Set("In-Reply-To", "\n "+msgId)
+	msgID := msg.Header.Get("Message-ID")
+	if msgID != "" {
+		m.headers.Set("In-Reply-To", "\n "+msgID)
 		references := msg.Header.Get("References")
 		if references != "" {
 			// By RFC 2822, the most immediate parent should appear last
 			// in the "References" header, so this order is intentional.
 			// TODO(user) 所以这个逻辑可能是不太对的
-			m.headers.Set("References", references+"\n "+msgId)
+			m.headers.Set("References", references+"\n "+msgID)
 		} else {
-			m.headers.Set("References", "\n "+msgId)
+			m.headers.Set("References", "\n "+msgID)
 		}
 	}
 
@@ -166,7 +166,7 @@ func (m *MailBuilder) Read(name string) ([]byte, error) {
 	return ioutil.ReadFile(path.Join(m.SrvConfig.BaseDir, "downloads", name))
 }
 
-// 构造邮件的报文，如果成功了，发送出去，否则就是失败了呗
+// Enclose 构造邮件的报文，如果成功了，发送出去，否则就是失败了呗
 func (m *MailBuilder) Enclose() (*bytes.Buffer, error) {
 	var err error
 

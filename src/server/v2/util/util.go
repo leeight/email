@@ -36,7 +36,7 @@ func init() {
 	charsetMap["GB-18030"] = "gb18030"
 }
 
-// 按照文档里面的说明，删除一些特殊的字符
+// StripInvalidCharacter 按照文档里面的说明，删除一些特殊的字符
 // http://developer.baidu.com/wiki/index.php?title=docs/pcs/rest/file_data_apis_list
 // 1. 路径长度限制为1000
 // 2. 路径中不能包含以下字符：\\ ? | " > < : *
@@ -53,6 +53,8 @@ func fixCharset(o string) string {
 	return o
 }
 
+// CharsetDecode 用来检测和修复一下文字的编码
+// 有时候邮件标题里面并不是按照规范来的，需要检测编码，然后转化为utf-8
 func CharsetDecode(r io.Reader, c string) ([]byte, error) {
 	body, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -100,7 +102,7 @@ func CharsetDecode(r io.Reader, c string) ([]byte, error) {
 	return body, nil
 }
 
-// 删除一些无意义的标签
+// StripUnnecessaryTags 删除邮件内容中一些无意义的标签
 func StripUnnecessaryTags(html []byte) []byte {
 	sanitizer := bluemonday.UGCPolicy()
 
@@ -124,7 +126,7 @@ func encodeURIComponent(s string) string {
 	return strings.Replace(url.QueryEscape(s), "+", "%20", -1)
 }
 
-// 扫描 att 目录，补充必要的信息
+// ScanAttachments 扫描 att 目录，给 models.Email 补充必要的信息
 func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.Attachment {
 	var atts []*models.Attachment
 	fileInfos, err := ioutil.ReadDir(dir)
@@ -140,7 +142,7 @@ func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.At
 		// http://pan.baidu.com/disk/home#path=%252Fapps%252Fdropbox%252Fbaidu.com%252Fliyubei%252F390026932.08759.stu.xjtu.edu.cn,S=2174601
 		var dst = fmt.Sprintf("/apps/dropbox/%s/%s/%s",
 			config.Pop3.Domain, config.Pop3.Username, StripInvalidCharacter(uidl))
-		var previewUrl = fmt.Sprintf("http://pan.baidu.com/disk/home#path=%s",
+		var previewURL = fmt.Sprintf("http://pan.baidu.com/disk/home#path=%s",
 			url.QueryEscape(url.QueryEscape(dst)))
 		if strings.HasSuffix(item.Name(), ".xlsx") || strings.HasSuffix(item.Name(), ".docx") {
 			// preview.html页面支持 xlsx 和 docx 的预览，xlsx的效果也比网盘的效果好
@@ -149,26 +151,26 @@ func ScanAttachments(dir, uidl string, config *models.ServerConfig) []*models.At
 			// 2. ul, li 的合理使用
 			// 3. 基本样式的保留（颜色，字体，字号等等）
 			// 4. 内联元素的显示（比如图片）
-			previewUrl = fmt.Sprintf("/preview.html?uidl=%s&file=%s",
+			previewURL = fmt.Sprintf("/preview.html?uidl=%s&file=%s",
 				encodeURIComponent(uidl),
 				encodeURIComponent(item.Name()))
 		} else if regexp.MustCompile(".(png|jpe?g|gif|pdf|txt|html?|diff|patch)$").MatchString(item.Name()) {
 			// 图片，PDF，文本之类的就直接在本地打开即可了
-			previewUrl = fmt.Sprintf("/downloads/%s/att/%s",
+			previewURL = fmt.Sprintf("/downloads/%s/att/%s",
 				encodeURIComponent(uidl),
 				encodeURIComponent(item.Name()))
 		}
 		att := models.Attachment{
-			humanize.Bytes(uint64(item.Size())),
-			item.Name(),
-			previewUrl,
+			Size:       humanize.Bytes(uint64(item.Size())),
+			Name:       item.Name(),
+			PreviewURL: previewURL,
 		}
 		atts = append(atts, &att)
 	}
 	return atts
 }
 
-// 发送邮件的时候，把邮件地址解析成后续可用的
+// ParseAddressList 发送邮件的时候，把邮件地址解析成后续可用的
 // 如果遇到非法的，无法解析的，直接抛弃掉
 func ParseAddressList(value string) []*mail.Address {
 	var list []*mail.Address
@@ -181,12 +183,16 @@ func ParseAddressList(value string) []*mail.Address {
 	return list
 }
 
+// ParseDate 用来解析邮件头中的日期，这里实际上调用的是 mail.Header 里面的
+// 实现，因为 net/mail 里面默认初始化了很多种日期的格式
 func ParseDate(date string) (time.Time, error) {
 	var y = mail.Header{}
 	y["Date"] = []string{date}
 	return y.Date()
 }
 
+// AddressToString 是把邮件地址转化为字符串，以便可以放到邮件头里面去
+// 发送邮件的时候会用到这个函数
 func AddressToString(list []*mail.Address) string {
 	addresses := make([]string, len(list))
 	for i, item := range list {
@@ -196,7 +202,7 @@ func AddressToString(list []*mail.Address) string {
 	return strings.Join(addresses, ", ")
 }
 
-// 开发模式的时候启用，主要目的是不再依赖edp webserver
+// StyleFilter 开发模式的时候启用，主要目的是不再依赖edp webserver
 // 方式是通过系统调用lessc来搞定这个事情
 func StyleFilter(root string) func(*context.Context) {
 	return func(ctx *context.Context) {
@@ -215,6 +221,7 @@ func StyleFilter(root string) func(*context.Context) {
 	}
 }
 
+// ListResponse 用来输出列表页的响应数据
 func ListResponse(totalCount int64, pageNo int, pageSize int, args ...interface{}) models.Response {
 	return &models.ListResponse{
 		Success: "true",
@@ -229,6 +236,7 @@ func ListResponse(totalCount int64, pageNo int, pageSize int, args ...interface{
 	}
 }
 
+// SimpleResponse 用来输出一个普通的ajax的相应数据
 func SimpleResponse(args ...interface{}) models.Response {
 	if args == nil {
 		return &models.SimpleResponse{
@@ -243,10 +251,10 @@ func SimpleResponse(args ...interface{}) models.Response {
 			Success: "true",
 			Result:  args[0].(interface{}),
 		}
-	} else {
-		return &models.SimpleResponse{
-			Success: "true",
-			Result:  args,
-		}
+	}
+
+	return &models.SimpleResponse{
+		Success: "true",
+		Result:  args,
 	}
 }

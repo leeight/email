@@ -12,7 +12,7 @@ import (
 	"../storage"
 )
 
-// 当解析失败之后，但是也需要保存邮件的信息，此时就
+// EmailSaveFallback 用来当邮件内容解析失败之后，但是也需要保存邮件的信息，此时就
 // 尽可能从邮件头里面得到信息，然后存储到数据库里面去
 func EmailSaveFallback(data []byte, uidl, message string, config *models.ServerConfig) {
 	var email, _ = parser.NewEmailFallback(data)
@@ -23,7 +23,8 @@ func EmailSaveFallback(data []byte, uidl, message string, config *models.ServerC
 	}
 }
 
-// 把邮件的保存到数据库，包括相关的Tags信息
+// EmailSave 用来把邮件的保存到数据库，包括相关的Tags信息
+// 如果参数 email.Id 存在并且大于0的话，会执行 Update 操作，不是 Insert 操作
 func EmailSave(email *models.Email, config *models.ServerConfig) {
 	var err error
 
@@ -55,7 +56,7 @@ func EmailSave(email *models.Email, config *models.ServerConfig) {
 	}
 }
 
-// 把邮件相关的资源保存下来，以本地文件或者网盘的文件的形式
+// EmailResourceSave 把邮件相关的资源保存下来，以本地文件或者网盘的文件的形式
 func EmailResourceSave(email *models.Email, config *models.ServerConfig) {
 	re := regexp.MustCompile(`src="cid:([^"]+)"`)
 	sm := re.FindAllSubmatch([]byte(email.Message), -1)
@@ -83,8 +84,8 @@ func EmailResourceSave(email *models.Email, config *models.ServerConfig) {
 		var filename string
 		if value.Name != "" {
 			filename = value.Name
-		} else if value.ContentId != "" {
-			filename = value.ContentId
+		} else if value.ContentID != "" {
+			filename = value.ContentID
 		} else {
 			continue
 		}

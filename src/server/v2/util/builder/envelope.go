@@ -53,32 +53,35 @@ import (
 // Content-Transfer-Encoding: base64
 // Content-Disposition: attachment; filename="=?utf-8?B?1K3J+srVyOu31rK8LnBwdHg=?="
 
-// 读取资源的接口
+// ResourceReader 读取资源的接口
 // 例如 ioutil.ReadFile
 type ResourceReader interface {
 	Read(name string) ([]byte, error)
 }
 
+// Envelope 用来提供 Enclose 和 Headers 两个接口
+// 不同类型的邮件体都会实现这两个接口
 type Envelope interface {
 	Enclose(rr ResourceReader) ([]byte, error)
 	Headers() textproto.MIMEHeader
 }
 
-//{{{
-
+// SimpleEnvelope 用来封装最简单的邮件体，只有文本内容，没有内联的元素，没有附件
 type SimpleEnvelope struct {
 	Message string // HTML邮件的正文
 }
 
-func (this *SimpleEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
-	message := []byte(this.Message)
+// Enclose 用来对文本类型的邮件体进行 base64 编码
+func (e *SimpleEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
+	message := []byte(e.Message)
 	message64 := make([]byte, base64.StdEncoding.EncodedLen(len(message)))
 	base64.StdEncoding.Encode(message64, message)
 
 	return message64, nil
 }
 
-func (this *SimpleEnvelope) Headers() textproto.MIMEHeader {
+// Headers 返回额外的邮件头
+func (e *SimpleEnvelope) Headers() textproto.MIMEHeader {
 	var headers = make(textproto.MIMEHeader)
 
 	headers.Set("Content-Type", "text/html; charset=\"utf-8\"")
@@ -87,29 +90,27 @@ func (this *SimpleEnvelope) Headers() textproto.MIMEHeader {
 	return headers
 }
 
-//}}}
-
-//{{{
-
+// RelatedEnvelope 是对含有内联资源，以及文本的邮件体进行打包的数据结构
 type RelatedEnvelope struct {
 	Message    string   // HTML邮件的正文
 	ContentIds []string // HTML邮件正文中所引用的资源，例如<img src="cid:...">
 	boundary   string
 }
 
-func (this *RelatedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
+// Enclose 对邮件体进行打包
+func (e *RelatedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 	raw := &bytes.Buffer{}
 	writer := multipart.NewWriter(raw)
 
-	this.boundary = writer.Boundary()
+	e.boundary = writer.Boundary()
 
 	// TODO(user) 正则表达式的替换Message的内容
-	se := SimpleEnvelope{Message: this.Message}
+	se := SimpleEnvelope{Message: e.Message}
 	body, _ := se.Enclose(rr)
 	part, _ := writer.CreatePart(se.Headers())
 	part.Write(body)
 
-	for _, resource := range this.ContentIds {
+	for _, resource := range e.ContentIds {
 		name := path.Base(resource)
 		header := textproto.MIMEHeader{}
 		// TODO(user) 如何识别文件的类型呢？后缀名貌似不太靠谱，都被隐藏到XXX里面去了
@@ -136,20 +137,18 @@ func (this *RelatedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 	return raw.Bytes(), nil
 }
 
-func (this *RelatedEnvelope) Headers() textproto.MIMEHeader {
+// Headers 返回额外的邮件头
+func (e *RelatedEnvelope) Headers() textproto.MIMEHeader {
 	var headers = make(textproto.MIMEHeader)
 
 	// Content-Type: multipart/related; boundary="--HELLO-WORLD--"
 	headers.Set("Content-Type",
-		fmt.Sprintf("multipart/related; boundary=\"%s\"", this.boundary))
+		fmt.Sprintf("multipart/related; boundary=\"%s\"", e.boundary))
 
 	return headers
 }
 
-//}}}
-
-//{{{
-
+// MixedEnvelope 对含有附件的邮件体进行打包的数据结构
 type MixedEnvelope struct {
 	Message     string   // HTML邮件的正文
 	ContentIds  []string // HTML邮件正文中所引用的资源，例如<img src="cid:...">
@@ -157,21 +156,22 @@ type MixedEnvelope struct {
 	boundary    string
 }
 
-func (this *MixedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
+// Enclose 对含有附件的邮件体进行打包
+func (e *MixedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 	raw := &bytes.Buffer{}
 	writer := multipart.NewWriter(raw)
 
-	this.boundary = writer.Boundary()
+	e.boundary = writer.Boundary()
 
 	re := RelatedEnvelope{
-		Message:    this.Message,
-		ContentIds: this.ContentIds,
+		Message:    e.Message,
+		ContentIds: e.ContentIds,
 	}
 	body, _ := re.Enclose(rr)
 	part, _ := writer.CreatePart(re.Headers())
 	part.Write(body)
 
-	for _, attach := range this.Attachments {
+	for _, attach := range e.Attachments {
 		name := path.Base(attach)
 		header := textproto.MIMEHeader{}
 		// TODO(user) 如何识别文件的类型呢？后缀名貌似不太靠谱，都被隐藏到XXX里面去了
@@ -197,18 +197,19 @@ func (this *MixedEnvelope) Enclose(rr ResourceReader) ([]byte, error) {
 	return raw.Bytes(), nil
 }
 
-func (this *MixedEnvelope) Headers() textproto.MIMEHeader {
+// Headers 返回额外的邮件头
+func (e *MixedEnvelope) Headers() textproto.MIMEHeader {
 	var headers = make(textproto.MIMEHeader)
 
 	// Content-Type: multipart/related; boundary="--HELLO-WORLD--"
 	headers.Set("Content-Type",
-		fmt.Sprintf("multipart/mixed; boundary=\"%s\"", this.boundary))
+		fmt.Sprintf("multipart/mixed; boundary=\"%s\"", e.boundary))
 
 	return headers
 }
 
-//}}}
-
+// GuessMimetype 根据名字猜测资源的类型
+// TODO 采用的方式不是很准确，应该采用其它更靠谱的方式
 func GuessMimetype(name string) string {
 	var ext, mtype string
 
@@ -230,7 +231,7 @@ func GuessMimetype(name string) string {
 	return mtype
 }
 
-// 创建邮件的正文，发送出去
+// EnvelopeMail 创建邮件的正文，发送出去
 func EnvelopeMail(
 	header map[string]string,
 	message []byte,

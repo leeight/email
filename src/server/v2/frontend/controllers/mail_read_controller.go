@@ -9,16 +9,19 @@ import (
 	"../../util"
 )
 
+// MailReadController 处理查看邮件详情的请求
 type MailReadController struct {
 	beego.Controller
 }
 
-func (this *MailReadController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *MailReadController) Get() {
+	controller.Post()
 }
 
-func (this *MailReadController) Post() {
-	id, err := this.GetInt("id")
+// Post 处理 POST 请求
+func (controller *MailReadController) Post() {
+	id, err := controller.GetInt("id")
 	if err != nil {
 		log.Println(err)
 		return
@@ -40,7 +43,7 @@ func (this *MailReadController) Post() {
 
 	patchEmailFields(email)
 
-	this.Data["json"] = util.SimpleResponse(email)
+	controller.Data["json"] = util.SimpleResponse(email)
 
-	this.ServeJson()
+	controller.ServeJson()
 }

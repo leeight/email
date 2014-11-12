@@ -12,7 +12,7 @@ type contactCache map[string]*models.Contact
 // Receiver解析出来之后，通过这个channel传递过来
 var contactQueue = make(chan *models.Contact, 100)
 
-// 更新数据库中联系人的信息
+// FlushContacts 用来更新数据库中联系人的信息
 // 因为一封邮件里面可能会有多个联系人，为了避免多次访问数据库，这里先在
 // 内存中做一个缓存，然后定期刷新到数据里面去，即便有数据库不一致的情况也没关系
 // 因为Count并不是一个关键的字段，只要有大小的区分即可
@@ -21,7 +21,7 @@ func FlushContacts(config *models.ServerConfig) error {
 	var dirtyCount = 0
 
 	for {
-		dirtyCount += 1
+		dirtyCount++
 
 		var item = <-contactQueue
 		if contact, ok := cache[item.Address]; !ok {
@@ -33,7 +33,7 @@ func FlushContacts(config *models.ServerConfig) error {
 			}
 		} else {
 			// 存在，更新数据即可
-			contact.Count += 1
+			contact.Count++
 			if len(item.Name) > len(contact.Name) {
 				contact.Name = item.Name
 			}

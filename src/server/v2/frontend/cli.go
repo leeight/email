@@ -7,7 +7,7 @@ import (
 	"./controllers"
 )
 
-// 启动 frontend 服务
+// Run 启动 frontend 服务
 func Run(config *models.ServerConfig) error {
 	controllers.SetServerConfig(config)
 

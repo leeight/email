@@ -9,7 +9,7 @@ import (
 	"../models"
 )
 
-// 对单个邮件执行一遍过滤器，如果出错或者遇到Stop:true的情况，就停止执行
+// RunFilter 对单个邮件执行一遍过滤器，如果出错或者遇到Stop:true的情况，就停止执行
 func RunFilter(email *models.Email, filters []models.Filter) error {
 	var names []string
 	for _, filter := range filters {
@@ -42,6 +42,7 @@ func RunFilter(email *models.Email, filters []models.Filter) error {
 	return nil
 }
 
+// NewFilters 从 filters.json 构造新的过滤器
 func NewFilters(file string) ([]models.Filter, error) {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {

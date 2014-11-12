@@ -9,6 +9,7 @@ type sheetType struct {
 	Data [][]string `json:"data"`
 }
 
+// XLSX2Html 把 xlsx 的输入文件，转化为二维数组，供后续的 preview.html 用来展示
 func XLSX2Html(file string) ([]*sheetType, error) {
 	f, err := xlsx.OpenFile(file)
 	if err != nil {

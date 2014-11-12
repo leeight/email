@@ -10,17 +10,19 @@ import (
 	"../../util"
 )
 
-// 邮件列表默认页面
+// InboxController 邮件列表默认页面
 type InboxController struct {
 	beego.Controller
 }
 
-func (this *InboxController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *InboxController) Get() {
+	controller.Post()
 }
 
-func (this *InboxController) Post() {
-	qs, schema, err := this.buildQuerySeter()
+// Post 处理 POST 请求
+func (controller *InboxController) Post() {
+	qs, schema, err := controller.buildQuerySeter()
 	if err != nil {
 		log.Println(err)
 		return
@@ -50,17 +52,17 @@ func (this *InboxController) Post() {
 		// email.Tags = ?
 	}
 
-	this.Data["json"] = util.ListResponse(totalCount,
+	controller.Data["json"] = util.ListResponse(totalCount,
 		schema.PageNo, schema.PageSize, emails)
-	this.ServeJson()
+	controller.ServeJson()
 }
 
 // 根据请求参数，构造过滤条件
-func (this *InboxController) buildQuerySeter() (
+func (controller *InboxController) buildQuerySeter() (
 	orm.QuerySeter, *models.InboxControllerSchema, error) {
 
 	var schema = new(models.InboxControllerSchema)
-	if err := this.ParseForm(schema); err != nil {
+	if err := controller.ParseForm(schema); err != nil {
 		return nil, nil, err
 	}
 	schema.Init()
@@ -72,12 +74,12 @@ func (this *InboxController) buildQuerySeter() (
 		qs = qs.Filter("IsDelete", 1)
 	} else if schema.IsStar == 1 {
 		qs = qs.Filter("IsStar", 1)
-	} else if schema.LabelId > 0 {
-		if schema.LabelId != 2 && schema.LabelId != 9 {
+	} else if schema.LabelID > 0 {
+		if schema.LabelID != 2 && schema.LabelID != 9 {
 			// TODO(user) 以后修复
 			qs = qs.Filter("IsDelete", 0)
 		}
-		qs = qs.Filter("Tags__Tag__Id", schema.LabelId)
+		qs = qs.Filter("Tags__Tag__Id", schema.LabelID)
 	} else {
 		qs = qs.Filter("IsDelete", 0)
 	}

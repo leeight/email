@@ -9,11 +9,11 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// backend和frontend所依赖的配置信息
+// ServerConfig backend和frontend所依赖的配置信息
 type ServerConfig struct {
-	Http       httpType    `json:"http"`
+	HTTP       httpType    `json:"http"`
 	Pop3       pop3Type    `json:"pop3"`
-	Smtp       smtpType    `json:"smtp"`
+	SMTP       smtpType    `json:"smtp"`
 	Service    serviceType `json:"service"`
 	Debug      bool        `json:"debug"`
 	ConfigPath string      `json:"-"`
@@ -22,7 +22,7 @@ type ServerConfig struct {
 	InitMode   bool        `json:"-"`
 }
 
-// 数据同步到本地磁盘
+// Sync 把配置数据同步到本地磁盘
 func (sc *ServerConfig) Sync() error {
 	if sc.ConfigPath == "" {
 		return errors.New("Invalid sc.ConfigPath")
@@ -54,7 +54,7 @@ type pop3Type struct {
 	Host             string        `json:"host"`
 	Domain           string        `json:"-"`
 	Port             int           `json:"port"`
-	Tls              bool          `json:"tls"`
+	TLS              bool          `json:"tls"`
 	Interval         time.Duration `json:"interval"`
 	RecentMails      int           `json:"recent_mails"`        // 单位（天），只收取最近这些天的邮件
 	KeepMailOnServer int           `json:"keep_mail_on_server"` // 单位（天），早于这些天之前的邮件会从服务器中删除
@@ -66,7 +66,7 @@ type smtpType struct {
 	Password string `json:"password"`
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
-	Tls      bool   `json:"tls"`
+	TLS      bool   `json:"tls"`
 }
 
 // 相关的一些其它服务
@@ -112,6 +112,7 @@ type filterConfigType struct {
 	Config string `json:"config"`
 }
 
+// NewNetdiskType 读取网盘的配置信息
 func NewNetdiskType(data []byte) (*netdiskType, error) {
 	var nt = netdiskType{}
 	var err = json.Unmarshal(data, &nt)

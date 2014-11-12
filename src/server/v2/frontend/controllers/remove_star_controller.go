@@ -12,18 +12,21 @@ import (
 	"../../util"
 )
 
+// RemoveStarController 处理取消星标的请求
 type RemoveStarController struct {
 	beego.Controller
 }
 
-func (this *RemoveStarController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *RemoveStarController) Get() {
+	controller.Post()
 }
 
-func (this *RemoveStarController) Post() {
-	var ids = this.GetString("ids")
+// Post 处理 POST 请求
+func (controller *RemoveStarController) Post() {
+	var ids = controller.GetString("ids")
 	if ids == "" {
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
 	_, err := gSrvConfig.Ormer.QueryTable("email").
@@ -32,10 +35,10 @@ func (this *RemoveStarController) Post() {
 
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
-	this.Data["json"] = util.SimpleResponse()
+	controller.Data["json"] = util.SimpleResponse()
 
-	this.ServeJson()
+	controller.ServeJson()
 }

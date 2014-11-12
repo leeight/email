@@ -13,7 +13,7 @@ import (
 
 var emailDateMap map[string]time.Time
 
-// 启动 backend 服务
+// Run 启动 backend 服务
 func Run(config *models.ServerConfig) {
 	// 尝试从磁盘恢复  uidl -> Date 的映射关系
 	data, err := ioutil.ReadFile(path.Join(config.BaseDir, ".edm.json"))

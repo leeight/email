@@ -65,8 +65,8 @@ func (n netdiskStorage) Save() error {
 	}
 	client := &http.Client{Transport: tr}
 
-	targetUrl := "https://c.pcs.baidu.com/rest/2.0/pcs/file?" + v.Encode()
-	resp, err := client.Post(targetUrl, contentType, raw)
+	targetURL := "https://c.pcs.baidu.com/rest/2.0/pcs/file?" + v.Encode()
+	resp, err := client.Post(targetURL, contentType, raw)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -89,7 +89,7 @@ func (n netdiskStorage) Save() error {
 	return nil
 }
 
-// 百度网盘的存储接口
+// NewNetdiskStorage 百度网盘的存储接口
 func NewNetdiskStorage(token, dst string, data []byte) Storage {
 	log.Printf("Uploading file %s", dst)
 	return netdiskStorage{token, dst, data}

@@ -15,7 +15,7 @@ type conditionType struct {
 	Rules [][]string `json:"rules"`
 }
 
-// 过滤器的配置
+// Filter 表示一个过滤器的配置
 type Filter struct {
 	Name      string        `json:"name"`
 	Disable   bool          `json:"disable"`
@@ -24,7 +24,7 @@ type Filter struct {
 	Action    actionType    `json:"action"`
 }
 
-// 判断邮件是否符合规则
+// Match 判断邮件是否符合规则
 func (filter *Filter) Match(email *Email) bool {
 	match := filter.Condition.Match
 	if match == "All" {
@@ -61,7 +61,7 @@ func (filter *Filter) Match(email *Email) bool {
 	}
 }
 
-// 检查一封邮件是否符合某条规则，如果符合的话返回true，否则返回false
+// CheckRule 检查一封邮件是否符合某条规则，如果符合的话返回true，否则返回false
 func (filter *Filter) CheckRule(email *Email, rule []string) bool {
 	var msg = email.RawMessage
 	var key = rule[0]
@@ -129,11 +129,9 @@ func (filter *Filter) CheckRule(email *Email, rule []string) bool {
 	default:
 		return operator.Exec(msg.Header.Get(key), rule[2])
 	}
-
-	return false
 }
 
-// 如果符合规则的话，也就是通过Match判断的话，执行规则定义的动作
+// TakeAction 如果符合规则的话，也就是通过Match判断的话，执行规则定义的动作
 func (filter *Filter) TakeAction(email *Email) error {
 	for k, v := range filter.Action {
 		action := NewAction(k)

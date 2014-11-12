@@ -22,7 +22,7 @@ func (s diskStorage) Save() error {
 	return err
 }
 
-// 本地文件的存储接口
+// NewDiskStorage 本地文件的存储接口
 func NewDiskStorage(dst string, data []byte, perm os.FileMode) Storage {
 	log.Printf("Saving file %s", dst)
 	return diskStorage{dst, data, perm}

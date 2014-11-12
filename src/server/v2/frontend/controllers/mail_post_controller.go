@@ -20,31 +20,33 @@ import (
 	"../../util/storage"
 )
 
-// 邮件列表默认页面
+// MailPostController 是邮件列表默认页面
 type MailPostController struct {
 	beego.Controller
 }
 
-func (this *MailPostController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *MailPostController) Get() {
+	controller.Post()
 }
 
-func (this *MailPostController) Post() {
-	var subject = this.GetString("subject")
+// Post 处理 POST 请求
+func (controller *MailPostController) Post() {
+	var subject = controller.GetString("subject")
 	if subject == "" {
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
-	var to = util.ParseAddressList(this.GetString("to"))
+	var to = util.ParseAddressList(controller.GetString("to"))
 	if to == nil || len(to) <= 0 {
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
 	var from, _ = mail.ParseAddress(fmt.Sprintf("%s <%s>",
 		RFC2047.Encode(gSrvConfig.Pop3.Username),
 		gSrvConfig.Pop3.Email))
-	var cc = util.ParseAddressList(this.GetString("cc"))
-	var bcc = util.ParseAddressList(this.GetString("bcc"))
+	var cc = util.ParseAddressList(controller.GetString("cc"))
+	var bcc = util.ParseAddressList(controller.GetString("bcc"))
 
 	var mailer = &builder.MailBuilder{
 		From:        from,
@@ -52,27 +54,27 @@ func (this *MailPostController) Post() {
 		To:          to,
 		Cc:          cc,
 		Bcc:         bcc,
-		Message:     this.GetString("message"),
-		Uidl:        this.GetString("uidl"),
-		Attachments: this.GetString("attachments"),
+		Message:     controller.GetString("message"),
+		Uidl:        controller.GetString("uidl"),
+		Attachments: controller.GetString("attachments"),
 		SrvConfig:   gSrvConfig,
 	}
 	var raw, err = mailer.Enclose()
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusServiceUnavailable))
+		controller.Abort(strconv.Itoa(http.StatusServiceUnavailable))
 	}
 
 	// log.Println(string(raw.Bytes()))
 
 	// 先保存，然后再发送邮件
-	go this.saveAndSendMail(mailer, raw.Bytes())
+	go controller.saveAndSendMail(mailer, raw.Bytes())
 
-	this.Data["json"] = util.SimpleResponse()
-	this.ServeJson()
+	controller.Data["json"] = util.SimpleResponse()
+	controller.ServeJson()
 }
 
-func (this *MailPostController) saveAndSendMail(
+func (controller *MailPostController) saveAndSendMail(
 	mailer *builder.MailBuilder, raw []byte) {
 	// 已发送邮件的uidl
 	var uidl = fmt.Sprintf("%d", time.Now().UnixNano())
@@ -100,10 +102,10 @@ func (this *MailPostController) saveAndSendMail(
 
 	// 开始发送邮件，即便上面失败了，也会走到这里的
 	log.Println("Sending Mail...")
-	var auth = sender.NewLoginAuth(gSrvConfig.Smtp.Username,
-		gSrvConfig.Smtp.Password)
-	var server = fmt.Sprintf("%s:%d", gSrvConfig.Smtp.Host, gSrvConfig.Smtp.Port)
-	var tls = gSrvConfig.Smtp.Tls
+	var auth = sender.NewLoginAuth(gSrvConfig.SMTP.Username,
+		gSrvConfig.SMTP.Password)
+	var server = fmt.Sprintf("%s:%d", gSrvConfig.SMTP.Host, gSrvConfig.SMTP.Port)
+	var tls = gSrvConfig.SMTP.TLS
 	err = sender.SendMail(mailer, raw, server, tls, auth)
 	if err != nil {
 		log.Println("Failed Sent Mail", uidl+".txt", err)

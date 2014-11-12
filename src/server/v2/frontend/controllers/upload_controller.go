@@ -14,67 +14,70 @@ import (
 	"../../util/storage"
 )
 
+// UploadController 处理用户的文件上传请求
 type UploadController struct {
 	beego.Controller
 }
 
-func (this *UploadController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *UploadController) Get() {
+	controller.Post()
 }
 
-func (this *UploadController) Post() {
-	switch this.GetString("action") {
+// Post 处理 POST 请求
+func (controller *UploadController) Post() {
+	switch controller.GetString("action") {
 	case "image":
-		this.processImageUpload()
+		controller.processImageUpload()
 	case "file":
-		this.processFileUpload()
+		controller.processFileUpload()
 	default:
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 }
 
-func (this *UploadController) output(url string) {
-	this.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
-	this.Ctx.WriteString(fmt.Sprintf(`{"state": "SUCCESS", "url": "%s"}`, url))
+func (controller *UploadController) output(url string) {
+	controller.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
+	controller.Ctx.WriteString(fmt.Sprintf(`{"state": "SUCCESS", "url": "%s"}`, url))
 }
 
-func (this *UploadController) processFileUpload() {
-	file, hdr, err := this.GetFile("file")
+func (controller *UploadController) processFileUpload() {
+	file, hdr, err := controller.GetFile("file")
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 	defer file.Close()
 
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	var dst = path.Join(gSrvConfig.BaseDir,
 		"downloads", "00000", "att", hdr.Filename)
 	storage.NewDiskStorage(dst, buf, 0644).Save()
-	this.output(fmt.Sprintf("downloads/00000/att/%s", path.Base(dst)))
+	controller.output(fmt.Sprintf("downloads/00000/att/%s", path.Base(dst)))
 }
 
-func (this *UploadController) processImageUpload() {
-	file, hdr, err := this.GetFile("image")
+func (controller *UploadController) processImageUpload() {
+	file, hdr, err := controller.GetFile("image")
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 	defer file.Close()
 
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	var dst = path.Join(gSrvConfig.BaseDir,
 		"downloads", "00000", "cid",
 		fmt.Sprintf("%x%s", md5.Sum(buf), path.Ext(hdr.Filename)))
 	storage.NewDiskStorage(dst, buf, 0644).Save()
-	this.output(fmt.Sprintf("downloads/00000/cid/%s", path.Base(dst)))
+	controller.output(fmt.Sprintf("downloads/00000/cid/%s", path.Base(dst)))
 }

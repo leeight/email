@@ -12,22 +12,25 @@ import (
 	"../../util"
 )
 
+// LabelsController 处理tag列表的请求
 type LabelsController struct {
 	beego.Controller
 }
 
-func (this *LabelsController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *LabelsController) Get() {
+	controller.Post()
 }
 
-func (this *LabelsController) Post() {
+// Post 处理 POST 请求
+func (controller *LabelsController) Post() {
 	var qs = gSrvConfig.Ormer.QueryTable("tag")
 
 	var tags []*models.Tag
 	_, err := qs.OrderBy("Name").All(&tags)
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	// 查询Tag下面未读的邮件数量
@@ -42,13 +45,13 @@ func (this *LabelsController) Post() {
 	db, err := orm.GetDB()
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	rows, err := db.Query(sql)
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 	defer rows.Close()
 
@@ -62,7 +65,7 @@ func (this *LabelsController) Post() {
 	}
 	if err := rows.Err(); err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	log.Println(sql)
@@ -73,6 +76,6 @@ func (this *LabelsController) Post() {
 		}
 	}
 
-	this.Data["json"] = util.SimpleResponse(tags)
-	this.ServeJson()
+	controller.Data["json"] = util.SimpleResponse(tags)
+	controller.ServeJson()
 }

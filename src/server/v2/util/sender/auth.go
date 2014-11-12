@@ -8,6 +8,7 @@ type loginAuth struct {
 	username, password string
 }
 
+// NewLoginAuth 用来创建一个登录信息，供 smtp 来用
 func NewLoginAuth(username, password string) smtp.Auth {
 	return &loginAuth{username, password}
 }

@@ -1,15 +1,11 @@
 package parser
 
 import (
-	"bytes"
-	"fmt"
 	"io/ioutil"
 	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"../../../net/mail"
 )
 
 func TestNewEmailFallback(t *testing.T) {
@@ -41,10 +37,10 @@ func TestNewMail_729676(t *testing.T) {
 	raw, err := ioutil.ReadFile(path.Join("data", "729676.txt"))
 	assert.Equal(t, err, nil)
 
-	msg, err := mail.ReadMessage(bytes.NewBuffer(raw))
+	email, err := NewEmail(raw)
 	assert.Equal(t, err, nil)
 
-	fmt.Printf("(%s)\n", msg.Header.Get("Subject"))
+	assert.Equal(t, "[提醒:邮件来自外部]  Re: 希望 WooYun-2014-82701 这个帖子的内容不要公开", email.Subject)
 }
 
 func TestNewMail_727774(t *testing.T) {

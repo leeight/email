@@ -6,15 +6,18 @@ import (
 	"../../util"
 )
 
+// UserSettingsReadController 读取用户的配置信息
 type UserSettingsReadController struct {
 	beego.Controller
 }
 
-func (this *UserSettingsReadController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *UserSettingsReadController) Get() {
+	controller.Post()
 }
 
-func (this *UserSettingsReadController) Post() {
-	this.Data["json"] = util.SimpleResponse(gSrvConfig)
-	this.ServeJson()
+// Post 处理 POST 请求
+func (controller *UserSettingsReadController) Post() {
+	controller.Data["json"] = util.SimpleResponse(gSrvConfig)
+	controller.ServeJson()
 }

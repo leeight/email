@@ -11,18 +11,21 @@ import (
 	"../../util"
 )
 
+// ContactsController 处理联系人列表的请求
 type ContactsController struct {
 	beego.Controller
 }
 
-func (this *ContactsController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *ContactsController) Get() {
+	controller.Post()
 }
 
-func (this *ContactsController) Post() {
+// Post 处理 POST 请求
+func (controller *ContactsController) Post() {
 	var o = gSrvConfig.Ormer
 	var qs = o.QueryTable("contact").
-		Filter("Address__icontains", this.GetString("keyword")).
+		Filter("Address__icontains", controller.GetString("keyword")).
 		OrderBy("-Count").
 		Offset(0).
 		Limit(6)
@@ -31,9 +34,9 @@ func (this *ContactsController) Post() {
 	_, err := qs.All(&contacts)
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
-	this.Data["json"] = util.ListResponse(6, 1, 6, contacts)
-	this.ServeJson()
+	controller.Data["json"] = util.ListResponse(6, 1, 6, contacts)
+	controller.ServeJson()
 }

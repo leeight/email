@@ -15,36 +15,39 @@ import (
 	"../../util/storage"
 )
 
+// PcsRetryController 处理网盘重新上传的请求
 type PcsRetryController struct {
 	beego.Controller
 }
 
-func (this *PcsRetryController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *PcsRetryController) Get() {
+	controller.Post()
 }
 
-func (this *PcsRetryController) Post() {
-	var uidl = this.GetString("uidl")
+// Post 处理 POST 请求
+func (controller *PcsRetryController) Post() {
+	var uidl = controller.GetString("uidl")
 	if uidl == "" {
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
 	var downloadDir = path.Join(gSrvConfig.BaseDir, "downloads", uidl, "att")
 	if _, err := os.Stat(downloadDir); err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
 	fileInfos, err := ioutil.ReadDir(downloadDir)
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	var token = gSrvConfig.Service.Netdisk.AccessToken
 	if token == "" {
 		log.Println("AccessToken is not set.")
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	for _, item := range fileInfos {
@@ -55,8 +58,8 @@ func (this *PcsRetryController) Post() {
 		go saveToNetdisk(downloadDir, item.Name(), uidl)
 	}
 
-	this.Data["json"] = util.SimpleResponse()
-	this.ServeJson()
+	controller.Data["json"] = util.SimpleResponse()
+	controller.ServeJson()
 }
 
 func saveToNetdisk(x, y, z string) {

@@ -25,7 +25,7 @@ type dummyNode struct {
 }
 
 type rFontsNode struct {
-	Ascii string `xml:"ascii,attr"`
+	ASCII string `xml:"ascii,attr"`
 }
 
 type blipNode struct {
@@ -34,7 +34,7 @@ type blipNode struct {
 
 type docxRelations struct {
 	Relationship []*struct {
-		Id     string `xml:"Id,attr"`
+		ID     string `xml:"Id,attr"`
 		Type   string `xml:"Type,attr"`
 		Target string `xml:"Target,attr"`
 	}
@@ -79,17 +79,17 @@ func (n *htmlNode) String() string {
 	}
 
 	var attrs = make([]string, len(n.Attr))
-	var i int = 0
+	var i = 0
 	for k, v := range n.Attr {
 		attrs[i] = fmt.Sprintf(" %s=\"%s\"", k, v)
-		i += 1
+		i++
 	}
 
 	var styles = make([]string, len(n.InlineStyles))
-	var j int = 0
+	var j = 0
 	for k, v := range n.InlineStyles {
 		styles[j] = fmt.Sprintf("%s:%s", k, v)
-		j += 1
+		j++
 	}
 	var inlineStyles = ""
 	if j > 0 {
@@ -99,16 +99,17 @@ func (n *htmlNode) String() string {
 	return fmt.Sprintf("<%s%s%s>", n.Name, strings.Join(attrs, ""), inlineStyles)
 }
 
-func NewHtmlNode(Name string) *htmlNode {
+// NewHTMLNode 用来创建一个新的 html 开始节点，对应的结束节点会再遇到 EndElement 的时候自动加上去
+func NewHTMLNode(Name string) *htmlNode {
 	return &htmlNode{
 		Name:         Name,
-		Dummy:        false,
+		Dummy:        false, // 只是一个占位，不会输入具体的内容，这样子就避免删除 output 里面的元素了
 		Attr:         make(map[string]string),
 		InlineStyles: make(map[string]string),
 	}
 }
 
-func getHtmlNode(array *ds.Array, idx int) *htmlNode {
+func getHTMLNode(array *ds.Array, idx int) *htmlNode {
 	if idx >= array.Length() {
 		return nil
 	}

@@ -14,6 +14,7 @@ import (
 // pkg级别公用的变量
 var gSrvConfig *models.ServerConfig
 
+// SetServerConfig 设置全局变量 gSrvConfig 的值
 func SetServerConfig(c *models.ServerConfig) {
 	gSrvConfig = c
 }

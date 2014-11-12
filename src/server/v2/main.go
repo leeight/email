@@ -22,12 +22,15 @@ import (
 	"./util"
 )
 
-var BUILD_DATE = "1989-06-04 03:04:05"
-var BUILD_VERSION = "default"
+// 最终所发布文件的编译日期
+var BuildDate = "1989-06-04 03:04:05"
+
+// 最终所发布文件的编译版本(git commit id)
+var BuildVersion = "default"
 
 func printHelp() {
-	fmt.Printf("BUILD_DATE: %s\n", BUILD_DATE)
-	fmt.Printf("BUILD_VERSION: %s\n", BUILD_VERSION)
+	fmt.Printf("BUILD_DATE: %s\n", BuildDate)
+	fmt.Printf("BUILD_VERSION: %s\n", BuildVersion)
 }
 
 func main() {
@@ -82,7 +85,7 @@ func main() {
 		config.Ormer = orm.NewOrm()
 	}
 
-	beego.HttpPort = config.Http.Port
+	beego.HttpPort = config.HTTP.Port
 	beego.HttpAddr = "localhost"
 	beego.DirectoryIndex = true
 	beego.EnableGzip = true

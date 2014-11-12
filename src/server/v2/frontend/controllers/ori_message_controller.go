@@ -14,18 +14,21 @@ import (
 	"../../models"
 )
 
+// OriMessageController 处理查看原始邮件内容的请求
 type OriMessageController struct {
 	beego.Controller
 }
 
-func (this *OriMessageController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *OriMessageController) Get() {
+	controller.Post()
 }
 
-func (this *OriMessageController) Post() {
-	var uidl = this.Ctx.Input.Param(":uidl")
+// Post 处理 POST 请求
+func (controller *OriMessageController) Post() {
+	var uidl = controller.Ctx.Input.Param(":uidl")
 	if uidl == "" {
-		this.Abort(strconv.Itoa(http.StatusBadRequest))
+		controller.Abort(strconv.Itoa(http.StatusBadRequest))
 	}
 
 	var email models.Email
@@ -35,7 +38,7 @@ func (this *OriMessageController) Post() {
 
 	if err != nil {
 		log.Println(err)
-		this.Abort(strconv.Itoa(http.StatusInternalServerError))
+		controller.Abort(strconv.Itoa(http.StatusInternalServerError))
 	}
 
 	// 从sqlite3导入数据到mysql之后，发生了转义的问题
@@ -53,6 +56,6 @@ func (this *OriMessageController) Post() {
 	// 新的数据里面保存的都是src="cid:xxx"
 	email.Message = strings.Replace(email.Message, `src="downloads`, `src="/downloads`, -1)
 
-	this.Ctx.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
-	this.Ctx.WriteString(email.Message)
+	controller.Ctx.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
+	controller.Ctx.WriteString(email.Message)
 }

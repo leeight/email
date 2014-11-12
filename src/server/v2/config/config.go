@@ -12,15 +12,15 @@ import (
 	"../models"
 )
 
-// 如果没有任何配置文件的时候，初始化一个默认的值，保证可以把服务运行
+// DefaultConfig 用来如果没有任何配置文件的时候，初始化一个默认的值，保证可以把服务运行
 // 起来，然后再通过 /user/settings 的页面来修改 POP3 和 SMTP 的配置
-// 主要是初始化 Service.Db 和 Http.Port
+// 主要是初始化 Service.Db 和 HTTP.Port
 func DefaultConfig() *models.ServerConfig {
 	var sc = &models.ServerConfig{}
 
 	sc.Debug = true
 	sc.InitMode = true
-	sc.Http.Port = 8877
+	sc.HTTP.Port = 8877
 	sc.Pop3.Interval = 60
 	sc.Service.Db.Type = "sqlite"
 	sc.Service.Db.Name = "default"
@@ -30,7 +30,7 @@ func DefaultConfig() *models.ServerConfig {
 	return sc
 }
 
-// 从文件 file 加载项目的配置信息
+// NewConfig 从文件 file 加载项目的配置信息
 // 如果失败了，返回 nil, error
 // 如果成功了，返回 models.ServerConfig, nil
 func NewConfig(file string) (*models.ServerConfig, error) {

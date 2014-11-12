@@ -14,42 +14,45 @@ import (
 	"../../util"
 )
 
+// UserSettingsUpdateController 更新用户的配置信息
 type UserSettingsUpdateController struct {
 	beego.Controller
 }
 
-func (this *UserSettingsUpdateController) Get() {
-	this.Post()
+// Get 处理 GET 请求
+func (controller *UserSettingsUpdateController) Get() {
+	controller.Post()
 }
 
-func (this *UserSettingsUpdateController) Post() {
-	var pop3Hostname = strings.Split(this.GetString("pop3.hostname"), ":")
+// Post 处理 POST 请求
+func (controller *UserSettingsUpdateController) Post() {
+	var pop3Hostname = strings.Split(controller.GetString("pop3.hostname"), ":")
 	var pop3Host = pop3Hostname[0]
 	var pop3Port, _ = strconv.Atoi(pop3Hostname[1])
-	var pop3Interval, _ = this.GetInt("pop3.interval")
-	var pop3Kmos, _ = this.GetInt("pop3.keep_mail_on_server")
-	var pop3Rms, _ = this.GetInt("pop3.recent_mails")
+	var pop3Interval, _ = controller.GetInt("pop3.interval")
+	var pop3Kmos, _ = controller.GetInt("pop3.keep_mail_on_server")
+	var pop3Rms, _ = controller.GetInt("pop3.recent_mails")
 
-	gSrvConfig.Pop3.Email = this.GetString("email")
-	gSrvConfig.Pop3.Username = this.GetString("pop3.username")
-	gSrvConfig.Pop3.Password = this.GetString("pop3.password")
+	gSrvConfig.Pop3.Email = controller.GetString("email")
+	gSrvConfig.Pop3.Username = controller.GetString("pop3.username")
+	gSrvConfig.Pop3.Password = controller.GetString("pop3.password")
 	gSrvConfig.Pop3.Host = pop3Host
 	gSrvConfig.Pop3.Port = pop3Port
 	gSrvConfig.Pop3.Interval = time.Duration(pop3Interval)
 	gSrvConfig.Pop3.RecentMails = int(pop3Rms)
 	gSrvConfig.Pop3.KeepMailOnServer = int(pop3Kmos)
-	gSrvConfig.Pop3.Tls = this.GetString("pop3.tls") == "on"
+	gSrvConfig.Pop3.TLS = controller.GetString("pop3.tls") == "on"
 
 	// ---
-	var smtpHostname = strings.Split(this.GetString("smtp.hostname"), ":")
+	var smtpHostname = strings.Split(controller.GetString("smtp.hostname"), ":")
 	var smtpHost = smtpHostname[0]
 	var smtpPort, _ = strconv.Atoi(smtpHostname[1])
 
-	gSrvConfig.Smtp.Username = this.GetString("smtp.username")
-	gSrvConfig.Smtp.Password = this.GetString("smtp.password")
-	gSrvConfig.Smtp.Host = smtpHost
-	gSrvConfig.Smtp.Port = smtpPort
-	gSrvConfig.Smtp.Tls = this.GetString("smtp.tls") == "on"
+	gSrvConfig.SMTP.Username = controller.GetString("smtp.username")
+	gSrvConfig.SMTP.Password = controller.GetString("smtp.password")
+	gSrvConfig.SMTP.Host = smtpHost
+	gSrvConfig.SMTP.Port = smtpPort
+	gSrvConfig.SMTP.TLS = controller.GetString("smtp.tls") == "on"
 
 	// --- 保存下来 ---
 	gSrvConfig.Sync()
@@ -78,6 +81,6 @@ func (this *UserSettingsUpdateController) Post() {
 		gSrvConfig.InitMode = false
 	}
 
-	this.Data["json"] = util.SimpleResponse()
-	this.ServeJson()
+	controller.Data["json"] = util.SimpleResponse()
+	controller.ServeJson()
 }

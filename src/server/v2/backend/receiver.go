@@ -17,9 +17,7 @@ import (
 	"../util/saver"
 )
 
-// 一次批量查询的个数
-var kMatchBatchNum = 256
-
+// Receiver 开始批量的接收邮件
 func Receiver(config *models.ServerConfig) error {
 	if config.InitMode {
 		log.Println("Under the init mode, Mail Receiver will do nothing.")
@@ -31,7 +29,7 @@ func Receiver(config *models.ServerConfig) error {
 	var hostname = fmt.Sprintf("%s:%d", config.Pop3.Host, config.Pop3.Port)
 	var client *pop3.Client
 	var err error
-	if config.Pop3.Tls {
+	if config.Pop3.TLS {
 		client, err = pop3.DialTLS(hostname)
 	} else {
 		client, err = pop3.Dial(hostname)
@@ -67,7 +65,7 @@ func Receiver(config *models.ServerConfig) error {
 
 	for msgid, msg := range msgs {
 		uidlMap[string(uidls[msg])] = []int{msgid, msg}
-		if len(uidlMap) >= kMatchBatchNum {
+		if len(uidlMap) >= 256 {
 			err := batchProcess(uidlMap, config, client)
 			if err != nil {
 				// 就算有错误，比如有些邮件没有收取下来，那么下一分钟还会继续收取的
