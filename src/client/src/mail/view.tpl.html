@@ -20,17 +20,19 @@
     <!-- /for -->
     <br/>
     <!-- for: ${labels} as ${item} -->
-    <!-- if: ${item.id} == ${label} -->
-    <li class="active">
-    <!-- else -->
-    <li>
-    <!-- /if -->
-        <!-- if: ${item.unread_count} > 0 -->
-        <a href="#/mail/inbox~label=${item.id}"><b>${item.name} (${item.unread_count})</b></a>
+    <!-- if: ${item.id} > 0 -->
+        <!-- if: ${item.id} == ${label} -->
+        <li class="active">
         <!-- else -->
-        <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
-        <!-- /if-->
-    </li>
+        <li>
+        <!-- /if -->
+            <!-- if: ${item.unread_count} > 0 -->
+            <a href="#/mail/inbox~label=${item.id}"><b>${item.name} (${item.unread_count})</b></a>
+            <!-- else -->
+            <a href="#/mail/inbox~label=${item.id}">${item.name}</a>
+            <!-- /if-->
+        </li>
+    <!-- /if -->
     <!-- /for -->
 </ul>
 <!-- /block -->
