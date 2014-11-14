@@ -4,9 +4,9 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 
 ## 如何使用
 
-为了方便使用，提供了 Mac 下面的编译好的版本(6.8M)，可以从这里下载：<http://pan.baidu.com/s/1gd1lVrl>
+为了方便使用，提供了 Mac 和 Windows 下面的编译好的二进制文件，可以从这里下载：<http://pan.baidu.com/s/1bnzYseN>
 
-下载解压之后，执行：`./email` 即可，如果正常启动成功，然后打开浏览器，访问：<http://localhost:8877> 就可以看到设置页面。
+下载解压之后，在终端里面直接执行即可，如果正常启动成功，然后打开浏览器，访问：<http://localhost:8877> 就可以看到设置页面。
 
 ![user_settings.png](docs/user_settings.png)
 
@@ -70,7 +70,7 @@ EMail Client 基于 [POP3](http://en.wikipedia.org/wiki/Post_Office_Protocol) �
 
 **注意事项**
 
-Windows下面安装可能会遇到很多问题，推荐在 Linux 或者 Mac 下面尝试
+Windows编译需要额外安装[tdm-gcc](http://tdm-gcc.tdragon.net/download)，其它平台下应该没有什么问题，不过还是推荐在 Linux 或者 Mac 下面尝试编译，会方便很多。
 
 ### 代码编译
 
@@ -90,14 +90,14 @@ go install "github.com/astaxie/beego/context"
 go install "github.com/astaxie/beego/orm"
 go install "github.com/dustin/go-humanize"
 go install "github.com/microcosm-cc/bluemonday"
-go install "github.com/qiniu/iconv"
 go install "github.com/saintfish/chardet"
 go install "github.com/stretchr/testify/assert"
 go install "github.com/go-sql-driver/mysql"
 go install "github.com/mattn/go-sqlite3"
 go install "github.com/bytbox/go-pop3"
-go install "code.google.com/p/go.net/publicsuffix"
 go install "github.com/tealeg/xlsx"
+go install "code.google.com/p/go.net/publicsuffix"
+go install "code.google.com/p/go.text/encoding"
 ```
 
 安装`lessc`
