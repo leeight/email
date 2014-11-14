@@ -41,6 +41,13 @@ linux_amd64:
 		main.go
 	strip linux_amd64_email
 
+linux_386:
+	GOOS=linux GOARCH=386 go build \
+		-o linux_386_email \
+		-ldflags '-X main.BuildVersion $(shell git log --format="%H" -n 1) -X main.BuildDate "$(shell date)"' \
+		main.go
+	strip linux_386_email
+
 darwin_386:
 	GOOS=darwin GOARCH=386 go build \
 		-o darwin_386_email \
