@@ -3,7 +3,6 @@ package util
 import (
 	"bytes"
 	"fmt"
-	// "html"
 	"io"
 	"io/ioutil"
 	"log"
@@ -67,11 +66,6 @@ func CharsetDecode(r io.Reader, c string) ([]byte, error) {
 		return x, nil
 	}
 
-	// if ct == "text/plain" {
-	// 	body = []byte(fmt.Sprintf("<pre>%s</pre>",
-	// 		html.EscapeString(string(body))))
-	// }
-
 	return body, nil
 }
 
@@ -91,6 +85,7 @@ func StripUnnecessaryTags(html []byte) []byte {
 	sanitizer.AllowAttrs("alt", "border").OnElements("img")
 	sanitizer.AllowAttrs("style", "color").OnElements(
 		"span", "table", "td", "tr", "font", "li", "ol", "ul")
+	sanitizer.AllowAttrs("class").OnElements("pre")
 
 	return sanitizer.SanitizeBytes(html)
 }

@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
+	"fmt"
+	"html"
 	"io"
 	"io/ioutil"
 	"log"
@@ -103,6 +105,10 @@ func NewEmail(raw []byte) (*models.Email, error) {
 		cte := msg.Header.Get("Content-Transfer-Encoding")
 		bodyReader := getBodyReader(msg.Body, cte, false)
 		body, _ := util.CharsetDecode(bodyReader, contentType)
+		if mediaType == "text/plain" {
+			body = []byte(fmt.Sprintf("<pre class=\"ct-text-plain\">%s</pre>",
+				html.EscapeString(string(body))))
+		}
 		email.MessageBundle[mediaType] = body
 	} else if strings.HasPrefix(mediaType, "multipart/") {
 		// 邮件里面可能有附件或者截图之类的东东
