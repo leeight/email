@@ -40,6 +40,18 @@ define(function (require) {
         },
         'no:click': function() {
             alert('NO, TOOD');
+        },
+        'markAsUnread:click': function() {
+            var email = this.model.get('email');
+            this.model.markAsUnread(email.id).then(function() {
+                alert('OK');
+            });
+        },
+        'unDelete:click': function() {
+            var email = this.model.get('email');
+            this.model.unDeleteMails(email.id).then(function() {
+                alert('OK');
+            });
         }
     };
 

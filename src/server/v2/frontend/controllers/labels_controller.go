@@ -76,6 +76,19 @@ func (controller *LabelsController) Post() {
 		}
 	}
 
+	count, err := gSrvConfig.Ormer.QueryTable("email").
+		Filter("IsCalendar", 1).
+		Filter("IsRead", 0).
+		Filter("IsDelete", 0).
+		Count()
+	if err != nil {
+		log.Println(err)
+	}
+	tags = append(tags, &models.Tag{
+		Name:        "All Calendar",
+		UnreadCount: count,
+	})
+
 	controller.Data["json"] = util.SimpleResponse(tags)
 	controller.ServeJson()
 }

@@ -91,7 +91,7 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} ids 把ids的邮件标记为已删除
-     * @returns {er.Deferred} .
+     * @return {er.Deferred} .
      */
     MailViewModel.prototype.deleteMails = function(ids) {
         return api.deleteMails({ids: ids});
@@ -99,12 +99,29 @@ define(function (require) {
 
     /**
      * @param {Array.<string>} uidl 把 uidl 的邮件的附件重新上传
-     * @returns {er.Deferred} .
+     * @return {er.Deferred} .
      */
     MailViewModel.prototype.pcsRetry = function(uidl) {
         return api.pcsRetry({uidl: uidl});
     };
 
+    /**
+     * 标记为未读
+     * @param {string} id 邮件的Id.
+     * @return {er.Deferred} .
+     */
+    MailViewModel.prototype.markAsUnread = function(id) {
+        return api.markAsUnread({ids: [id]});
+    };
+
+    /**
+     * 恢复删除的邮件
+     * @param {string} id 邮件的Id.
+     * @return {er.Deferred} .
+     */
+    MailViewModel.prototype.unDeleteMails = function(id) {
+        return api.unDeleteMails({ids: [id]});
+    };
 
     // return模块
     require('er/util').inherits(MailViewModel, BaseModel);

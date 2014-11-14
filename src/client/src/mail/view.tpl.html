@@ -77,7 +77,13 @@
                         &nbsp;|&nbsp;
                         <a data-ui-type="Link" data-ui-id="forward" href="javascript:void(0)">转发</a>
                         &nbsp;|&nbsp;
+                        <!-- if: ${email.is_delete} == 1 -->
+                        <a data-ui-type="Link" data-ui-id="unDelete" href="javascript:void(0)">取消删除</a>
+                        <!-- else -->
                         <a data-ui-type="Link" data-ui-id="delete" href="javascript:void(0)">删除</a>
+                        <!-- /if -->
+                        &nbsp;|&nbsp;
+                        <a data-ui-type="Link" data-ui-id="markAsUnread" href="javascript:void(0)">标记未读</a>
                         &nbsp;|&nbsp;
                         <a data-ui-disabled="true" data-ui-type="Link" data-ui-id="addLabel" href="javascript:void(0)">添加标签</a>
                         <!-- if: ${email.attachments.length} -->

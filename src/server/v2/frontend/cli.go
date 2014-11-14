@@ -16,9 +16,11 @@ func Run(config *models.ServerConfig) error {
 	beego.Router("/api/mail/read", &controllers.MailReadController{})
 	beego.Router("/api/mail/search", &controllers.MailSearchController{})
 	beego.Router("/api/mail/mark_as_read", &controllers.MarkAsReadController{})
+	beego.Router("/api/mail/mark_as_unread", &controllers.MarkAsUnreadController{})
 	beego.Router("/api/mail/add_star", &controllers.AddStarController{})
 	beego.Router("/api/mail/remove_star", &controllers.RemoveStarController{})
 	beego.Router("/api/mail/delete", &controllers.MailDeleteController{})
+	beego.Router("/api/mail/undelete", &controllers.MailUndeleteController{})
 	beego.Router("/api/mail/post", &controllers.MailPostController{})
 	beego.Router("/ori/message/:uidl.html", &controllers.OriMessageController{})
 

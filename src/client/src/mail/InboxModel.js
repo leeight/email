@@ -24,57 +24,69 @@ define(function (require) {
     /**
      * @inheritDoc
      */
-    MailInboxModel.prototype.datasource = {
-        labels: function(model) {
-            return api.labelList({});
-        },
-        navigators: function(model) {
-            var index = location.href.indexOf('#');
-            var url = index === -1 ? '' : location.href.slice(index);
-
-            var navigators = [
-                {
-                    path: '#/mail/inbox',
-                    name: 'All Mail',
-                    active: false
-                },
-                {
-                    path: '#/mail/starred',
-                    name: 'Starred Mail',
-                    active: false
-                },
-                // {
-                //     path: '#/thread/list',
-                //     name: 'All Thread',
-                //     active: false
-                // },
-                {
-                    path: '#/calendar/list',
-                    name: 'All Calendar',
-                    active: false
-                },
-                {
-                    path: '#/mail/sent',
-                    name: 'Sent Mail',
-                    active: false
-                },
-                {
-                    path: '#/mail/deleted',
-                    name: 'Deleted Mail',
-                    active: false
-                }
-            ];
-
-            var label = model.get('label');
-            if (!label) {
-                u.each(navigators, function(item) {
-                    item.active = url.indexOf(item.path) === 0;
-                });
+    MailInboxModel.prototype.datasource = [
+        {
+            labels: function(model) {
+                return api.labelList({});
             }
+        },
+        {
+            navigators: function(model) {
+                var labels = model.get('labels');
+                var count = 0;
+                if (labels.length && labels[labels.length - 1].name === 'All Calendar') {
+                    var last = labels.pop();
+                    count = last.unread_count;
+                    model.set('labels', labels);
+                }
 
-            return navigators;
+                var index = location.href.indexOf('#');
+                var url = index === -1 ? '' : location.href.slice(index);
+
+                var navigators = [
+                    {
+                        path: '#/mail/inbox',
+                        name: 'All Mail',
+                        active: false
+                    },
+                    {
+                        path: '#/mail/starred',
+                        name: 'Starred Mail',
+                        active: false
+                    },
+                    // {
+                    //     path: '#/thread/list',
+                    //     name: 'All Thread',
+                    //     active: false
+                    // },
+                    {
+                        path: '#/calendar/list',
+                        name: (count ? 'All Calendar (' + count + ')' : 'All Calendar') ,
+                        active: false
+                    },
+                    {
+                        path: '#/mail/sent',
+                        name: 'Sent Mail',
+                        active: false
+                    },
+                    {
+                        path: '#/mail/deleted',
+                        name: 'Deleted Mail',
+                        active: false
+                    }
+                ];
+
+                var label = model.get('label');
+                if (!label) {
+                    u.each(navigators, function(item) {
+                        item.active = url.indexOf(item.path) === 0;
+                    });
+                }
+
+                return navigators;
+            }
         }
-    };
+    ];
 
     /**
      * @param {Array.<string>} ids 把ids的邮件标记为已读
