@@ -10,9 +10,9 @@ import (
 
 	"github.com/astaxie/beego"
 
-	"../../../RFC2047"
 	"../../../net/mail"
 	"../../util"
+	"../../util/RFC2047"
 	"../../util/builder"
 	"../../util/parser"
 	"../../util/saver"

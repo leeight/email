@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"../../../RFC2047"
 	"../../../net/mail"
+	"../RFC2047"
 	"../parser"
 )
 

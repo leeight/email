@@ -18,9 +18,9 @@ import (
 	"github.com/saintfish/chardet"
 
 	".."
-	"../../../RFC2047"
 	"../../../net/mail"
 	"../../models"
+	"../RFC2047"
 )
 
 // NewEmailFallback 只解析邮件头，得到一个简单的邮件信息

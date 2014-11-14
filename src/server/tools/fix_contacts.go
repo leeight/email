@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"../RFC2047"
+	"../v2/util/RFC2047"
 )
 
 func main() {

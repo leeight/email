@@ -3,7 +3,7 @@ package util
 import (
 	"bytes"
 	"fmt"
-	"html"
+	// "html"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,24 +17,12 @@ import (
 	"github.com/astaxie/beego/context"
 	"github.com/dustin/go-humanize"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/qiniu/iconv"
 	"github.com/saintfish/chardet"
 
 	"../../net/mail"
 	"../models"
+	"./encoding"
 )
-
-var charsetMap map[string]string
-
-func init() {
-	// 初始化 charsetMap
-	charsetMap = make(map[string]string)
-
-	charsetMap["gb2312"] = "gb18030"
-	charsetMap["gbk"] = "gb18030"
-	charsetMap["windows-1252"] = "gb18030"
-	charsetMap["GB-18030"] = "gb18030"
-}
 
 // StripInvalidCharacter 按照文档里面的说明，删除一些特殊的字符
 // http://developer.baidu.com/wiki/index.php?title=docs/pcs/rest/file_data_apis_list
@@ -45,14 +33,6 @@ func StripInvalidCharacter(s string) string {
 	return regexp.MustCompile(`^([\s\.]*)|([\s\.]*)$|[\\\?\|"<>:\*]`).ReplaceAllString(s, "")
 }
 
-// 修复一下charset的值，以便iconv可以正确的处理
-func fixCharset(o string) string {
-	if v, ok := charsetMap[o]; ok {
-		return v
-	}
-	return o
-}
-
 // CharsetDecode 用来检测和修复一下文字的编码
 // 有时候邮件标题里面并不是按照规范来的，需要检测编码，然后转化为utf-8
 func CharsetDecode(r io.Reader, c string) ([]byte, error) {
@@ -61,7 +41,7 @@ func CharsetDecode(r io.Reader, c string) ([]byte, error) {
 		return []byte(""), err
 	}
 
-	ct, params, err := mime.ParseMediaType(c)
+	_, params, err := mime.ParseMediaType(c)
 	if err != nil {
 		return body, err
 	}
@@ -80,24 +60,17 @@ func CharsetDecode(r io.Reader, c string) ([]byte, error) {
 	}
 
 	if charset != "" {
-		cd, err := iconv.Open("utf-8", fixCharset(charset))
+		x, err := encoding.Decode(body, charset)
 		if err != nil {
-			log.Printf("Invalid charset = %s, content-type = %s\n", charset, ct)
-			return body, nil
+			log.Println(err)
 		}
-		defer cd.Close()
-
-		var outbuf [512]byte
-		x, _, err := cd.Conv(body, outbuf[:])
-		if err == nil {
-			body = x
-		}
+		return x, nil
 	}
 
-	if ct == "text/plain" {
-		body = []byte(fmt.Sprintf("<pre>%s</pre>",
-			html.EscapeString(string(body))))
-	}
+	// if ct == "text/plain" {
+	// 	body = []byte(fmt.Sprintf("<pre>%s</pre>",
+	// 		html.EscapeString(string(body))))
+	// }
 
 	return body, nil
 }

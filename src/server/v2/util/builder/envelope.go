@@ -10,7 +10,7 @@ import (
 	"path"
 	"strings"
 
-	"../../../RFC2047"
+	"../RFC2047"
 )
 
 // 我们发送的时候不考虑 text/plain 的情况了

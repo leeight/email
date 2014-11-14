@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"../../RFC2047"
+	"../../v2/util/RFC2047"
 )
 
 var debug = debugT(false)

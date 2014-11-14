@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"../../../RFC2047"
 	"../../../net/mail"
 	"../../models"
 	"../../util"
+	"../RFC2047"
 )
 
 // MailBuilder 发送邮件的时候，构造邮件的报文
